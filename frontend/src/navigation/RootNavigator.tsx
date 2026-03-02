@@ -12,6 +12,11 @@ import RestaurantCreateScreen from '../screens/restaurant/RestaurantCreateScreen
 import RestaurantDetailScreen from '../screens/restaurant/RestaurantDetailScreen';
 import CompanionCreateScreen from '../screens/companion/CompanionCreateScreen';
 import CompanionDetailScreen from '../screens/companion/CompanionDetailScreen';
+import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
+import ItineraryFormScreen from '../screens/itinerary/ItineraryFormScreen';
+import ItineraryResultScreen from '../screens/itinerary/ItineraryResultScreen';
+import ChatScreen from '../screens/chat/ChatScreen';
+import LocationSelectScreen from '../screens/matching/LocationSelectScreen';
 
 const Stack = createStackNavigator();
 
@@ -71,6 +76,11 @@ export default function RootNavigator() {
             <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
             <Stack.Screen name="CompanionCreate" component={CompanionCreateScreen} />
             <Stack.Screen name="CompanionDetail" component={CompanionDetailScreen} />
+            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
+            <Stack.Screen name="ItineraryForm" component={ItineraryFormScreen} />
+            <Stack.Screen name="ItineraryResult" component={ItineraryResultScreen} />
+            <Stack.Screen name="Chat" component={ChatScreen} />
+            <Stack.Screen name="LocationSelect" component={LocationSelectScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

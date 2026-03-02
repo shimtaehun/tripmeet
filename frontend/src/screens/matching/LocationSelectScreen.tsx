@@ -43,7 +43,10 @@ export default function LocationSelectScreen() {
 
       if (!res.ok) throw new Error();
 
-      navigation.replace('Matching', { locationName: locationName.trim() });
+      navigation.navigate('Main', {
+        screen: 'Matching',
+        params: { locationName: locationName.trim() },
+      });
     } catch {
       Alert.alert('오류', '위치 등록에 실패했습니다.');
     } finally {

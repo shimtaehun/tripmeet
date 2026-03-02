@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 
 interface UserProfile {
@@ -22,24 +23,49 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProfile();
+  const fetchProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/me`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (!res.ok) throw new Error('프로필 조회 실패');
+
+      const data = await res.json();
+      setProfile(data);
+    } catch (e) {
+      console.error('프로필 조회 오류:', e);
+      Alert.alert('오류', '프로필을 불러올 수 없습니다.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const fetchProfile = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
-    const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
-    const data = await res.json();
-    setProfile(data);
-    setLoading(false);
-  };
+  // 프로필 수정 후 돌아왔을 때 자동 갱신
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfile();
+    }, [fetchProfile]),
+  );
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    Alert.alert('로그아웃', '로그아웃하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '로그아웃',
+        style: 'destructive',
+        onPress: async () => {
+          await supabase.auth.signOut();
+        },
+      },
+    ]);
   };
 
   if (loading) {
@@ -60,12 +86,12 @@ export default function ProfileScreen() {
         }
         style={styles.avatar}
       />
-      <Text style={styles.nickname}>{profile?.nickname}</Text>
+      <Text style={styles.nickname}>{profile?.nickname ?? '닉네임 없음'}</Text>
       {profile?.bio ? <Text style={styles.bio}>{profile.bio}</Text> : null}
 
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => navigation.navigate('ProfileEdit')}
+        onPress={() => navigation.navigate('ProfileEdit', { profile })}
       >
         <Text style={styles.editButtonText}>프로필 수정</Text>
       </TouchableOpacity>
@@ -112,6 +138,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     marginBottom: 12,
+    marginTop: 16,
   },
   editButtonText: { color: '#3B82F6', fontSize: 15, fontWeight: '600' },
   logoutButton: {
