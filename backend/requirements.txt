@@ -1,0 +1,21 @@
+# 웹 프레임워크
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# Supabase (DB + Auth)
+supabase==2.10.0
+
+# OpenAI (AI 일정 생성)
+openai==1.57.0
+
+# Redis (AI 결과 캐싱 - Upstash REST 방식)
+upstash-redis==1.1.0
+
+# 환경변수
+python-dotenv==1.0.1
+
+# 이미지 업로드 (Cloudflare R2 - S3 호환)
+boto3==1.35.74
+
+# HTTP 요청
+httpx>=0.26,<0.28
