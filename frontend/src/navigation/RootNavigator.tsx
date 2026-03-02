@@ -8,6 +8,8 @@ import MainTabs from './MainTabs';
 import LoginScreen from '../screens/auth/LoginScreen';
 import PostCreateScreen from '../screens/community/PostCreateScreen';
 import PostDetailScreen from '../screens/community/PostDetailScreen';
+import RestaurantCreateScreen from '../screens/restaurant/RestaurantCreateScreen';
+import RestaurantDetailScreen from '../screens/restaurant/RestaurantDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -63,6 +65,8 @@ export default function RootNavigator() {
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen name="PostCreate" component={PostCreateScreen} />
             <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+            <Stack.Screen name="RestaurantCreate" component={RestaurantCreateScreen} />
+            <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

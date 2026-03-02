@@ -147,19 +147,19 @@
 
 #### 6-1. 맛집 리뷰 API (백엔드)
 
-- [ ] **[6-1-1]** `app/routers/restaurants.py` 작성: `GET /restaurants` 엔드포인트 (location_name 필터, cursor 기반 페이지네이션 20개씩)
-- [ ] **[6-1-2]** `app/routers/restaurants.py` 수정: `POST /restaurants` 엔드포인트 추가 (이미지 최대 5장 multipart 업로드, R2 저장 후 URL 배열로 저장, 인증 필수)
-- [ ] **[6-1-3]** `app/routers/restaurants.py` 수정: `GET /restaurants/{id}` 엔드포인트 추가
-- [ ] **[6-1-4]** `app/routers/restaurants.py` 수정: `DELETE /restaurants/{id}` 엔드포인트 추가 (작성자 본인만)
-- [ ] **[6-1-5]** `app/main.py` 수정: restaurants 라우터 import 및 `app.include_router(restaurants.router)` 추가
+- [x] **[6-1-1]** `app/routers/restaurants.py` 작성: `GET /restaurants` 엔드포인트 (location_name 필터, cursor 기반 페이지네이션 20개씩)
+- [x] **[6-1-2]** `app/routers/restaurants.py` 수정: `POST /restaurants` 엔드포인트 추가 (이미지 최대 5장 multipart 업로드, R2 저장 후 URL 배열로 저장, 인증 필수)
+- [x] **[6-1-3]** `app/routers/restaurants.py` 수정: `GET /restaurants/{id}` 엔드포인트 추가
+- [x] **[6-1-4]** `app/routers/restaurants.py` 수정: `DELETE /restaurants/{id}` 엔드포인트 추가 (작성자 본인만)
+- [x] **[6-1-5]** `app/main.py` 수정: restaurants 라우터 import 및 `app.include_router(restaurants.router)` 추가
 
 #### 6-2. 맛집 리뷰 화면 (프론트엔드)
 
-- [ ] **[6-2-1]** `src/services/restaurantService.ts` 작성: 맛집 CRUD API 호출 함수 (이미지 multipart FormData 전송 포함)
-- [ ] **[6-2-2]** `src/screens/restaurant/RestaurantListScreen.tsx` 작성: 맛집 목록 화면 (지역 입력 필터, 별점 표시, FlatList)
-- [ ] **[6-2-3]** `src/screens/restaurant/RestaurantCreateScreen.tsx` 작성: 맛집 등록 화면 (이미지 최대 5장 선택→압축→업로드, 가게명/위치/설명/별점 입력)
-- [ ] **[6-2-4]** `src/screens/restaurant/RestaurantDetailScreen.tsx` 작성: 맛집 상세 화면 (이미지 ScrollView, 별점, 설명, 삭제 버튼)
-- [ ] **[6-2-5]** `src/navigation/RootNavigator.tsx` 수정: RestaurantListScreen, RestaurantCreateScreen, RestaurantDetailScreen 스택 추가 (Community 탭 또는 별도 접근 경로)
+- [x] **[6-2-1]** `src/services/restaurantService.ts` 작성: 맛집 CRUD API 호출 함수 (이미지 multipart FormData 전송 포함)
+- [x] **[6-2-2]** `src/screens/restaurant/RestaurantListScreen.tsx` 작성: 맛집 목록 화면 (지역 입력 필터, 별점 표시, FlatList)
+- [x] **[6-2-3]** `src/screens/restaurant/RestaurantCreateScreen.tsx` 작성: 맛집 등록 화면 (이미지 최대 5장 선택→압축→업로드, 가게명/위치/설명/별점 입력)
+- [x] **[6-2-4]** `src/screens/restaurant/RestaurantDetailScreen.tsx` 작성: 맛집 상세 화면 (이미지 ScrollView, 별점, 설명, 삭제 버튼)
+- [x] **[6-2-5]** `src/navigation/RootNavigator.tsx` 수정: RestaurantCreateScreen, RestaurantDetailScreen 스택 추가 / MainTabs.tsx에 맛집 탭 추가
 
 ---
 

@@ -4,6 +4,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import MatchingScreen from '../screens/matching/MatchingScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import CompanionScreen from '../screens/companion/CompanionScreen';
+import RestaurantListScreen from '../screens/restaurant/RestaurantListScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,11 @@ export default function MainTabs() {
         name="Community"
         component={CommunityScreen}
         options={{ tabBarLabel: '커뮤니티' }}
+      />
+      <Tab.Screen
+        name="Restaurant"
+        component={RestaurantListScreen}
+        options={{ tabBarLabel: '맛집' }}
       />
       <Tab.Screen
         name="Companion"
