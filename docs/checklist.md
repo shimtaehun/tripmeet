@@ -167,21 +167,21 @@
 
 #### 7-1. 동행 구인 API (백엔드)
 
-- [ ] **[7-1-1]** `app/routers/companions.py` 작성: `GET /companions` 엔드포인트 (status 필터: open/closed, cursor 기반 페이지네이션 20개씩)
-- [ ] **[7-1-2]** `app/routers/companions.py` 수정: `POST /companions` 엔드포인트 추가 (destination, travel_start_date, travel_end_date, description, max_participants 입력, 인증 필수)
-- [ ] **[7-1-3]** `app/routers/companions.py` 수정: `GET /companions/{id}` 엔드포인트 추가 (신청자 목록 포함)
-- [ ] **[7-1-4]** `app/routers/companions.py` 수정: `PATCH /companions/{id}/close` 엔드포인트 추가 (모집 마감, 작성자만 가능)
-- [ ] **[7-1-5]** `app/routers/companions.py` 수정: `POST /companions/{id}/apply` 엔드포인트 추가 (신청 메시지 포함, 중복 신청 시 400 에러)
-- [ ] **[7-1-6]** `app/routers/companions.py` 수정: `PATCH /companions/{id}/applications/{application_id}` 엔드포인트 추가 (status: accepted/rejected, 작성자만 가능)
-- [ ] **[7-1-7]** `app/main.py` 수정: companions 라우터 import 및 `app.include_router(companions.router)` 추가
+- [x] **[7-1-1]** `app/routers/companions.py` 작성: `GET /companions` 엔드포인트 (status 필터: open/closed, cursor 기반 페이지네이션 20개씩)
+- [x] **[7-1-2]** `app/routers/companions.py` 수정: `POST /companions` 엔드포인트 추가 (destination, travel_start_date, travel_end_date, description, max_participants 입력, 인증 필수)
+- [x] **[7-1-3]** `app/routers/companions.py` 수정: `GET /companions/{id}` 엔드포인트 추가 (신청자 목록 포함)
+- [x] **[7-1-4]** `app/routers/companions.py` 수정: `PATCH /companions/{id}/close` 엔드포인트 추가 (모집 마감, 작성자만 가능)
+- [x] **[7-1-5]** `app/routers/companions.py` 수정: `POST /companions/{id}/apply` 엔드포인트 추가 (신청 메시지 포함, 중복 신청 시 400 에러)
+- [x] **[7-1-6]** `app/routers/companions.py` 수정: `PATCH /companions/{id}/applications/{application_id}` 엔드포인트 추가 (status: accepted/rejected, 작성자만 가능)
+- [x] **[7-1-7]** `app/main.py` 수정: companions 라우터 import 및 `app.include_router(companions.router)` 추가
 
 #### 7-2. 동행 구인 화면 (프론트엔드)
 
-- [ ] **[7-2-1]** `src/services/companionService.ts` 작성: 동행 구인 CRUD + 신청/수락/거절 API 호출 함수
-- [ ] **[7-2-2]** `src/screens/companion/CompanionScreen.tsx` 수정: 동행 구인 목록 FlatList (open/closed 탭 필터, 여행 날짜/목적지 카드 표시)
-- [ ] **[7-2-3]** `src/screens/companion/CompanionCreateScreen.tsx` 작성: 동행 구인 등록 화면 (여행지, 날짜 선택, 모집 인원, 조건 설명 입력)
-- [ ] **[7-2-4]** `src/screens/companion/CompanionDetailScreen.tsx` 작성: 동행 상세 화면 (게시글 내용, 신청 버튼, 작성자일 경우 신청자 목록 및 수락/거절 버튼)
-- [ ] **[7-2-5]** `src/navigation/RootNavigator.tsx` 수정: CompanionCreateScreen, CompanionDetailScreen 스택 추가
+- [x] **[7-2-1]** `src/services/companionService.ts` 작성: 동행 구인 CRUD + 신청/수락/거절 API 호출 함수
+- [x] **[7-2-2]** `src/screens/companion/CompanionScreen.tsx` 수정: 동행 구인 목록 FlatList (open/closed 탭 필터, 여행 날짜/목적지 카드 표시)
+- [x] **[7-2-3]** `src/screens/companion/CompanionCreateScreen.tsx` 작성: 동행 구인 등록 화면 (여행지, 날짜 선택, 모집 인원, 조건 설명 입력)
+- [x] **[7-2-4]** `src/screens/companion/CompanionDetailScreen.tsx` 작성: 동행 상세 화면 (게시글 내용, 신청 버튼, 작성자일 경우 신청자 목록 및 수락/거절 버튼)
+- [x] **[7-2-5]** `src/navigation/RootNavigator.tsx` 수정: CompanionCreateScreen, CompanionDetailScreen 스택 추가
 
 ---
 

@@ -10,6 +10,8 @@ import PostCreateScreen from '../screens/community/PostCreateScreen';
 import PostDetailScreen from '../screens/community/PostDetailScreen';
 import RestaurantCreateScreen from '../screens/restaurant/RestaurantCreateScreen';
 import RestaurantDetailScreen from '../screens/restaurant/RestaurantDetailScreen';
+import CompanionCreateScreen from '../screens/companion/CompanionCreateScreen';
+import CompanionDetailScreen from '../screens/companion/CompanionDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +69,8 @@ export default function RootNavigator() {
             <Stack.Screen name="PostDetail" component={PostDetailScreen} />
             <Stack.Screen name="RestaurantCreate" component={RestaurantCreateScreen} />
             <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
+            <Stack.Screen name="CompanionCreate" component={CompanionCreateScreen} />
+            <Stack.Screen name="CompanionDetail" component={CompanionDetailScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

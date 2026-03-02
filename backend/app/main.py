@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, users, locations, itineraries, posts, restaurants
+from app.routers import auth, users, locations, itineraries, posts, restaurants, companions
 
 app = FastAPI(title="TripMeet API")
 
@@ -30,6 +30,7 @@ app.include_router(locations.router)
 app.include_router(itineraries.router)
 app.include_router(posts.router)
 app.include_router(restaurants.router)
+app.include_router(companions.router)
 
 
 @app.get("/health")
