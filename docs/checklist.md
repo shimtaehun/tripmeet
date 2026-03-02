@@ -189,15 +189,15 @@
 
 #### 8-1. 핵심 API 단위 테스트
 
-- [ ] **[8-1-1]** `tests/conftest.py` 작성: pytest fixture 정의 (FastAPI TestClient, 테스트용 Supabase 목 또는 실제 연결)
-- [ ] **[8-1-2]** `tests/test_auth.py` 작성: `POST /auth/sync-user` 테스트 (신규 사용자 생성, 기존 사용자 조회 케이스)
-- [ ] **[8-1-3]** `tests/test_itineraries.py` 작성: `POST /itineraries` 테스트 (캐시 미스 → GPT 호출, 캐시 히트 → API 미호출 케이스)
-- [ ] **[8-1-4]** `tests/test_locations.py` 작성: `POST /locations`, `GET /locations` 테스트 (지역 등록 및 목록 조회 케이스)
+- [x] **[8-1-1]** `tests/conftest.py` 작성: pytest fixture 정의 (FastAPI TestClient, get_current_user 의존성 오버라이드)
+- [x] **[8-1-2]** `tests/test_auth.py` 작성: `POST /auth/sync-user` 테스트 (신규 사용자 생성, 기존 사용자 조회 케이스)
+- [x] **[8-1-3]** `tests/test_itineraries.py` 작성: `POST /itineraries` 테스트 (캐시 미스 → GPT 호출, 캐시 히트 → API 미호출 케이스)
+- [x] **[8-1-4]** `tests/test_locations.py` 작성: `POST /locations`, `GET /locations` 테스트 (지역 등록 및 목록 조회 케이스)
 
 #### 8-2. 배포 준비
 
-- [ ] **[8-2-1]** `render.yaml` 수정: `R2_ACCOUNT_ID` 항목을 `R2_ENDPOINT_URL`로 교체 (storage_service.py와 키 이름 일치)
-- [ ] **[8-2-2]** `frontend/app.json` 수정: `scheme` 필드 추가 ("tripmeet"), 앱 이름/버전 확정
-- [ ] **[8-2-3]** `frontend/eas.json` 작성: EAS Build 프로필 정의 (development, preview, production)
-- [ ] **[8-2-4]** Supabase 대시보드 작업: 프로덕션 리다이렉트 URL 등록 (`tripmeet://auth/callback`), 현재 Expo Go URL도 병행 등록
-- [ ] **[8-2-5]** Render.com 대시보드 작업: 환경변수 11개 전체 등록 및 배포 실행 후 `/health` 엔드포인트 응답 확인
+- [x] **[8-2-1]** `render.yaml` 수정: `R2_ACCOUNT_ID` 항목을 `R2_ENDPOINT_URL`로 교체 (storage_service.py와 키 이름 일치)
+- [x] **[8-2-2]** `frontend/app.json` 수정: `scheme` 필드 추가 ("tripmeet"), 앱 이름(TripMeet)/슬러그(tripmeet)/번들ID 확정
+- [x] **[8-2-3]** `frontend/eas.json` 작성: EAS Build 프로필 정의 (development, preview, production)
+- [ ] **[8-2-4]** [수동 작업] Supabase 대시보드: 프로덕션 리다이렉트 URL 등록 (`tripmeet://auth/callback`), Expo Go URL도 병행 등록
+- [ ] **[8-2-5]** [수동 작업] Render.com 대시보드: 환경변수 11개 전체 등록 및 배포 실행 후 `/health` 엔드포인트 응답 확인
