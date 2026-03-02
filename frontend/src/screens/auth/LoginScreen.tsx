@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
@@ -23,25 +24,36 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const redirectTo = Linking.createURL('auth/callback');
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo },
-      });
 
-      if (error) throw error;
+      if (Platform.OS === 'web') {
+        // 웹: signInWithOAuth가 브라우저를 직접 리디렉션하므로 추가 처리 불필요
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo },
+        });
+        if (error) throw error;
+      } else {
+        // 네이티브: WebBrowser로 인앱 브라우저 열고 PKCE 코드 교환
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo },
+        });
 
-      if (data.url) {
-        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+        if (error) throw error;
 
-        if (result.type === 'success' && result.url) {
-          // PKCE 플로우: Supabase가 콜백 URL에 code 파라미터를 붙여 반환
-          const queryString = result.url.split('?')[1] ?? '';
-          const params = new URLSearchParams(queryString);
-          const code = params.get('code');
+        if (data.url) {
+          const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
 
-          if (code) {
-            const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
-            if (sessionError) throw sessionError;
+          if (result.type === 'success' && result.url) {
+            // PKCE 플로우: Supabase가 콜백 URL에 code 파라미터를 붙여 반환
+            const queryString = result.url.split('?')[1] ?? '';
+            const params = new URLSearchParams(queryString);
+            const code = params.get('code');
+
+            if (code) {
+              const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
+              if (sessionError) throw sessionError;
+            }
           }
         }
       }

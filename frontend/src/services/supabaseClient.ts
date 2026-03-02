@@ -23,6 +23,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storage: storageAdapter,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    // 웹: OAuth 완료 후 URL에 붙은 code를 Supabase가 자동 감지해야 함
+    // 네이티브: 수동으로 exchangeCodeForSession을 호출하므로 false
+    detectSessionInUrl: Platform.OS === 'web',
   },
 });

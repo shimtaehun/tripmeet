@@ -126,20 +126,20 @@
 
 #### 5-1. 커뮤니티 게시판 API (백엔드)
 
-- [ ] **[5-1-1]** `app/routers/posts.py` 작성: `GET /posts` 엔드포인트 (category 필터, cursor 기반 페이지네이션 20개씩, 인증 필수)
-- [ ] **[5-1-2]** `app/routers/posts.py` 수정: `POST /posts` 엔드포인트 추가 (title, content, category 입력, 인증 필수)
-- [ ] **[5-1-3]** `app/routers/posts.py` 수정: `GET /posts/{id}` 엔드포인트 추가 (조회수 view_count +1 증가 포함)
-- [ ] **[5-1-4]** `app/routers/posts.py` 수정: `PATCH /posts/{id}` 엔드포인트 추가 (작성자 본인만 수정 가능, 권한 검증)
-- [ ] **[5-1-5]** `app/routers/posts.py` 수정: `DELETE /posts/{id}` 엔드포인트 추가 (작성자 본인만 삭제 가능)
-- [ ] **[5-1-6]** `app/main.py` 수정: posts 라우터 import 및 `app.include_router(posts.router)` 추가
+- [x] **[5-1-1]** `app/routers/posts.py` 작성: `GET /posts` 엔드포인트 (category 필터, cursor 기반 페이지네이션 20개씩, 인증 필수)
+- [x] **[5-1-2]** `app/routers/posts.py` 수정: `POST /posts` 엔드포인트 추가 (title, content, category 입력, 인증 필수)
+- [x] **[5-1-3]** `app/routers/posts.py` 수정: `GET /posts/{id}` 엔드포인트 추가 (조회수 view_count +1 증가 포함)
+- [x] **[5-1-4]** `app/routers/posts.py` 수정: `PATCH /posts/{id}` 엔드포인트 추가 (작성자 본인만 수정 가능, 권한 검증)
+- [x] **[5-1-5]** `app/routers/posts.py` 수정: `DELETE /posts/{id}` 엔드포인트 추가 (작성자 본인만 삭제 가능)
+- [x] **[5-1-6]** `app/main.py` 수정: posts 라우터 import 및 `app.include_router(posts.router)` 추가
 
 #### 5-2. 커뮤니티 게시판 화면 (프론트엔드)
 
-- [ ] **[5-2-1]** `src/services/postService.ts` 작성: GET /posts, POST /posts, GET /posts/{id}, PATCH, DELETE API 호출 함수 (Authorization 헤더 포함)
-- [ ] **[5-2-2]** `src/screens/community/CommunityScreen.tsx` 수정: 게시글 목록 FlatList 구현 (카테고리 탭 필터: 전체/질문/후기/정보, 무한 스크롤)
-- [ ] **[5-2-3]** `src/screens/community/PostCreateScreen.tsx` 작성: 게시글 작성 화면 (카테고리 선택, 제목/내용 입력, 등록 버튼)
-- [ ] **[5-2-4]** `src/screens/community/PostDetailScreen.tsx` 작성: 게시글 상세 화면 (본문 표시, 작성자일 경우 수정/삭제 버튼 표시)
-- [ ] **[5-2-5]** `src/navigation/RootNavigator.tsx` 수정: PostCreateScreen, PostDetailScreen을 Stack에 추가 (Community 탭 내 스택 네비게이션)
+- [x] **[5-2-1]** `src/services/postService.ts` 작성: GET /posts, POST /posts, GET /posts/{id}, PATCH, DELETE API 호출 함수 (Authorization 헤더 포함)
+- [x] **[5-2-2]** `src/screens/community/CommunityScreen.tsx` 수정: 게시글 목록 FlatList 구현 (카테고리 탭 필터: 전체/질문/후기/정보, 무한 스크롤)
+- [x] **[5-2-3]** `src/screens/community/PostCreateScreen.tsx` 작성: 게시글 작성 화면 (카테고리 선택, 제목/내용 입력, 등록 버튼)
+- [x] **[5-2-4]** `src/screens/community/PostDetailScreen.tsx` 작성: 게시글 상세 화면 (본문 표시, 작성자일 경우 수정/삭제 버튼 표시)
+- [x] **[5-2-5]** `src/navigation/RootNavigator.tsx` 수정: PostCreateScreen, PostDetailScreen을 Stack에 추가 (Community 탭 내 스택 네비게이션)
 
 ---
 
