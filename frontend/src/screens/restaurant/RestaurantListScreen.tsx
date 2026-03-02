@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getRestaurants, RestaurantSummary } from '../../services/restaurantService';
+import { Colors, Radius, Shadow } from '../../utils/theme';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -19,6 +20,7 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map(i => (
         <Text key={i} style={i <= rating ? styles.starFilled : styles.starEmpty}>★</Text>
       ))}
+      <Text style={styles.ratingNum}>{rating.toFixed(1)}</Text>
     </View>
   );
 }
@@ -71,51 +73,58 @@ export default function RestaurantListScreen() {
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation.navigate('RestaurantDetail', { restaurantId: item.id })}
+      activeOpacity={0.75}
     >
       {item.image_urls.length > 0 ? (
         <Image source={{ uri: item.image_urls[0] }} style={styles.thumbnail} />
       ) : (
-        <View style={[styles.thumbnail, styles.thumbnailPlaceholder]}>
-          <Text style={styles.thumbnailPlaceholderText}>사진 없음</Text>
+        <View style={[styles.thumbnail, styles.thumbnailEmpty]}>
+          <Text style={styles.thumbnailEmptyIcon}>🍽</Text>
         </View>
       )}
       <View style={styles.cardInfo}>
         <Text style={styles.restaurantName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.locationName}>{item.location_name}</Text>
+        <View style={styles.locationRow}>
+          <Text style={styles.locationIcon}>📍</Text>
+          <Text style={styles.locationName}>{item.location_name}</Text>
+        </View>
         <StarRating rating={item.rating} />
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
+      {/* 헤더 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>맛집</Text>
         <TouchableOpacity
-          style={styles.addButton}
+          style={styles.addBtn}
           onPress={() => navigation.navigate('RestaurantCreate')}
+          activeOpacity={0.85}
         >
-          <Text style={styles.addButtonText}>등록</Text>
+          <Text style={styles.addBtnText}>+ 등록</Text>
         </TouchableOpacity>
       </View>
 
+      {/* 검색바 */}
       <View style={styles.searchRow}>
         <TextInput
           style={styles.searchInput}
           placeholder="지역 검색 (예: 홍대, 도쿄)"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={locationFilter}
           onChangeText={setLocationFilter}
           onSubmitEditing={handleSearch}
           returnKeyType="search"
         />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>검색</Text>
+        <TouchableOpacity style={styles.searchBtn} onPress={handleSearch} activeOpacity={0.8}>
+          <Text style={styles.searchBtnText}>검색</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#3B82F6" />
+        <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : (
         <FlatList
           data={restaurants}
@@ -123,14 +132,20 @@ export default function RestaurantListScreen() {
           renderItem={renderItem}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
+          }
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
             <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>🍜</Text>
               <Text style={styles.emptyText}>등록된 맛집이 없습니다.</Text>
+              <Text style={styles.emptyHint}>첫 번째 맛집을 등록해보세요!</Text>
             </View>
           }
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={styles.footer} color="#3B82F6" /> : null
+            loadingMore ? <ActivityIndicator style={styles.footerLoader} color={Colors.primary} /> : null
           }
         />
       )}
@@ -139,75 +154,153 @@ export default function RestaurantListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: Colors.card,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 52,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-  addButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '800' as const,
+    color: Colors.text,
+  },
+  addBtn: {
+    backgroundColor: Colors.red,
+    borderRadius: Radius.sm,
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
-  addButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  addBtnText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '700' as const,
+  },
+
+  // 검색
   searchRow: {
     flexDirection: 'row',
+    backgroundColor: Colors.card,
     paddingHorizontal: 16,
     paddingVertical: 10,
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
   searchInput: {
     flex: 1,
-    height: 38,
+    height: 40,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
     paddingHorizontal: 12,
     fontSize: 14,
-    color: '#111827',
+    color: Colors.text,
+    backgroundColor: Colors.surface,
   },
-  searchButton: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    paddingHorizontal: 14,
+  searchBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.sm,
+    paddingHorizontal: 16,
     justifyContent: 'center',
   },
-  searchButtonText: { fontSize: 14, color: '#374151', fontWeight: '600' },
+  searchBtnText: {
+    fontSize: 14,
+    color: '#fff',
+    fontWeight: '700' as const,
+  },
+
+  // 리스트
+  listContent: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  separator: { height: 10 },
   card: {
     flexDirection: 'row',
+    backgroundColor: Colors.card,
+    borderRadius: Radius.md,
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    ...Shadow.card,
   },
   thumbnail: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
-    marginRight: 12,
+    width: 80,
+    height: 80,
+    borderRadius: Radius.md,
+    marginRight: 14,
   },
-  thumbnailPlaceholder: {
-    backgroundColor: '#F3F4F6',
+  thumbnailEmpty: {
+    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  thumbnailPlaceholderText: { fontSize: 11, color: '#9CA3AF' },
-  cardInfo: { flex: 1, justifyContent: 'center' },
-  restaurantName: { fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 4 },
-  locationName: { fontSize: 13, color: '#6B7280', marginBottom: 6 },
-  starRow: { flexDirection: 'row' },
-  starFilled: { fontSize: 14, color: '#FBBF24' },
-  starEmpty: { fontSize: 14, color: '#E5E7EB' },
+  thumbnailEmptyIcon: { fontSize: 28 },
+  cardInfo: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 4,
+  },
+  restaurantName: {
+    fontSize: 15,
+    fontWeight: '700' as const,
+    color: Colors.text,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  locationIcon: { fontSize: 11 },
+  locationName: {
+    fontSize: 13,
+    color: Colors.textMedium,
+  },
+  starRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 1,
+  },
+  starFilled: {
+    fontSize: 14,
+    color: Colors.amber,
+  },
+  starEmpty: {
+    fontSize: 14,
+    color: Colors.border,
+  },
+  ratingNum: {
+    fontSize: 12,
+    color: Colors.textMedium,
+    fontWeight: '600' as const,
+    marginLeft: 4,
+  },
+
   loader: { marginTop: 60 },
-  footer: { paddingVertical: 16 },
-  empty: { alignItems: 'center', paddingTop: 60 },
-  emptyText: { fontSize: 15, color: '#9CA3AF' },
+  footerLoader: { paddingVertical: 16 },
+  empty: {
+    alignItems: 'center',
+    paddingTop: 80,
+  },
+  emptyIcon: { fontSize: 40, marginBottom: 12 },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textMedium,
+    marginBottom: 6,
+  },
+  emptyHint: {
+    fontSize: 13,
+    color: Colors.textLight,
+  },
 });

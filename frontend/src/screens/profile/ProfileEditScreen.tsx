@@ -7,11 +7,13 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { compressImage } from '../../utils/imageCompressor';
+import { Colors, Radius, Shadow } from '../../utils/theme';
 
 export default function ProfileEditScreen() {
   const navigation = useNavigation<any>();
@@ -94,84 +96,148 @@ export default function ProfileEditScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
+      {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={styles.cancelText}>취소</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>프로필 수정</Text>
-        <TouchableOpacity onPress={handleSave} disabled={loading}>
+        <TouchableOpacity onPress={handleSave} disabled={loading} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           {loading ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
             <Text style={styles.saveText}>저장</Text>
           )}
         </TouchableOpacity>
       </View>
 
-      <View style={styles.body}>
-        <TouchableOpacity style={styles.imageButton} onPress={handlePickImage} disabled={loading}>
-          <Text style={styles.imageButtonText}>프로필 사진 변경</Text>
+      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* 사진 변경 버튼 */}
+        <TouchableOpacity
+          style={styles.imageBtn}
+          onPress={handlePickImage}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.imageBtnIcon}>📷</Text>
+          <Text style={styles.imageBtnText}>프로필 사진 변경</Text>
         </TouchableOpacity>
 
+        {/* 닉네임 */}
         <Text style={styles.label}>닉네임</Text>
         <TextInput
           style={styles.input}
           value={nickname}
           onChangeText={setNickname}
           placeholder="닉네임 입력"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           maxLength={50}
         />
 
-        <Text style={styles.label}>자기소개</Text>
+        {/* 자기소개 */}
+        <Text style={styles.label}>자기소개 <Text style={styles.labelOptional}>(선택)</Text></Text>
         <TextInput
           style={[styles.input, styles.bioInput]}
           value={bio}
           onChangeText={setBio}
-          placeholder="자기소개 입력 (선택)"
-          placeholderTextColor="#9CA3AF"
+          placeholder="여행 스타일, 관심사 등을 적어보세요"
+          placeholderTextColor={Colors.textLight}
           multiline
           textAlignVertical="top"
           maxLength={200}
         />
-      </View>
+        <Text style={styles.charCount}>{bio.length} / 200</Text>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: Colors.card,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 52,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
-  cancelText: { fontSize: 15, color: '#6B7280' },
-  saveText: { fontSize: 15, color: '#3B82F6', fontWeight: '600' },
-  body: { padding: 24 },
-  imageButton: {
-    borderWidth: 1,
-    borderColor: '#3B82F6',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginBottom: 24,
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: Colors.text,
   },
-  imageButtonText: { color: '#3B82F6', fontSize: 14, fontWeight: '600' },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 6, marginTop: 16 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    padding: 12,
+  cancelText: {
     fontSize: 15,
-    color: '#111827',
+    color: Colors.textMedium,
   },
-  bioInput: { height: 100 },
+  saveText: {
+    fontSize: 15,
+    color: Colors.primary,
+    fontWeight: '700' as const,
+  },
+
+  // 바디
+  body: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  imageBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.card,
+    borderWidth: 1.5,
+    borderColor: Colors.primaryBorder,
+    borderRadius: Radius.md,
+    paddingVertical: 14,
+    marginBottom: 24,
+    ...Shadow.card,
+  },
+  imageBtnIcon: { fontSize: 18 },
+  imageBtnText: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '700' as const,
+  },
+
+  label: {
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: Colors.textMedium,
+    marginBottom: 6,
+    marginTop: 16,
+  },
+  labelOptional: {
+    fontWeight: '400' as const,
+    color: Colors.textLight,
+  },
+  input: {
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
+    padding: 14,
+    fontSize: 15,
+    color: Colors.text,
+  },
+  bioInput: {
+    height: 110,
+  },
+  charCount: {
+    textAlign: 'right',
+    fontSize: 11,
+    color: Colors.textLight,
+    marginTop: 4,
+  },
 });

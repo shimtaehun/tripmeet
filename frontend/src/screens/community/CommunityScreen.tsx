@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
+import { Colors, Radius, Shadow } from '../../utils/theme';
 
 const CATEGORIES = [
   { label: '전체', value: undefined },
@@ -22,6 +23,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   question: '질문',
   review: '후기',
   info: '정보',
+};
+
+const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
+  question: { bg: Colors.primaryLight, text: Colors.primary },
+  review: { bg: Colors.greenLight, text: Colors.green },
+  info: { bg: Colors.accentLight, text: Colors.accent },
 };
 
 export default function CommunityScreen() {
@@ -70,50 +77,63 @@ export default function CommunityScreen() {
     setSelectedCategory(value);
   };
 
-  const renderItem = ({ item }: { item: PostSummary }) => (
-    <TouchableOpacity
-      style={styles.postItem}
-      onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
-    >
-      <View style={styles.postHeader}>
-        <View style={styles.categoryBadge}>
-          <Text style={styles.categoryBadgeText}>{CATEGORY_LABELS[item.category]}</Text>
+  const renderItem = ({ item }: { item: PostSummary }) => {
+    const catStyle = CATEGORY_COLORS[item.category] ?? { bg: Colors.surface, text: Colors.textMedium };
+    return (
+      <TouchableOpacity
+        style={styles.postCard}
+        onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
+        activeOpacity={0.75}
+      >
+        <View style={styles.postMeta}>
+          <View style={[styles.catBadge, { backgroundColor: catStyle.bg }]}>
+            <Text style={[styles.catBadgeText, { color: catStyle.text }]}>
+              {CATEGORY_LABELS[item.category]}
+            </Text>
+          </View>
+          <Text style={styles.viewCount}>조회 {item.view_count}</Text>
         </View>
-        <Text style={styles.viewCount}>조회 {item.view_count}</Text>
-      </View>
-      <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
-      <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
-    </TouchableOpacity>
-  );
+        <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
+        <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
+      {/* 헤더 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>커뮤니티</Text>
         <TouchableOpacity
-          style={styles.writeButton}
+          style={styles.writeBtn}
           onPress={() => navigation.navigate('PostCreate')}
+          activeOpacity={0.85}
         >
-          <Text style={styles.writeButtonText}>글쓰기</Text>
+          <Text style={styles.writeBtnText}>+ 글쓰기</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.tabs}>
-        {CATEGORIES.map(cat => (
-          <TouchableOpacity
-            key={cat.label}
-            style={[styles.tab, selectedCategory === cat.value && styles.tabActive]}
-            onPress={() => handleCategorySelect(cat.value)}
-          >
-            <Text style={[styles.tabText, selectedCategory === cat.value && styles.tabTextActive]}>
-              {cat.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      {/* 카테고리 탭 */}
+      <View style={styles.tabBar}>
+        {CATEGORIES.map(cat => {
+          const active = selectedCategory === cat.value;
+          return (
+            <TouchableOpacity
+              key={cat.label}
+              style={[styles.tab, active && styles.tabActive]}
+              onPress={() => handleCategorySelect(cat.value)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.tabText, active && styles.tabTextActive]}>
+                {cat.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#3B82F6" />
+        <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : (
         <FlatList
           data={posts}
@@ -121,14 +141,20 @@ export default function CommunityScreen() {
           renderItem={renderItem}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
+          }
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>게시글이 없습니다.</Text>
+              <Text style={styles.emptyIcon}>💬</Text>
+              <Text style={styles.emptyText}>아직 게시글이 없습니다.</Text>
+              <Text style={styles.emptyHint}>첫 번째 글을 작성해보세요!</Text>
             </View>
           }
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={styles.footer} color="#3B82F6" /> : null
+            loadingMore ? <ActivityIndicator style={styles.footerLoader} color={Colors.primary} /> : null
           }
         />
       )}
@@ -137,58 +163,130 @@ export default function CommunityScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: Colors.card,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 52,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-  writeButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '800' as const,
+    color: Colors.text,
+  },
+  writeBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.sm,
     paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  writeButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  tabs: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  writeBtnText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '700' as const,
+  },
+
+  // 탭
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: Colors.card,
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+    gap: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
   tab: {
-    marginRight: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.surface,
   },
-  tabActive: { backgroundColor: '#EFF6FF' },
-  tabText: { fontSize: 14, color: '#6B7280' },
-  tabTextActive: { color: '#3B82F6', fontWeight: '600' },
-  postItem: {
+  tabActive: {
+    backgroundColor: Colors.primary,
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '500' as const,
+    color: Colors.textMedium,
+  },
+  tabTextActive: {
+    color: '#fff',
+    fontWeight: '700' as const,
+  },
+
+  // 리스트
+  listContent: {
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    paddingBottom: 32,
   },
-  postHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  categoryBadge: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 4,
+  postCard: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.md,
+    padding: 16,
+    ...Shadow.card,
+  },
+  separator: {
+    height: 10,
+  },
+  postMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  catBadge: {
+    borderRadius: Radius.xs,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
   },
-  categoryBadgeText: { fontSize: 12, color: '#6B7280' },
-  viewCount: { fontSize: 12, color: '#9CA3AF' },
-  postTitle: { fontSize: 15, color: '#111827', marginBottom: 6 },
-  postDate: { fontSize: 12, color: '#9CA3AF' },
+  catBadgeText: {
+    fontSize: 11,
+    fontWeight: '700' as const,
+  },
+  viewCount: {
+    fontSize: 12,
+    color: Colors.textLight,
+  },
+  postTitle: {
+    fontSize: 15,
+    fontWeight: '600' as const,
+    color: Colors.text,
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  postDate: {
+    fontSize: 12,
+    color: Colors.textLight,
+  },
+
+  // 기타
   loader: { marginTop: 60 },
-  footer: { paddingVertical: 16 },
-  empty: { alignItems: 'center', paddingTop: 60 },
-  emptyText: { fontSize: 15, color: '#9CA3AF' },
+  footerLoader: { paddingVertical: 16 },
+  empty: {
+    alignItems: 'center',
+    paddingTop: 80,
+  },
+  emptyIcon: { fontSize: 40, marginBottom: 12 },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textMedium,
+    marginBottom: 6,
+  },
+  emptyHint: {
+    fontSize: 13,
+    color: Colors.textLight,
+  },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors, Radius, Shadow } from '../../utils/theme';
 
 interface Props {
   userId: string;
@@ -17,7 +18,7 @@ export default function TravelerListItem({
   onChatPress,
 }: Props) {
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
       <Image
         source={
           profileImageUrl
@@ -28,38 +29,68 @@ export default function TravelerListItem({
       />
       <View style={styles.info}>
         <Text style={styles.nickname}>{nickname}</Text>
-        {bio ? <Text style={styles.bio} numberOfLines={1}>{bio}</Text> : null}
+        {bio ? (
+          <Text style={styles.bio} numberOfLines={1}>{bio}</Text>
+        ) : (
+          <Text style={styles.bioEmpty}>자기소개 없음</Text>
+        )}
       </View>
-      <TouchableOpacity style={styles.chatButton} onPress={() => onChatPress(userId, nickname)}>
-        <Text style={styles.chatButtonText}>채팅</Text>
+      <TouchableOpacity
+        style={styles.chatBtn}
+        onPress={() => onChatPress(userId, nickname)}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.chatBtnText}>💬 채팅</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    backgroundColor: Colors.card,
+    borderRadius: Radius.md,
+    padding: 14,
+    ...Shadow.card,
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E5E7EB',
+    width: 52,
+    height: 52,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.surface,
     marginRight: 12,
   },
-  info: { flex: 1 },
-  nickname: { fontSize: 15, fontWeight: '600', color: '#111827' },
-  bio: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
-  chatButton: {
-    backgroundColor: '#EFF6FF',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+  info: {
+    flex: 1,
   },
-  chatButtonText: { color: '#3B82F6', fontSize: 13, fontWeight: '600' },
+  nickname: {
+    fontSize: 15,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    marginBottom: 3,
+  },
+  bio: {
+    fontSize: 12,
+    color: Colors.textMedium,
+  },
+  bioEmpty: {
+    fontSize: 12,
+    color: Colors.textLight,
+    fontStyle: 'italic',
+  },
+  chatBtn: {
+    backgroundColor: Colors.primaryLight,
+    borderRadius: Radius.sm,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: Colors.primaryBorder,
+  },
+  chatBtnText: {
+    color: Colors.primary,
+    fontSize: 13,
+    fontWeight: '700' as const,
+  },
 });

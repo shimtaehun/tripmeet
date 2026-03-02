@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
+import { Colors, Radius, Shadow } from '../../utils/theme';
 
 type StatusFilter = 'all' | 'open' | 'closed';
 
@@ -61,55 +62,79 @@ export default function CompanionScreen() {
     setLoadingMore(false);
   };
 
-  const renderItem = ({ item }: { item: CompanionSummary }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('CompanionDetail', { companionId: item.id })}
-    >
-      <View style={styles.cardTop}>
-        <Text style={styles.destination}>{item.destination}</Text>
-        <View style={[styles.statusBadge, item.status === 'open' ? styles.badgeOpen : styles.badgeClosed]}>
-          <Text style={[styles.statusBadgeText, item.status === 'open' ? styles.badgeOpenText : styles.badgeClosedText]}>
-            {item.status === 'open' ? '모집중' : '마감'}
-          </Text>
+  const renderItem = ({ item }: { item: CompanionSummary }) => {
+    const isOpen = item.status === 'open';
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('CompanionDetail', { companionId: item.id })}
+        activeOpacity={0.75}
+      >
+        {/* 상단 행: 목적지 + 상태 배지 */}
+        <View style={styles.cardTop}>
+          <View style={styles.destinationRow}>
+            <Text style={styles.destinationIcon}>✈</Text>
+            <Text style={styles.destination}>{item.destination}</Text>
+          </View>
+          <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
+            <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
+              {isOpen ? '모집중' : '마감'}
+            </Text>
+          </View>
         </View>
-      </View>
-      <Text style={styles.dateRange}>
-        {item.travel_start_date} ~ {item.travel_end_date}
-      </Text>
-      <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
-      <Text style={styles.participants}>최대 {item.max_participants}명</Text>
-    </TouchableOpacity>
-  );
+
+        {/* 날짜 */}
+        <View style={styles.dateRow}>
+          <Text style={styles.dateIcon}>📅</Text>
+          <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
+        </View>
+
+        {/* 설명 */}
+        <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
+
+        {/* 하단: 인원 */}
+        <View style={styles.cardBottom}>
+          <Text style={styles.participants}>최대 {item.max_participants}명</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
+      {/* 헤더 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>동행 구인</Text>
         <TouchableOpacity
-          style={styles.addButton}
+          style={styles.addBtn}
           onPress={() => navigation.navigate('CompanionCreate')}
+          activeOpacity={0.85}
         >
-          <Text style={styles.addButtonText}>등록</Text>
+          <Text style={styles.addBtnText}>+ 등록</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.tabRow}>
-        {STATUS_TABS.map(tab => (
-          <TouchableOpacity
-            key={tab.value}
-            style={[styles.tab, statusFilter === tab.value && styles.tabActive]}
-            onPress={() => setStatusFilter(tab.value)}
-          >
-            <Text style={[styles.tabText, statusFilter === tab.value && styles.tabTextActive]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      {/* 상태 필터 탭 */}
+      <View style={styles.tabBar}>
+        {STATUS_TABS.map(tab => {
+          const active = statusFilter === tab.value;
+          return (
+            <TouchableOpacity
+              key={tab.value}
+              style={[styles.tab, active && styles.tabActive]}
+              onPress={() => setStatusFilter(tab.value)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.tabText, active && styles.tabTextActive]}>
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#3B82F6" />
+        <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : (
         <FlatList
           data={companions}
@@ -117,14 +142,20 @@ export default function CompanionScreen() {
           renderItem={renderItem}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
+          }
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
             <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>🤝</Text>
               <Text style={styles.emptyText}>등록된 동행 구인이 없습니다.</Text>
+              <Text style={styles.emptyHint}>함께 여행할 동반자를 모집해보세요!</Text>
             </View>
           }
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={styles.footer} color="#3B82F6" /> : null
+            loadingMore ? <ActivityIndicator style={styles.footerLoader} color={Colors.primary} /> : null
           }
         />
       )}
@@ -133,64 +164,154 @@ export default function CompanionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: Colors.card,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 52,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-  addButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '800' as const,
+    color: Colors.text,
+  },
+  addBtn: {
+    backgroundColor: Colors.amber,
+    borderRadius: Radius.sm,
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
-  addButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  tabRow: {
+  addBtnText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '700' as const,
+  },
+
+  // 탭
+  tabBar: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
+    backgroundColor: Colors.card,
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+    gap: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
   tab: {
     paddingHorizontal: 16,
     paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderRadius: Radius.full,
+    backgroundColor: Colors.surface,
   },
-  tabActive: { borderColor: '#3B82F6', backgroundColor: '#EFF6FF' },
-  tabText: { fontSize: 13, color: '#6B7280' },
-  tabTextActive: { color: '#3B82F6', fontWeight: '600' },
-  card: {
+  tabActive: {
+    backgroundColor: Colors.primary,
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '500' as const,
+    color: Colors.textMedium,
+  },
+  tabTextActive: {
+    color: '#fff',
+    fontWeight: '700' as const,
+  },
+
+  // 리스트
+  listContent: {
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    paddingBottom: 32,
   },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  destination: { fontSize: 16, fontWeight: '600', color: '#111827' },
+  separator: { height: 10 },
+  card: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.md,
+    padding: 16,
+    ...Shadow.card,
+  },
+  cardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  destinationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  destinationIcon: { fontSize: 14 },
+  destination: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    flex: 1,
+  },
   statusBadge: {
-    borderRadius: 4,
+    borderRadius: Radius.xs,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
+    marginLeft: 8,
   },
-  badgeOpen: { backgroundColor: '#D1FAE5' },
-  badgeClosed: { backgroundColor: '#F3F4F6' },
-  statusBadgeText: { fontSize: 12, fontWeight: '600' },
-  badgeOpenText: { color: '#065F46' },
-  badgeClosedText: { color: '#6B7280' },
-  dateRange: { fontSize: 13, color: '#6B7280', marginBottom: 6 },
-  description: { fontSize: 14, color: '#374151', marginBottom: 8, lineHeight: 20 },
-  participants: { fontSize: 12, color: '#9CA3AF' },
+  badgeOpen: { backgroundColor: Colors.greenLight },
+  badgeClosed: { backgroundColor: Colors.surface },
+  statusBadgeText: { fontSize: 11, fontWeight: '700' as const },
+  badgeOpenText: { color: Colors.green },
+  badgeClosedText: { color: Colors.textMedium },
+
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 8,
+  },
+  dateIcon: { fontSize: 12 },
+  dateRange: {
+    fontSize: 13,
+    color: Colors.textMedium,
+  },
+  description: {
+    fontSize: 14,
+    color: Colors.textMedium,
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  cardBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  participants: {
+    fontSize: 12,
+    color: Colors.textLight,
+    fontWeight: '500' as const,
+  },
+
   loader: { marginTop: 60 },
-  footer: { paddingVertical: 16 },
-  empty: { alignItems: 'center', paddingTop: 60 },
-  emptyText: { fontSize: 15, color: '#9CA3AF' },
+  footerLoader: { paddingVertical: 16 },
+  empty: {
+    alignItems: 'center',
+    paddingTop: 80,
+  },
+  emptyIcon: { fontSize: 40, marginBottom: 12 },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textMedium,
+    marginBottom: 6,
+  },
+  emptyHint: {
+    fontSize: 13,
+    color: Colors.textLight,
+  },
 });
