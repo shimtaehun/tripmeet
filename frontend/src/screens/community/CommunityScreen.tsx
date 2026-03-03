@@ -10,43 +10,41 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
-import { Colors, Gradients, Radius, Shadow, Animation } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
 
 const CATEGORIES = [
-  { label: '전체', value: undefined,    color: Colors.primary },
-  { label: '질문', value: 'question',   color: Colors.primary },
-  { label: '후기', value: 'review',     color: Colors.green   },
-  { label: '정보', value: 'info',       color: Colors.accent  },
+  { label: '전체',  value: undefined,    color: Colors.primary },
+  { label: '질문',  value: 'question',   color: Colors.primary },
+  { label: '후기',  value: 'review',     color: Colors.green   },
+  { label: '정보',  value: 'info',       color: Colors.amber   },
 ];
 
-const CAT_META: Record<string, { label: string; bg: string; text: string; gradient: string[] }> = {
-  question: { label: '질문', bg: Colors.primaryLight, text: Colors.primary,
-               gradient: [Colors.primaryLight, '#DBEAFE'] },
-  review:   { label: '후기', bg: Colors.greenLight,   text: Colors.green,
-               gradient: [Colors.greenLight, '#D1FAE5'] },
-  info:     { label: '정보', bg: Colors.accentLight,  text: Colors.accent,
-               gradient: [Colors.accentLight, '#FEF3C7'] },
+const CAT_META: Record<string, { label: string; bg: string; text: string }> = {
+  question: { label: '질문', bg: Colors.primaryLight, text: Colors.primary },
+  review:   { label: '후기', bg: Colors.greenLight,   text: Colors.green   },
+  info:     { label: '정보', bg: Colors.amberLight,   text: Colors.amber   },
 };
 
 function PostCard({ item, index }: { item: PostSummary; index: number }) {
   const navigation = useNavigation<any>();
-  const scale     = useRef(new Animated.Value(1)).current;
-  const opacity   = useRef(new Animated.Value(0)).current;
-  const slideY    = useRef(new Animated.Value(20)).current;
+  const scale   = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideY  = useRef(new Animated.Value(18)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 350, delay: index * 60, useNativeDriver: true }),
-      Animated.spring(slideY, { toValue: 0, delay: index * 60, tension: 80, friction: 9, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 320, delay: index * 55, useNativeDriver: true }),
+      Animated.spring(slideY, { toValue: 0, delay: index * 55, tension: 80, friction: 9, useNativeDriver: true }),
     ]).start();
   }, []);
 
   const onPressIn  = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, tension: 200 }).start();
-  const onPressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 200 }).start();
+  const onPressOut = () => Animated.spring(scale, { toValue: 1,    useNativeDriver: true, tension: 200 }).start();
 
-  const meta = CAT_META[item.category] ?? { label: item.category, bg: Colors.surface, text: Colors.textMedium, gradient: [Colors.surface, Colors.background] };
+  const meta = CAT_META[item.category] ?? { label: item.category, bg: Colors.surface, text: Colors.textMedium };
 
   return (
     <Animated.View style={{ opacity, transform: [{ scale }, { translateY: slideY }] }}>
@@ -56,21 +54,25 @@ function PostCard({ item, index }: { item: PostSummary; index: number }) {
         onPressOut={onPressOut}
         activeOpacity={1}
       >
-        <LinearGradient colors={Gradients.card} style={styles.postCard}>
-          {/* 왼쪽 카테고리 컬러 바 */}
+        <View style={styles.postCard}>
           <View style={[styles.catBar, { backgroundColor: meta.text }]} />
 
           <View style={styles.postBody}>
             <View style={styles.postTop}>
-              <LinearGradient colors={meta.gradient} style={styles.catBadge}>
+              <View style={[styles.catBadge, { backgroundColor: meta.bg }]}>
                 <Text style={[styles.catBadgeText, { color: meta.text }]}>{meta.label}</Text>
-              </LinearGradient>
-              <Text style={styles.viewCount}>👁 {item.view_count}</Text>
+              </View>
+              <View style={styles.viewRow}>
+                <Ionicons name="eye-outline" size={11} color={Colors.textLight} />
+                <Text style={styles.viewCount}>{item.view_count}</Text>
+              </View>
             </View>
             <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
             <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
           </View>
-        </LinearGradient>
+
+          <Ionicons name="chevron-forward" size={16} color={Colors.border} style={{ alignSelf: 'center' }} />
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -114,9 +116,8 @@ export default function CommunityScreen() {
 
   return (
     <View style={styles.root}>
-      {/* 그라디언트 헤더 */}
       <LinearGradient
-        colors={['#1E3A8A', '#2563EB']}
+        colors={[Colors.primaryDark, Colors.primary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -127,11 +128,11 @@ export default function CommunityScreen() {
           onPress={() => navigation.navigate('PostCreate')}
           activeOpacity={0.85}
         >
-          <Text style={styles.writeBtnText}>✍ 글쓰기</Text>
+          <Ionicons name="create-outline" size={14} color="#fff" />
+          <Text style={styles.writeBtnText}>글쓰기</Text>
         </TouchableOpacity>
       </LinearGradient>
 
-      {/* 카테고리 탭 */}
       <View style={styles.tabBar}>
         {CATEGORIES.map(cat => {
           const active = selectedCategory === cat.value;
@@ -140,21 +141,9 @@ export default function CommunityScreen() {
               key={String(cat.value)}
               onPress={() => { if (cat.value !== selectedCategory) setSelectedCategory(cat.value); }}
               activeOpacity={0.75}
+              style={[styles.tab, active && { backgroundColor: cat.color }]}
             >
-              {active ? (
-                <LinearGradient
-                  colors={[cat.color, cat.color + 'BB']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.tabActive}
-                >
-                  <Text style={styles.tabTextActive}>{cat.label}</Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.tab}>
-                  <Text style={styles.tabText}>{cat.label}</Text>
-                </View>
-              )}
+              <Text style={[styles.tabText, active && styles.tabTextActive]}>{cat.label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -173,10 +162,10 @@ export default function CommunityScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
           }
           contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>💬</Text>
+              <Ionicons name="chatbubbles-outline" size={48} color={Colors.border} />
               <Text style={styles.emptyTitle}>아직 게시글이 없습니다</Text>
               <Text style={styles.emptyHint}>첫 번째 글을 작성해보세요!</Text>
             </View>
@@ -197,17 +186,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
     paddingBottom: 16,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   writeBtn: {
-    backgroundColor: 'rgba(255,255,255,0.22)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderColor: 'rgba(255,255,255,0.30)',
     borderRadius: Radius.sm,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   writeBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
@@ -223,15 +215,9 @@ const styles = StyleSheet.create({
   },
   tab: {
     paddingHorizontal: 16,
-    paddingVertical: 7,
+    paddingVertical: 6,
     borderRadius: Radius.full,
     backgroundColor: Colors.surface,
-  },
-  tabActive: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: Radius.full,
-    ...Shadow.card,
   },
   tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
   tabTextActive: { fontSize: 13, color: '#fff', fontWeight: '700' as const },
@@ -240,6 +226,8 @@ const styles = StyleSheet.create({
 
   postCard: {
     flexDirection: 'row',
+    alignItems: 'stretch',
+    backgroundColor: Colors.card,
     borderRadius: Radius.md,
     overflow: 'hidden',
     ...Shadow.card,
@@ -258,6 +246,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   catBadgeText: { fontSize: 11, fontWeight: '700' as const },
+  viewRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   viewCount: { fontSize: 11, color: Colors.textLight },
   postTitle: {
     fontSize: 15, fontWeight: '600' as const, color: Colors.text,
@@ -266,8 +255,7 @@ const styles = StyleSheet.create({
   postDate: { fontSize: 11, color: Colors.textLight },
 
   loader: { marginTop: 60 },
-  empty: { alignItems: 'center', paddingTop: 80 },
-  emptyIcon: { fontSize: 44, marginBottom: 14 },
-  emptyTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textMedium, marginBottom: 6 },
+  empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
+  emptyTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textMedium },
   emptyHint: { fontSize: 13, color: Colors.textLight },
 });

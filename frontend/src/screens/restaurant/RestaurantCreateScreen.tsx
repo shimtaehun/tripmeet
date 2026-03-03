@@ -11,9 +11,11 @@ import {
   Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { createRestaurant } from '../../services/restaurantService';
 import { compressImage } from '../../utils/imageCompressor';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
 const MAX_IMAGES = 5;
 
@@ -21,8 +23,8 @@ function StarSelector({ rating, onSelect }: { rating: number; onSelect: (r: numb
   return (
     <View style={styles.starRow}>
       {[1, 2, 3, 4, 5].map(i => (
-        <TouchableOpacity key={i} onPress={() => onSelect(i)}>
-          <Text style={i <= rating ? styles.starFilled : styles.starEmpty}>★</Text>
+        <TouchableOpacity key={i} onPress={() => onSelect(i)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
+          <Ionicons name={i <= rating ? 'star' : 'star-outline'} size={32} color={i <= rating ? Colors.amber : Colors.border} />
         </TouchableOpacity>
       ))}
     </View>
@@ -78,7 +80,6 @@ export default function RestaurantCreateScreen() {
 
     setLoading(true);
     try {
-      // 이미지 압축 (context.md 원칙 4: 500KB 이하)
       const compressedImages = await Promise.all(
         images.map(async (img, index) => {
           const compressed = await compressImage(img.uri);
@@ -108,15 +109,19 @@ export default function RestaurantCreateScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.cancelText}>취소</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.headerSideBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="close" size={22} color={Colors.textMedium} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>맛집 등록</Text>
-        <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+        <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
             <Text style={styles.submitText}>등록</Text>
           )}
@@ -124,11 +129,11 @@ export default function RestaurantCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>가게 이름 *</Text>
+        <Text style={styles.label}>가게 이름 <Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="가게 이름을 입력하세요"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={name}
           onChangeText={setName}
           maxLength={100}
@@ -136,11 +141,11 @@ export default function RestaurantCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>위치 *</Text>
+        <Text style={styles.label}>위치 <Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="예: 홍대, 도쿄 시부야"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={locationName}
           onChangeText={setLocationName}
           maxLength={100}
@@ -152,7 +157,7 @@ export default function RestaurantCreateScreen() {
         <TextInput
           style={styles.descriptionInput}
           placeholder="맛집 설명을 입력하세요"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={description}
           onChangeText={setDescription}
           multiline
@@ -162,11 +167,11 @@ export default function RestaurantCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>별점 *</Text>
+        <Text style={styles.label}>별점 <Text style={styles.required}>*</Text></Text>
         <StarSelector rating={rating} onSelect={setRating} />
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, { borderBottomWidth: 0 }]}>
         <Text style={styles.label}>사진 ({images.length}/{MAX_IMAGES})</Text>
         <View style={styles.imageRow}>
           {images.map((img, index) => (
@@ -176,14 +181,14 @@ export default function RestaurantCreateScreen() {
                 style={styles.removeButton}
                 onPress={() => handleRemoveImage(index)}
               >
-                <Text style={styles.removeButtonText}>X</Text>
+                <Ionicons name="close" size={10} color="#fff" />
               </TouchableOpacity>
             </View>
           ))}
           {images.length < MAX_IMAGES && (
             <TouchableOpacity style={styles.addImageButton} onPress={handlePickImages}>
-              <Text style={styles.addImageIcon}>+</Text>
-              <Text style={styles.addImageText}>사진 추가</Text>
+              <Ionicons name="camera-outline" size={22} color={Colors.textLight} />
+              <Text style={styles.addImageText}>추가</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -193,45 +198,56 @@ export default function RestaurantCreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
-  cancelText: { fontSize: 15, color: '#6B7280' },
-  submitText: { fontSize: 15, color: '#3B82F6', fontWeight: '600' },
+  headerSideBtn: { width: 44, alignItems: 'center' },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
+  submitText: { fontSize: 15, color: Colors.primary, fontWeight: '700' as const },
+
   section: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    backgroundColor: Colors.card,
+    paddingHorizontal: Spacing.screenPad,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
+    marginTop: 8,
   },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 12, fontWeight: '600' as const, color: Colors.textMedium, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
+  required: { color: Colors.red },
+
   input: {
     fontSize: 15,
-    color: '#111827',
-    paddingVertical: 4,
+    color: Colors.text,
+    paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.border,
+    paddingBottom: 10,
   },
   descriptionInput: {
     fontSize: 15,
-    color: '#111827',
+    color: Colors.text,
     minHeight: 120,
     paddingVertical: 4,
+    lineHeight: 24,
   },
-  starRow: { flexDirection: 'row', gap: 6 },
-  starFilled: { fontSize: 32, color: '#FBBF24' },
-  starEmpty: { fontSize: 32, color: '#E5E7EB' },
+
+  starRow: { flexDirection: 'row', gap: 8 },
+
   imageRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   imageWrapper: { position: 'relative' },
-  imageThumbnail: { width: 80, height: 80, borderRadius: 8 },
+  imageThumbnail: { width: 80, height: 80, borderRadius: Radius.sm },
   removeButton: {
     position: 'absolute',
     top: -6,
@@ -239,22 +255,21 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#EF4444',
+    backgroundColor: Colors.red,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  removeButtonText: { fontSize: 10, color: '#fff', fontWeight: 'bold' },
   addImageButton: {
     width: 80,
     height: 80,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderRadius: Radius.sm,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.surface,
+    gap: 4,
   },
-  addImageIcon: { fontSize: 22, color: '#9CA3AF' },
-  addImageText: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  addImageText: { fontSize: 11, color: Colors.textLight },
 });

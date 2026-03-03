@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
 
 interface Props {
@@ -38,7 +39,7 @@ export default function TravelerListItem({
 
   return (
     <Animated.View style={{ opacity, transform: [{ scale }, { translateX: slideX }] }}>
-      <LinearGradient colors={Gradients.card} style={styles.card}>
+      <View style={styles.card}>
         {/* 프로필 사진 */}
         <View style={styles.avatarWrap}>
           <Image
@@ -67,15 +68,16 @@ export default function TravelerListItem({
           activeOpacity={1}
         >
           <LinearGradient
-            colors={['#2563EB', '#0EA5E9']}
+            colors={Gradients.gold}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.chatBtn}
           >
+            <Ionicons name="chatbubble-outline" size={13} color="#fff" />
             <Text style={styles.chatBtnText}>채팅</Text>
           </LinearGradient>
         </TouchableOpacity>
-      </LinearGradient>
+      </View>
     </Animated.View>
   );
 }
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Radius.lg,
     padding: 14,
+    backgroundColor: Colors.card,
     ...Shadow.card,
   },
   avatarWrap: {
@@ -116,10 +119,13 @@ const styles = StyleSheet.create({
   bio: { fontSize: 12, color: Colors.textMedium },
   bioEmpty: { fontSize: 12, color: Colors.textLight, fontStyle: 'italic' },
   chatBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     borderRadius: Radius.sm,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 9,
-    ...Shadow.glow,
+    ...Shadow.glowGold,
   },
   chatBtnText: { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
 });

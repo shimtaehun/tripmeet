@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/home/HomeScreen';
 import MatchingScreen from '../screens/matching/MatchingScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
@@ -11,42 +12,64 @@ import { Colors } from '../utils/theme';
 
 const Tab = createBottomTabNavigator();
 
-function TabIcon({
-  emoji, focused, label, activeColor,
-}: {
-  emoji: string; focused: boolean; label: string; activeColor: string;
-}) {
-  return (
-    <View style={{ alignItems: 'center', gap: 2, paddingTop: 4 }}>
-      {focused ? (
-        <View
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: activeColor + '18',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1.5,
-            borderColor: activeColor + '30',
-          }}
-        >
-          <Text style={{ fontSize: 20 }}>{emoji}</Text>
-        </View>
-      ) : (
-        <Text style={{ fontSize: 20, opacity: 0.45 }}>{emoji}</Text>
-      )}
-    </View>
-  );
-}
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const TAB_CONFIG = [
-  { name: 'Home',       emoji: '🏠', label: '홈',     activeColor: Colors.primary, component: HomeScreen },
-  { name: 'Matching',   emoji: '📍', label: '매칭',   activeColor: Colors.green,   component: MatchingScreen },
-  { name: 'Community',  emoji: '💬', label: '커뮤니티', activeColor: Colors.primary, component: CommunityScreen },
-  { name: 'Restaurant', emoji: '🍜', label: '맛집',   activeColor: Colors.red,     component: RestaurantListScreen },
-  { name: 'Companion',  emoji: '🤝', label: '동행',   activeColor: Colors.amber,   component: CompanionScreen },
-  { name: 'Profile',    emoji: '👤', label: '내 정보', activeColor: Colors.primary, component: ProfileScreen },
+const TAB_CONFIG: {
+  name: string;
+  label: string;
+  icon: IoniconName;
+  iconActive: IoniconName;
+  activeColor: string;
+  component: React.ComponentType<any>;
+}[] = [
+  {
+    name: 'Home',
+    label: '홈',
+    icon: 'home-outline',
+    iconActive: 'home',
+    activeColor: Colors.primary,
+    component: HomeScreen,
+  },
+  {
+    name: 'Matching',
+    label: '매칭',
+    icon: 'location-outline',
+    iconActive: 'location',
+    activeColor: Colors.green,
+    component: MatchingScreen,
+  },
+  {
+    name: 'Community',
+    label: '커뮤니티',
+    icon: 'chatbubbles-outline',
+    iconActive: 'chatbubbles',
+    activeColor: Colors.primary,
+    component: CommunityScreen,
+  },
+  {
+    name: 'Restaurant',
+    label: '맛집',
+    icon: 'restaurant-outline',
+    iconActive: 'restaurant',
+    activeColor: Colors.red,
+    component: RestaurantListScreen,
+  },
+  {
+    name: 'Companion',
+    label: '동행',
+    icon: 'people-outline',
+    iconActive: 'people',
+    activeColor: Colors.amber,
+    component: CompanionScreen,
+  },
+  {
+    name: 'Profile',
+    label: '내 정보',
+    icon: 'person-outline',
+    iconActive: 'person',
+    activeColor: Colors.primary,
+    component: ProfileScreen,
+  },
 ];
 
 export default function MainTabs() {
@@ -65,21 +88,33 @@ export default function MainTabs() {
             borderTopWidth: 1,
             height: 64,
             paddingBottom: 10,
-            paddingTop: 4,
+            paddingTop: 6,
           },
           tabBarLabelStyle: {
-            fontSize: 9.5,
+            fontSize: 10,
             fontWeight: '600',
-            marginTop: 0,
+            marginTop: 2,
           },
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              emoji={tab?.emoji ?? '●'}
-              focused={focused}
-              label={tab?.label ?? ''}
-              activeColor={tab?.activeColor ?? Colors.primary}
-            />
-          ),
+          tabBarIcon: ({ focused, color }) => {
+            const iconName = focused ? (tab?.iconActive ?? tab?.icon) : tab?.icon;
+            return (
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                {focused && (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: -6,
+                      width: 32,
+                      height: 3,
+                      borderRadius: 2,
+                      backgroundColor: color,
+                    }}
+                  />
+                )}
+                <Ionicons name={iconName ?? 'ellipse-outline'} size={22} color={color} />
+              </View>
+            );
+          },
         };
       }}
     >

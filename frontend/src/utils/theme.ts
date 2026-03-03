@@ -1,92 +1,87 @@
-// ─────────────────────────────────────────────────
-// TripMeet Design System v2.0 — Gradient-First
-// ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Voyage Design System v3.0  — Editorial Premium
+// ─────────────────────────────────────────────────────────────
 
+// ─── 색상 ─────────────────────────────────────────────────────
 export const Colors = {
-  // 주색
-  primary: '#2563EB',
-  primaryDark: '#1E40AF',
-  primaryDeep: '#1E3A8A',
-  primaryLight: '#EFF6FF',
-  primaryBorder: '#BFDBFE',
+  // Primary — 딥 네이비
+  primary: '#1B3A5C',
+  primaryDark: '#0D2137',
+  primaryDeep: '#071524',
+  primaryLight: '#EEF4FA',
+  primaryBorder: '#C2D8EC',
 
-  // 강조색 (선셋 오렌지)
-  accent: '#F97316',
-  accentLight: '#FFF7ED',
-  accentBorder: '#FED7AA',
-  accentGold: '#FBBF24',
+  // Accent — 샴페인 골드
+  gold: '#C9A96E',
+  goldDark: '#A8824A',
+  goldLight: '#FBF5E8',
+  goldBorder: '#E8D5B0',
 
-  // 상태
-  green: '#10B981',
-  greenLight: '#ECFDF5',
-  greenBorder: '#A7F3D0',
-  red: '#EF4444',
-  redLight: '#FEF2F2',
-  amber: '#F59E0B',
-  amberLight: '#FFFBEB',
+  // 시맨틱
+  green: '#2A9D6F',
+  greenLight: '#E8F7F1',
+  greenBorder: '#A7DFC8',
+  red: '#D64045',
+  redLight: '#FDEAEA',
+  amber: '#E8A020',
+  amberLight: '#FDF3E0',
 
-  // 배경
-  background: '#F0F4FF',
-  backgroundDeep: '#E8EEFF',
+  // 서피스
+  background: '#FAF9F7',
+  backgroundDeep: '#F2EDE4',
   card: '#FFFFFF',
-  surface: '#F8FAFC',
+  surface: '#F7F5F2',
 
   // 텍스트
-  text: '#0F172A',
-  textMedium: '#475569',
-  textLight: '#94A3B8',
+  text: '#1A1A2E',
+  textMedium: '#4A5568',
+  textLight: '#8A9AB0',
   textOnDark: '#FFFFFF',
-  textOnDarkSub: 'rgba(255,255,255,0.75)',
+  textOnDarkSub: 'rgba(255,255,255,0.72)',
 
   // 선
-  border: '#E2E8F0',
-  divider: '#F1F5F9',
+  border: '#E8E0D4',
+  divider: '#F0EBE3',
 
-  // 글래스모피즘
-  glass: 'rgba(255,255,255,0.15)',
-  glassBorder: 'rgba(255,255,255,0.28)',
-  glassDark: 'rgba(0,0,0,0.12)',
+  // 글래스
+  glass: 'rgba(255,255,255,0.12)',
+  glassBorder: 'rgba(255,255,255,0.24)',
+  glassDark: 'rgba(0,0,0,0.10)',
 
-  // 탭 네비게이터
-  tabActive: '#2563EB',
-  tabInactive: '#94A3B8',
+  // 탭
+  tabActive: '#1B3A5C',
+  tabInactive: '#A0AEC0',
 };
 
-// ─── 그라디언트 팔레트 ────────────────────────────
+// ─── 그라디언트 ─────────────────────────────────────────────────
 export const Gradients = {
-  // 히어로 — 딥 오션 블루 (Login, 상단 배너)
-  hero: ['#0F2B5B', '#1E3A8A', '#2563EB', '#0EA5E9'] as string[],
+  // 히어로 — 딥 오션 네이비
+  hero: ['#071524', '#0D2137', '#1B3A5C', '#2C5282'] as string[],
 
-  // 노을 — 주요 CTA 버튼
-  sunset: ['#F97316', '#FB923C', '#FBBF24'] as string[],
+  // 골드 CTA
+  gold: ['#C9A96E', '#D4B87A', '#B8895C'] as string[],
 
-  // 오션 민트
-  ocean: ['#0EA5E9', '#06B6D4', '#22D3EE'] as string[],
+  // 카드 서피스
+  card: ['#FFFFFF', '#FDFCFB'] as string[],
 
-  // 에메랄드 — 성공/모집중 배지
-  emerald: ['#10B981', '#34D399', '#6EE7B7'] as string[],
+  // 미드나잇 오버레이
+  midnight: ['rgba(7,21,36,0)', 'rgba(7,21,36,0.82)'] as string[],
 
-  // 산호 — 강조 카드
-  coral: ['#F43F5E', '#F97316', '#FBBF24'] as string[],
+  // 에메랄드
+  emerald: ['#2A9D6F', '#3EBD8A', '#56D4A2'] as string[],
 
-  // 보라 — 프리미엄 기능 (AI 일정)
-  violet: ['#7C3AED', '#4F46E5', '#2563EB'] as string[],
-
-  // 기능 타일 배경 (가로)
-  tileAI:       ['#EFF6FF', '#DBEAFE'] as string[],
-  tileMatch:    ['#ECFDF5', '#D1FAE5'] as string[],
-  tileCommunity:['#FFF7ED', '#FEF3C7'] as string[],
-  tileRestaurant:['#FFF1F2', '#FFE4E6'] as string[],
-  tileCompanion: ['#FFFBEB', '#FEF3C7'] as string[],
-
-  // 카드 그라디언트
-  card: ['#FFFFFF', '#F8FAFF'] as string[],
+  // 섹션별 타일 (에디토리얼 무드)
+  tileAI:         ['#EEF4FA', '#D9EAF7'] as string[],
+  tileMatch:      ['#E8F4F0', '#CDE9DF'] as string[],
+  tileCommunity:  ['#FBF5E8', '#F5EDD6'] as string[],
+  tileRestaurant: ['#FDEAEA', '#F8D8D8'] as string[],
+  tileCompanion:  ['#F0EDF8', '#E4DEF4'] as string[],
 };
 
-// ─── 레이디우스 ──────────────────────────────────
+// ─── 반경 ────────────────────────────────────────────────────
 export const Radius = {
-  xs: 6,
-  sm: 10,
+  xs: 4,
+  sm: 8,
   md: 14,
   lg: 20,
   xl: 28,
@@ -94,35 +89,49 @@ export const Radius = {
   full: 999,
 };
 
-// ─── 그림자 ──────────────────────────────────────
+// ─── 그림자 ──────────────────────────────────────────────────
 export const Shadow = {
+  subtle: {
+    shadowColor: '#1A1A2E',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
+  },
   card: {
-    shadowColor: '#1E3A5F',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
+    shadowColor: '#1A1A2E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
     shadowRadius: 12,
-    elevation: 5,
+    elevation: 3,
   },
   strong: {
-    shadowColor: '#1E3A5F',
+    shadowColor: '#1A1A2E',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 10,
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 8,
   },
   glow: {
-    shadowColor: '#2563EB',
+    shadowColor: '#1B3A5C',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  glowGold: {
+    shadowColor: '#C9A96E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.38,
+    shadowRadius: 14,
+    elevation: 6,
   },
   glowAccent: {
-    shadowColor: '#F97316',
+    shadowColor: '#C9A96E',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.40,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.38,
+    shadowRadius: 14,
+    elevation: 6,
   },
   none: {
     shadowColor: 'transparent',
@@ -133,25 +142,38 @@ export const Shadow = {
   },
 };
 
-// ─── 타이포그래피 ─────────────────────────────────
+// ─── 타이포그래피 ─────────────────────────────────────────────
 export const Typography = {
-  display: { fontSize: 36, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.8 },
-  h1: { fontSize: 28, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.4 },
-  h2: { fontSize: 22, fontWeight: '700' as const, color: Colors.text },
-  h3: { fontSize: 17, fontWeight: '700' as const, color: Colors.text },
-  body: { fontSize: 15, fontWeight: '400' as const, color: Colors.text, lineHeight: 24 },
-  bodyMd: { fontSize: 14, fontWeight: '400' as const, color: Colors.textMedium, lineHeight: 22 },
+  display: { fontSize: 38, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.8 },
+  h1:      { fontSize: 28, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.4 },
+  h2:      { fontSize: 22, fontWeight: '700' as const, color: Colors.text, letterSpacing: -0.2 },
+  h3:      { fontSize: 17, fontWeight: '700' as const, color: Colors.text },
+  h4:      { fontSize: 15, fontWeight: '600' as const, color: Colors.text },
+  body:    { fontSize: 15, fontWeight: '400' as const, color: Colors.text, lineHeight: 24 },
+  bodyMd:  { fontSize: 14, fontWeight: '400' as const, color: Colors.textMedium, lineHeight: 22 },
   caption: { fontSize: 12, fontWeight: '400' as const, color: Colors.textLight, lineHeight: 18 },
-  label: { fontSize: 13, fontWeight: '600' as const, color: Colors.textMedium },
-  buttonLg: { fontSize: 16, fontWeight: '700' as const },
-  buttonMd: { fontSize: 14, fontWeight: '700' as const },
-  buttonSm: { fontSize: 13, fontWeight: '600' as const },
+  label:   { fontSize: 12, fontWeight: '700' as const, color: Colors.textMedium, letterSpacing: 0.8 },
+  overline:{ fontSize: 11, fontWeight: '700' as const, color: Colors.textLight, letterSpacing: 1.2, textTransform: 'uppercase' as const },
+  buttonLg:{ fontSize: 16, fontWeight: '700' as const, letterSpacing: 0.2 },
+  buttonMd:{ fontSize: 14, fontWeight: '700' as const },
+  buttonSm:{ fontSize: 13, fontWeight: '600' as const },
 };
 
-// ─── 애니메이션 타이밍 ─────────────────────────────
+// ─── 간격 ─────────────────────────────────────────────────────
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+  screenPad: 20,
+};
+
+// ─── 애니메이션 타이밍 ─────────────────────────────────────────
 export const Animation = {
   fast: 150,
   normal: 280,
-  slow: 500,
-  entrance: 650,
+  slow: 480,
+  entrance: 600,
 };

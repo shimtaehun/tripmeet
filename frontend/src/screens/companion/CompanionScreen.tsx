@@ -8,16 +8,18 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
-import { Colors, Radius, Shadow } from '../../utils/theme';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
 type StatusFilter = 'all' | 'open' | 'closed';
 
 const STATUS_TABS: { label: string; value: StatusFilter }[] = [
-  { label: '전체', value: 'all' },
-  { label: '모집중', value: 'open' },
-  { label: '마감', value: 'closed' },
+  { label: '전체',  value: 'all'    },
+  { label: '모집중', value: 'open'   },
+  { label: '마감',  value: 'closed' },
 ];
 
 export default function CompanionScreen() {
@@ -70,10 +72,9 @@ export default function CompanionScreen() {
         onPress={() => navigation.navigate('CompanionDetail', { companionId: item.id })}
         activeOpacity={0.75}
       >
-        {/* 상단 행: 목적지 + 상태 배지 */}
         <View style={styles.cardTop}>
           <View style={styles.destinationRow}>
-            <Text style={styles.destinationIcon}>✈</Text>
+            <Ionicons name="airplane" size={14} color={Colors.amber} />
             <Text style={styles.destination}>{item.destination}</Text>
           </View>
           <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
@@ -83,17 +84,15 @@ export default function CompanionScreen() {
           </View>
         </View>
 
-        {/* 날짜 */}
         <View style={styles.dateRow}>
-          <Text style={styles.dateIcon}>📅</Text>
+          <Ionicons name="calendar-outline" size={12} color={Colors.textMedium} />
           <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
         </View>
 
-        {/* 설명 */}
         <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
 
-        {/* 하단: 인원 */}
         <View style={styles.cardBottom}>
+          <Ionicons name="people-outline" size={13} color={Colors.textLight} />
           <Text style={styles.participants}>최대 {item.max_participants}명</Text>
         </View>
       </TouchableOpacity>
@@ -102,19 +101,23 @@ export default function CompanionScreen() {
 
   return (
     <View style={styles.root}>
-      {/* 헤더 */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={[Colors.primaryDark, Colors.primary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <Text style={styles.headerTitle}>동행 구인</Text>
         <TouchableOpacity
           style={styles.addBtn}
           onPress={() => navigation.navigate('CompanionCreate')}
           activeOpacity={0.85}
         >
-          <Text style={styles.addBtnText}>+ 등록</Text>
+          <Ionicons name="add" size={14} color="#fff" />
+          <Text style={styles.addBtnText}>등록</Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      {/* 상태 필터 탭 */}
       <View style={styles.tabBar}>
         {STATUS_TABS.map(tab => {
           const active = statusFilter === tab.value;
@@ -149,7 +152,7 @@ export default function CompanionScreen() {
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>🤝</Text>
+              <Ionicons name="people-outline" size={48} color={Colors.border} />
               <Text style={styles.emptyText}>등록된 동행 구인이 없습니다.</Text>
               <Text style={styles.emptyHint}>함께 여행할 동반자를 모집해보세요!</Text>
             </View>
@@ -164,47 +167,36 @@ export default function CompanionScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  root: { flex: 1, backgroundColor: Colors.background },
 
-  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.card,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '800' as const,
-    color: Colors.text,
-  },
+  headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   addBtn: {
-    backgroundColor: Colors.amber,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
     borderRadius: Radius.sm,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
   },
-  addBtnText: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
+  addBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
 
-  // 탭
   tabBar: {
     flexDirection: 'row',
     backgroundColor: Colors.card,
     paddingHorizontal: 12,
-    paddingBottom: 10,
-    gap: 6,
+    paddingVertical: 10,
+    gap: 8,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
@@ -214,25 +206,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     backgroundColor: Colors.surface,
   },
-  tabActive: {
-    backgroundColor: Colors.primary,
-  },
-  tabText: {
-    fontSize: 13,
-    fontWeight: '500' as const,
-    color: Colors.textMedium,
-  },
-  tabTextActive: {
-    color: '#fff',
-    fontWeight: '700' as const,
-  },
+  tabActive: { backgroundColor: Colors.primary },
+  tabText: { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
+  tabTextActive: { color: '#fff', fontWeight: '700' as const },
 
-  // 리스트
-  listContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
+  listContent: { padding: 14, paddingBottom: 32 },
   separator: { height: 10 },
+
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.md,
@@ -251,7 +231,6 @@ const styles = StyleSheet.create({
     gap: 6,
     flex: 1,
   },
-  destinationIcon: { fontSize: 14 },
   destination: {
     fontSize: 16,
     fontWeight: '700' as const,
@@ -273,45 +252,22 @@ const styles = StyleSheet.create({
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 5,
     marginBottom: 8,
   },
-  dateIcon: { fontSize: 12 },
-  dateRange: {
-    fontSize: 13,
-    color: Colors.textMedium,
-  },
+  dateRange: { fontSize: 13, color: Colors.textMedium },
   description: {
     fontSize: 14,
     color: Colors.textMedium,
     lineHeight: 20,
     marginBottom: 10,
   },
-  cardBottom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  participants: {
-    fontSize: 12,
-    color: Colors.textLight,
-    fontWeight: '500' as const,
-  },
+  cardBottom: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  participants: { fontSize: 12, color: Colors.textLight, fontWeight: '500' as const },
 
   loader: { marginTop: 60 },
   footerLoader: { paddingVertical: 16 },
-  empty: {
-    alignItems: 'center',
-    paddingTop: 80,
-  },
-  emptyIcon: { fontSize: 40, marginBottom: 12 },
-  emptyText: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-    color: Colors.textMedium,
-    marginBottom: 6,
-  },
-  emptyHint: {
-    fontSize: 13,
-    color: Colors.textLight,
-  },
+  empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
+  emptyText: { fontSize: 16, fontWeight: '600' as const, color: Colors.textMedium },
+  emptyHint: { fontSize: 13, color: Colors.textLight },
 });

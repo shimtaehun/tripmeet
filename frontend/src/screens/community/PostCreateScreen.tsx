@@ -9,20 +9,21 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createPost, updatePost, Post } from '../../services/postService';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
 const CATEGORIES = [
-  { label: '질문', value: 'question' },
-  { label: '후기', value: 'review' },
-  { label: '정보', value: 'info' },
+  { label: '질문', value: 'question', color: Colors.primary },
+  { label: '후기', value: 'review',   color: Colors.green   },
+  { label: '정보', value: 'info',     color: Colors.amber   },
 ];
 
 export default function PostCreateScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
-  // 수정 모드일 경우 기존 게시글 데이터가 params로 전달됨
   const editPost: Post | undefined = route.params?.post;
   const isEditMode = !!editPost;
 
@@ -58,15 +59,19 @@ export default function PostCreateScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.cancelText}>취소</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.headerSideBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="close" size={22} color={Colors.textMedium} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{isEditMode ? '게시글 수정' : '글쓰기'}</Text>
-        <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+        <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
             <Text style={styles.submitText}>{isEditMode ? '수정' : '등록'}</Text>
           )}
@@ -77,26 +82,34 @@ export default function PostCreateScreen() {
         <View style={styles.section}>
           <Text style={styles.label}>카테고리</Text>
           <View style={styles.categoryRow}>
-            {CATEGORIES.map(cat => (
-              <TouchableOpacity
-                key={cat.value}
-                style={[styles.categoryButton, category === cat.value && styles.categoryButtonActive]}
-                onPress={() => setCategory(cat.value)}
-              >
-                <Text style={[styles.categoryButtonText, category === cat.value && styles.categoryButtonTextActive]}>
-                  {cat.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {CATEGORIES.map(cat => {
+              const active = category === cat.value;
+              return (
+                <TouchableOpacity
+                  key={cat.value}
+                  style={[
+                    styles.categoryButton,
+                    active && { borderColor: cat.color, backgroundColor: cat.color + '14' },
+                  ]}
+                  onPress={() => setCategory(cat.value)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={[styles.categoryButtonText, active && { color: cat.color, fontWeight: '700' as const }]}>
+                    {cat.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       )}
 
       <View style={styles.section}>
+        <Text style={styles.label}>제목</Text>
         <TextInput
           style={styles.titleInput}
           placeholder="제목을 입력하세요"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={title}
           onChangeText={setTitle}
           maxLength={200}
@@ -104,10 +117,11 @@ export default function PostCreateScreen() {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.label}>내용</Text>
         <TextInput
           style={styles.contentInput}
           placeholder="내용을 입력하세요"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={content}
           onChangeText={setContent}
           multiline
@@ -119,46 +133,58 @@ export default function PostCreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
-  cancelText: { fontSize: 15, color: '#6B7280' },
-  submitText: { fontSize: 15, color: '#3B82F6', fontWeight: '600' },
+  headerSideBtn: { width: 44, alignItems: 'center' },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
+  submitText: { fontSize: 15, color: Colors.primary, fontWeight: '700' as const },
+
   section: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: Colors.card,
+    paddingHorizontal: Spacing.screenPad,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
+    marginTop: 8,
   },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 12, fontWeight: '600' as const, color: Colors.textMedium, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
+
   categoryRow: { flexDirection: 'row', gap: 8 },
   categoryButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderRadius: Radius.full,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
   },
-  categoryButtonActive: { borderColor: '#3B82F6', backgroundColor: '#EFF6FF' },
-  categoryButtonText: { fontSize: 14, color: '#6B7280' },
-  categoryButtonTextActive: { color: '#3B82F6', fontWeight: '600' },
+  categoryButtonText: { fontSize: 14, color: Colors.textMedium },
+
   titleInput: {
     fontSize: 16,
-    color: '#111827',
+    color: Colors.text,
     paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingBottom: 10,
   },
   contentInput: {
     fontSize: 15,
-    color: '#111827',
+    color: Colors.text,
     minHeight: 200,
     paddingVertical: 4,
+    lineHeight: 24,
   },
 });

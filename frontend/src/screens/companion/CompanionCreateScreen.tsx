@@ -9,8 +9,10 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { createCompanion } from '../../services/companionService';
+import { Colors, Radius, Spacing } from '../../utils/theme';
 
 export default function CompanionCreateScreen() {
   const navigation = useNavigation<any>();
@@ -64,15 +66,19 @@ export default function CompanionCreateScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.cancelText}>취소</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.headerSideBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="close" size={22} color={Colors.textMedium} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>동행 구인 등록</Text>
-        <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+        <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
             <Text style={styles.submitText}>등록</Text>
           )}
@@ -80,11 +86,11 @@ export default function CompanionCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>여행지 *</Text>
+        <Text style={styles.label}>여행지 <Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="예: 도쿄, 방콕, 제주도"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={destination}
           onChangeText={setDestination}
           maxLength={100}
@@ -92,11 +98,11 @@ export default function CompanionCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>여행 시작일 * (YYYY-MM-DD)</Text>
+        <Text style={styles.label}>여행 시작일 <Text style={styles.required}>*</Text> <Text style={styles.labelHint}>(YYYY-MM-DD)</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="예: 2026-05-01"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={startDate}
           onChangeText={setStartDate}
           maxLength={10}
@@ -105,11 +111,11 @@ export default function CompanionCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>여행 종료일 * (YYYY-MM-DD)</Text>
+        <Text style={styles.label}>여행 종료일 <Text style={styles.required}>*</Text> <Text style={styles.labelHint}>(YYYY-MM-DD)</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="예: 2026-05-07"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={endDate}
           onChangeText={setEndDate}
           maxLength={10}
@@ -118,11 +124,11 @@ export default function CompanionCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>최대 모집 인원 * (2~10명)</Text>
+        <Text style={styles.label}>최대 모집 인원 <Text style={styles.required}>*</Text> <Text style={styles.labelHint}>(2~10명)</Text></Text>
         <TextInput
           style={styles.input}
           placeholder="예: 3"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={maxParticipants}
           onChangeText={setMaxParticipants}
           maxLength={2}
@@ -131,11 +137,11 @@ export default function CompanionCreateScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>동행 조건 및 설명 *</Text>
+        <Text style={styles.label}>동행 조건 및 설명 <Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.descriptionInput}
           placeholder="동행 조건, 일정 계획, 원하는 동반자 스타일 등을 자유롭게 작성해주세요."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textLight}
           value={description}
           onChangeText={setDescription}
           multiline
@@ -148,37 +154,49 @@ export default function CompanionCreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
-  cancelText: { fontSize: 15, color: '#6B7280' },
-  submitText: { fontSize: 15, color: '#3B82F6', fontWeight: '600' },
+  headerSideBtn: { width: 44, alignItems: 'center' },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
+  submitText: { fontSize: 15, color: Colors.primary, fontWeight: '700' as const },
+
   section: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    backgroundColor: Colors.card,
+    paddingHorizontal: Spacing.screenPad,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
+    marginTop: 8,
   },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 13, fontWeight: '600' as const, color: Colors.textMedium, marginBottom: 10 },
+  required: { color: Colors.red },
+  labelHint: { fontWeight: '400' as const, color: Colors.textLight },
+
   input: {
     fontSize: 15,
-    color: '#111827',
-    paddingVertical: 4,
+    color: Colors.text,
+    paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.border,
+    paddingBottom: 10,
   },
   descriptionInput: {
     fontSize: 15,
-    color: '#111827',
+    color: Colors.text,
     minHeight: 160,
     paddingVertical: 4,
+    lineHeight: 24,
   },
 });

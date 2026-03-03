@@ -8,14 +8,16 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { getPost, deletePost, Post } from '../../services/postService';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
-const CATEGORY_LABELS: Record<string, string> = {
-  question: '질문',
-  review: '후기',
-  info: '정보',
+const CAT_META: Record<string, { label: string; bg: string; text: string }> = {
+  question: { label: '질문', bg: Colors.primaryLight, text: Colors.primary },
+  review:   { label: '후기', bg: Colors.greenLight,   text: Colors.green   },
+  info:     { label: '정보', bg: Colors.amberLight,   text: Colors.amber   },
 };
 
 export default function PostDetailScreen() {
@@ -70,7 +72,7 @@ export default function PostDetailScreen() {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -78,22 +80,28 @@ export default function PostDetailScreen() {
   if (!post) return null;
 
   const isAuthor = currentUserId === post.user_id;
+  const meta = CAT_META[post.category] ?? { label: post.category, bg: Colors.surface, text: Colors.textMedium };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>뒤로</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
         </TouchableOpacity>
+
         {isAuthor && (
           <View style={styles.authorActions}>
             <TouchableOpacity
               onPress={() => navigation.navigate('PostCreate', { post })}
-              style={styles.editButton}
+              style={styles.actionBtn}
             >
               <Text style={styles.editText}>수정</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDelete}>
+            <TouchableOpacity onPress={handleDelete} style={styles.actionBtn}>
               <Text style={styles.deleteText}>삭제</Text>
             </TouchableOpacity>
           </View>
@@ -102,16 +110,22 @@ export default function PostDetailScreen() {
 
       <View style={styles.content}>
         <View style={styles.meta}>
-          <View style={styles.categoryBadge}>
-            <Text style={styles.categoryBadgeText}>{CATEGORY_LABELS[post.category]}</Text>
+          <View style={[styles.categoryBadge, { backgroundColor: meta.bg }]}>
+            <Text style={[styles.categoryBadgeText, { color: meta.text }]}>{meta.label}</Text>
           </View>
-          <Text style={styles.viewCount}>조회 {post.view_count}</Text>
+          <View style={styles.viewRow}>
+            <Ionicons name="eye-outline" size={12} color={Colors.textLight} />
+            <Text style={styles.viewCount}>{post.view_count}</Text>
+          </View>
         </View>
 
         <Text style={styles.title}>{post.title}</Text>
 
         <View style={styles.authorRow}>
-          <Text style={styles.authorName}>{post.author?.nickname ?? '알 수 없음'}</Text>
+          <View style={styles.authorInfo}>
+            <Ionicons name="person-circle-outline" size={16} color={Colors.textMedium} />
+            <Text style={styles.authorName}>{post.author?.nickname ?? '알 수 없음'}</Text>
+          </View>
           <Text style={styles.date}>{new Date(post.created_at).toLocaleDateString('ko-KR')}</Text>
         </View>
 
@@ -124,41 +138,60 @@ export default function PostDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  loader: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  backText: { fontSize: 15, color: '#3B82F6' },
-  authorActions: { flexDirection: 'row', gap: 16 },
-  editButton: {},
-  editText: { fontSize: 15, color: '#6B7280' },
-  deleteText: { fontSize: 15, color: '#EF4444' },
-  content: { padding: 16 },
+  backBtn: { width: 36, alignItems: 'center' },
+  authorActions: { flexDirection: 'row', gap: 4 },
+  actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
+  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+
+  content: {
+    backgroundColor: Colors.card,
+    margin: Spacing.screenPad,
+    borderRadius: Radius.lg,
+    padding: 20,
+    ...Shadow.card,
+  },
   meta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   categoryBadge: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 4,
+    borderRadius: Radius.xs,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
   },
-  categoryBadgeText: { fontSize: 12, color: '#6B7280' },
-  viewCount: { fontSize: 12, color: '#9CA3AF' },
-  title: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 12 },
-  authorRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-  authorName: { fontSize: 14, color: '#374151' },
-  date: { fontSize: 13, color: '#9CA3AF' },
-  divider: { height: 1, backgroundColor: '#F3F4F6', marginBottom: 16 },
-  body: { fontSize: 15, color: '#374151', lineHeight: 24 },
+  categoryBadgeText: { fontSize: 12, fontWeight: '700' as const },
+  viewRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  viewCount: { fontSize: 12, color: Colors.textLight },
+
+  title: { fontSize: 20, fontWeight: '800' as const, color: Colors.text, marginBottom: 14, lineHeight: 28 },
+
+  authorRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  authorInfo: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  authorName: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
+  date: { fontSize: 12, color: Colors.textLight },
+
+  divider: { height: 1, backgroundColor: Colors.divider, marginBottom: 18 },
+  body: { fontSize: 15, color: Colors.text, lineHeight: 26 },
 });

@@ -8,7 +8,10 @@ import {
   Share,
   Alert,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface Activity {
   time: string;
@@ -59,98 +62,159 @@ export default function ItineraryResultScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
+      <LinearGradient
+        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <View style={styles.headerRow}>
+          <Ionicons name="sparkles" size={18} color={Colors.gold} />
+          <Text style={styles.headerBadge}>AI 생성 일정</Text>
+          {itinerary.is_cached && (
+            <View style={styles.cacheBadge}>
+              <Text style={styles.cacheBadgeText}>캐시</Text>
+            </View>
+          )}
+        </View>
         <Text style={styles.destination}>{itinerary.destination}</Text>
         <Text style={styles.meta}>
-          {itinerary.duration_days}일 / {itinerary.travelers_count}명 / {itinerary.budget_range}
+          {itinerary.duration_days}일 · {itinerary.travelers_count}명 · {itinerary.budget_range}
         </Text>
-        {itinerary.is_cached && (
-          <Text style={styles.cachedBadge}>캐시된 결과</Text>
-        )}
+      </LinearGradient>
+
+      <View style={styles.dayList}>
+        {days.map((day) => (
+          <View key={day.day} style={styles.dayBlock}>
+            <View style={styles.dayLabelRow}>
+              <View style={styles.dayNumBadge}>
+                <Text style={styles.dayNumText}>Day {day.day}</Text>
+              </View>
+              <Text style={styles.dayLabel}>{day.date_label}</Text>
+            </View>
+
+            {day.activities.map((activity, idx) => (
+              <View key={idx} style={styles.activityItem}>
+                <View style={styles.timelineCol}>
+                  <Text style={styles.activityTime}>{activity.time}</Text>
+                  {idx < day.activities.length - 1 && <View style={styles.timelineLine} />}
+                </View>
+                <View style={styles.activityContent}>
+                  <Text style={styles.activityTitle}>{activity.title}</Text>
+                  <Text style={styles.activityDesc}>{activity.description}</Text>
+                  {activity.estimated_cost > 0 && (
+                    <View style={styles.costRow}>
+                      <Ionicons name="wallet-outline" size={11} color={Colors.textLight} />
+                      <Text style={styles.activityCost}>약 {activity.estimated_cost.toLocaleString()}원</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            ))}
+          </View>
+        ))}
       </View>
 
-      {days.map((day) => (
-        <View key={day.day} style={styles.dayBlock}>
-          <Text style={styles.dayLabel}>{day.date_label}</Text>
-          {day.activities.map((activity, idx) => (
-            <View key={idx} style={styles.activityItem}>
-              <Text style={styles.activityTime}>{activity.time}</Text>
-              <View style={styles.activityContent}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
-                <Text style={styles.activityDesc}>{activity.description}</Text>
-                {activity.estimated_cost > 0 && (
-                  <Text style={styles.activityCost}>
-                    약 {activity.estimated_cost.toLocaleString()}원
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-      ))}
-
-      <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-        <Text style={styles.shareButtonText}>SNS 공유하기</Text>
+      <TouchableOpacity
+        style={styles.shareWrap}
+        onPress={handleShare}
+        activeOpacity={0.85}
+      >
+        <LinearGradient
+          colors={Gradients.gold}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.shareBtn}
+        >
+          <Ionicons name="share-social-outline" size={18} color="#fff" />
+          <Text style={styles.shareBtnText}>SNS 공유하기</Text>
+        </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  root: { flex: 1, backgroundColor: Colors.background },
+
   header: {
-    padding: 20,
-    backgroundColor: '#EFF6FF',
-    marginBottom: 8,
+    paddingTop: 52,
+    paddingBottom: 32,
+    paddingHorizontal: Spacing.screenPad,
+    gap: 6,
   },
-  destination: { fontSize: 24, fontWeight: 'bold', color: '#1D4ED8', marginBottom: 6 },
-  meta: { fontSize: 14, color: '#3B82F6' },
-  cachedBadge: {
-    marginTop: 6,
-    fontSize: 11,
-    color: '#9CA3AF',
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  headerBadge: { fontSize: 12, fontWeight: '600' as const, color: Colors.gold },
+  cacheBadge: {
+    borderRadius: Radius.xs,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
+  cacheBadgeText: { fontSize: 10, color: 'rgba(255,255,255,0.70)' },
+  destination: { fontSize: 28, fontWeight: '800' as const, color: '#fff', letterSpacing: -0.5 },
+  meta: { fontSize: 14, color: 'rgba(255,255,255,0.70)' },
+
+  dayList: { padding: Spacing.screenPad, gap: 14, paddingBottom: 0 },
+
   dayBlock: {
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
+    ...Shadow.card,
   },
-  dayLabel: {
-    backgroundColor: '#F3F4F6',
-    padding: 12,
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#374151',
+  dayLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
+  dayNumBadge: {
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.xs,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  dayNumText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
+  dayLabel: { fontSize: 14, fontWeight: '600' as const, color: Colors.text },
+
   activityItem: {
     flexDirection: 'row',
-    padding: 12,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    gap: 12,
+    borderTopColor: Colors.divider,
+    gap: 14,
   },
-  activityTime: {
-    width: 36,
-    fontSize: 12,
-    color: '#3B82F6',
-    fontWeight: '600',
-    paddingTop: 2,
-  },
+  timelineCol: { width: 38, alignItems: 'center', paddingTop: 2 },
+  activityTime: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const, textAlign: 'center' },
+  timelineLine: { width: 1, flex: 1, backgroundColor: Colors.border, marginTop: 4 },
   activityContent: { flex: 1 },
-  activityTitle: { fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 2 },
-  activityDesc: { fontSize: 13, color: '#6B7280', lineHeight: 18 },
-  activityCost: { fontSize: 12, color: '#9CA3AF', marginTop: 4 },
-  shareButton: {
-    margin: 20,
-    backgroundColor: '#3B82F6',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
+  activityTitle: { fontSize: 14, fontWeight: '700' as const, color: Colors.text, marginBottom: 3 },
+  activityDesc: { fontSize: 13, color: Colors.textMedium, lineHeight: 19, marginBottom: 4 },
+  costRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  activityCost: { fontSize: 12, color: Colors.textLight },
+
+  shareWrap: {
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+    margin: Spacing.screenPad,
+    marginTop: 20,
     marginBottom: 40,
+    ...Shadow.glowGold,
   },
-  shareButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 15,
+  },
+  shareBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' as const },
 });

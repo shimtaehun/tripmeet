@@ -9,7 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import {
   getOrCreateChatRoom,
@@ -17,8 +18,10 @@ import {
   subscribeToMessages,
   ChatMessage,
 } from '../../services/chatService';
+import { Colors, Radius, Spacing } from '../../utils/theme';
 
 export default function ChatScreen() {
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { targetUserId, targetNickname } = route.params;
 
@@ -67,12 +70,20 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
       <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>{targetNickname}</Text>
+        <View style={{ width: 36 }} />
       </View>
 
       <FlatList
@@ -89,14 +100,16 @@ export default function ChatScreen() {
           value={inputText}
           onChangeText={setInputText}
           placeholder="메시지 입력"
+          placeholderTextColor={Colors.textLight}
           multiline
         />
         <TouchableOpacity
           style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
           onPress={handleSend}
           disabled={!inputText.trim()}
+          activeOpacity={0.8}
         >
-          <Text style={styles.sendButtonText}>전송</Text>
+          <Ionicons name="send" size={16} color="#fff" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -104,50 +117,73 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  root: { flex: 1, backgroundColor: Colors.background },
+
   header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    backgroundColor: '#fff',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: 17, fontWeight: 'bold', color: '#111827' },
+  backBtn: { width: 36, alignItems: 'center' },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
+
   messageList: { padding: 16, gap: 8 },
   messageRow: { flexDirection: 'row', marginBottom: 8 },
   myRow: { justifyContent: 'flex-end' },
   theirRow: { justifyContent: 'flex-start' },
-  bubble: { maxWidth: '75%', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 9 },
-  myBubble: { backgroundColor: '#3B82F6', borderBottomRightRadius: 4 },
-  theirBubble: { backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#E5E7EB' },
-  myText: { color: '#fff', fontSize: 15 },
-  theirText: { color: '#111827', fontSize: 15 },
+  bubble: {
+    maxWidth: '75%',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  myBubble: {
+    backgroundColor: Colors.primary,
+    borderBottomRightRadius: Radius.xs,
+  },
+  theirBubble: {
+    backgroundColor: Colors.card,
+    borderBottomLeftRadius: Radius.xs,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  myText: { color: '#fff', fontSize: 15, lineHeight: 22 },
+  theirText: { color: Colors.text, fontSize: 15, lineHeight: 22 },
+
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    backgroundColor: '#fff',
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.card,
     gap: 8,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 20,
+    borderColor: Colors.border,
+    borderRadius: 22,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 9,
     fontSize: 15,
     maxHeight: 100,
-    color: '#111827',
+    color: Colors.text,
+    backgroundColor: Colors.surface,
   },
   sendButton: {
-    backgroundColor: '#3B82F6',
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  sendButtonDisabled: { backgroundColor: '#93C5FD' },
-  sendButtonText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  sendButtonDisabled: { backgroundColor: Colors.primaryBorder },
 });

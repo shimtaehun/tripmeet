@@ -10,9 +10,11 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { getRestaurant, deleteRestaurant, Restaurant } from '../../services/restaurantService';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -20,8 +22,9 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <View style={styles.starRow}>
       {[1, 2, 3, 4, 5].map(i => (
-        <Text key={i} style={i <= rating ? styles.starFilled : styles.starEmpty}>★</Text>
+        <Ionicons key={i} name={i <= rating ? 'star' : 'star-outline'} size={18} color={i <= rating ? Colors.amber : Colors.border} />
       ))}
+      <Text style={styles.ratingNum}>{rating.toFixed(1)}</Text>
     </View>
   );
 }
@@ -78,7 +81,7 @@ export default function RestaurantDetailScreen() {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -88,13 +91,17 @@ export default function RestaurantDetailScreen() {
   const isAuthor = currentUserId === restaurant.user_id;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>뒤로</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
         </TouchableOpacity>
         {isAuthor && (
-          <TouchableOpacity onPress={handleDelete}>
+          <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
             <Text style={styles.deleteText}>삭제</Text>
           </TouchableOpacity>
         )}
@@ -114,18 +121,31 @@ export default function RestaurantDetailScreen() {
       )}
 
       <View style={styles.content}>
-        <Text style={styles.name}>{restaurant.name}</Text>
-        <Text style={styles.locationName}>{restaurant.location_name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{restaurant.name}</Text>
+        </View>
+
+        <View style={styles.locationRow}>
+          <Ionicons name="location-outline" size={13} color={Colors.textMedium} />
+          <Text style={styles.locationName}>{restaurant.location_name}</Text>
+        </View>
+
         <StarRating rating={restaurant.rating} />
 
         {restaurant.description ? (
-          <Text style={styles.description}>{restaurant.description}</Text>
+          <>
+            <View style={styles.divider} />
+            <Text style={styles.description}>{restaurant.description}</Text>
+          </>
         ) : null}
 
         <View style={styles.divider} />
 
         <View style={styles.authorRow}>
-          <Text style={styles.authorName}>{restaurant.author?.nickname ?? '알 수 없음'}</Text>
+          <View style={styles.authorInfo}>
+            <Ionicons name="person-circle-outline" size={15} color={Colors.textMedium} />
+            <Text style={styles.authorName}>{restaurant.author?.nickname ?? '알 수 없음'}</Text>
+          </View>
           <Text style={styles.date}>{new Date(restaurant.created_at).toLocaleDateString('ko-KR')}</Text>
         </View>
       </View>
@@ -134,32 +154,43 @@ export default function RestaurantDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  loader: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  backText: { fontSize: 15, color: '#3B82F6' },
-  deleteText: { fontSize: 15, color: '#EF4444' },
-  image: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH * 0.65,
+  backBtn: { width: 36, alignItems: 'center' },
+  deleteBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+
+  image: { width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.65 },
+
+  content: {
+    backgroundColor: Colors.card,
+    margin: Spacing.screenPad,
+    borderRadius: Radius.lg,
+    padding: 20,
+    ...Shadow.card,
   },
-  content: { padding: 16 },
-  name: { fontSize: 22, fontWeight: 'bold', color: '#111827', marginBottom: 6 },
-  locationName: { fontSize: 14, color: '#6B7280', marginBottom: 10 },
-  starRow: { flexDirection: 'row', marginBottom: 14 },
-  starFilled: { fontSize: 20, color: '#FBBF24' },
-  starEmpty: { fontSize: 20, color: '#E5E7EB' },
-  description: { fontSize: 15, color: '#374151', lineHeight: 24, marginBottom: 14 },
-  divider: { height: 1, backgroundColor: '#F3F4F6', marginBottom: 14 },
-  authorRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  authorName: { fontSize: 14, color: '#374151' },
-  date: { fontSize: 13, color: '#9CA3AF' },
+  nameRow: { marginBottom: 8 },
+  name: { fontSize: 22, fontWeight: '800' as const, color: Colors.text },
+  locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 12 },
+  locationName: { fontSize: 13, color: Colors.textMedium },
+  starRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 14 },
+  ratingNum: { fontSize: 13, color: Colors.textMedium, fontWeight: '600' as const, marginLeft: 6 },
+  description: { fontSize: 15, color: Colors.text, lineHeight: 26 },
+  divider: { height: 1, backgroundColor: Colors.divider, marginVertical: 16 },
+  authorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  authorInfo: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  authorName: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
+  date: { fontSize: 12, color: Colors.textLight },
 });

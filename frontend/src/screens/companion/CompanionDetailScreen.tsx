@@ -9,6 +9,7 @@ import {
   Alert,
   TextInput,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import {
@@ -19,6 +20,7 @@ import {
   CompanionDetail,
   ApplicationInfo,
 } from '../../services/companionService';
+import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
 export default function CompanionDetailScreen() {
   const navigation = useNavigation<any>();
@@ -109,7 +111,7 @@ export default function CompanionDetailScreen() {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -120,21 +122,28 @@ export default function CompanionDetailScreen() {
   const isOpen = companion.status === 'open';
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>뒤로</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
         </TouchableOpacity>
         {isAuthor && isOpen && (
-          <TouchableOpacity onPress={handleClose}>
-            <Text style={styles.closeText}>마감</Text>
+          <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
+            <Text style={styles.closeText}>마감하기</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View style={styles.content}>
         <View style={styles.titleRow}>
-          <Text style={styles.destination}>{companion.destination}</Text>
+          <View style={styles.destinationWrap}>
+            <Ionicons name="airplane" size={16} color={Colors.amber} />
+            <Text style={styles.destination}>{companion.destination}</Text>
+          </View>
           <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
             <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
               {isOpen ? '모집중' : '마감'}
@@ -142,10 +151,14 @@ export default function CompanionDetailScreen() {
           </View>
         </View>
 
-        <Text style={styles.dateRange}>
-          {companion.travel_start_date} ~ {companion.travel_end_date}
-        </Text>
-        <Text style={styles.participants}>최대 {companion.max_participants}명 모집</Text>
+        <View style={styles.metaRow}>
+          <Ionicons name="calendar-outline" size={13} color={Colors.textMedium} />
+          <Text style={styles.dateRange}>{companion.travel_start_date} ~ {companion.travel_end_date}</Text>
+        </View>
+        <View style={styles.metaRow}>
+          <Ionicons name="people-outline" size={13} color={Colors.textMedium} />
+          <Text style={styles.participants}>최대 {companion.max_participants}명 모집</Text>
+        </View>
 
         <View style={styles.divider} />
 
@@ -154,12 +167,14 @@ export default function CompanionDetailScreen() {
         <View style={styles.divider} />
 
         <View style={styles.authorRow}>
-          <Text style={styles.authorName}>{companion.author?.nickname ?? '알 수 없음'}</Text>
+          <View style={styles.authorInfo}>
+            <Ionicons name="person-circle-outline" size={16} color={Colors.textMedium} />
+            <Text style={styles.authorName}>{companion.author?.nickname ?? '알 수 없음'}</Text>
+          </View>
           <Text style={styles.date}>{new Date(companion.created_at).toLocaleDateString('ko-KR')}</Text>
         </View>
       </View>
 
-      {/* 신청 영역 (비작성자 + 모집중) */}
       {!isAuthor && isOpen && (
         <View style={styles.applySection}>
           {showApplyInput ? (
@@ -167,7 +182,7 @@ export default function CompanionDetailScreen() {
               <TextInput
                 style={styles.applyInput}
                 placeholder="신청 메시지를 입력하세요 (선택)"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={Colors.textLight}
                 value={applyMessage}
                 onChangeText={setApplyMessage}
                 multiline
@@ -197,14 +212,15 @@ export default function CompanionDetailScreen() {
             <TouchableOpacity
               style={styles.applyButton}
               onPress={() => setShowApplyInput(true)}
+              activeOpacity={0.85}
             >
+              <Ionicons name="people-outline" size={18} color="#fff" />
               <Text style={styles.applyButtonText}>동행 신청</Text>
             </TouchableOpacity>
           )}
         </View>
       )}
 
-      {/* 신청자 목록 (작성자에게만 표시) */}
       {isAuthor && companion.applications.length > 0 && (
         <View style={styles.applicationsSection}>
           <Text style={styles.applicationsTitle}>신청자 목록 ({companion.applications.length}명)</Text>
@@ -248,50 +264,81 @@ export default function CompanionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  loader: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  root: { flex: 1, backgroundColor: Colors.background },
+  loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.border,
   },
-  backText: { fontSize: 15, color: '#3B82F6' },
-  closeText: { fontSize: 15, color: '#EF4444' },
-  content: { padding: 16 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  destination: { fontSize: 22, fontWeight: 'bold', color: '#111827' },
-  statusBadge: { borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 },
-  badgeOpen: { backgroundColor: '#D1FAE5' },
-  badgeClosed: { backgroundColor: '#F3F4F6' },
-  statusBadgeText: { fontSize: 12, fontWeight: '600' },
-  badgeOpenText: { color: '#065F46' },
-  badgeClosedText: { color: '#6B7280' },
-  dateRange: { fontSize: 14, color: '#6B7280', marginBottom: 4 },
-  participants: { fontSize: 13, color: '#9CA3AF', marginBottom: 12 },
-  divider: { height: 1, backgroundColor: '#F3F4F6', marginVertical: 14 },
-  description: { fontSize: 15, color: '#374151', lineHeight: 24 },
-  authorRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  authorName: { fontSize: 14, color: '#374151' },
-  date: { fontSize: 13, color: '#9CA3AF' },
-  applySection: { padding: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
-  applyButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 10,
-    paddingVertical: 14,
+  backBtn: { width: 36, alignItems: 'center' },
+  closeBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  closeText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+
+  content: {
+    backgroundColor: Colors.card,
+    margin: Spacing.screenPad,
+    borderRadius: Radius.lg,
+    padding: 20,
+    ...Shadow.card,
+  },
+  titleRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
-  applyButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  destinationWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  destination: { fontSize: 22, fontWeight: '800' as const, color: Colors.text },
+  statusBadge: { borderRadius: Radius.xs, paddingHorizontal: 8, paddingVertical: 3, marginLeft: 8 },
+  badgeOpen: { backgroundColor: Colors.greenLight },
+  badgeClosed: { backgroundColor: Colors.surface },
+  statusBadgeText: { fontSize: 12, fontWeight: '700' as const },
+  badgeOpenText: { color: Colors.green },
+  badgeClosedText: { color: Colors.textMedium },
+
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 5 },
+  dateRange: { fontSize: 14, color: Colors.textMedium },
+  participants: { fontSize: 13, color: Colors.textMedium },
+
+  divider: { height: 1, backgroundColor: Colors.divider, marginVertical: 16 },
+  description: { fontSize: 15, color: Colors.text, lineHeight: 26 },
+
+  authorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  authorInfo: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  authorName: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
+  date: { fontSize: 12, color: Colors.textLight },
+
+  applySection: {
+    marginHorizontal: Spacing.screenPad,
+    marginBottom: Spacing.screenPad,
+  },
+  applyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.md,
+    paddingVertical: 15,
+    ...Shadow.card,
+  },
+  applyButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
   applyInput: {
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
     padding: 12,
     fontSize: 14,
-    color: '#111827',
+    color: Colors.text,
+    backgroundColor: Colors.card,
     minHeight: 80,
     marginBottom: 10,
   },
@@ -299,56 +346,66 @@ const styles = StyleSheet.create({
   cancelApplyButton: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 10,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
     paddingVertical: 12,
     alignItems: 'center',
+    backgroundColor: Colors.card,
   },
-  cancelApplyText: { fontSize: 15, color: '#6B7280' },
+  cancelApplyText: { fontSize: 15, color: Colors.textMedium },
   submitApplyButton: {
     flex: 2,
-    backgroundColor: '#3B82F6',
-    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.sm,
     paddingVertical: 12,
     alignItems: 'center',
   },
-  submitApplyText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  submitApplyText: { color: '#fff', fontSize: 15, fontWeight: '600' as const },
+
   applicationsSection: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    marginHorizontal: Spacing.screenPad,
+    marginBottom: Spacing.screenPad,
   },
-  applicationsTitle: { fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 12 },
+  applicationsTitle: { fontSize: 15, fontWeight: '700' as const, color: Colors.text, marginBottom: 12 },
   applicationCard: {
-    padding: 12,
+    padding: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.card,
     marginBottom: 10,
+    ...Shadow.subtle,
   },
-  applicationTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  applicantName: { fontSize: 14, fontWeight: '600', color: '#111827' },
-  appStatusBadge: { borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 },
-  appBadgePending: { backgroundColor: '#FEF3C7' },
-  appBadgeAccepted: { backgroundColor: '#D1FAE5' },
-  appBadgeRejected: { backgroundColor: '#FEE2E2' },
-  appStatusText: { fontSize: 11, fontWeight: '600', color: '#374151' },
-  applicationMessage: { fontSize: 13, color: '#6B7280', marginBottom: 10 },
+  applicationTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  applicantName: { fontSize: 14, fontWeight: '600' as const, color: Colors.text },
+  appStatusBadge: { borderRadius: Radius.xs, paddingHorizontal: 8, paddingVertical: 2 },
+  appBadgePending: { backgroundColor: Colors.amberLight },
+  appBadgeAccepted: { backgroundColor: Colors.greenLight },
+  appBadgeRejected: { backgroundColor: Colors.redLight },
+  appStatusText: { fontSize: 11, fontWeight: '600' as const, color: Colors.textMedium },
+  applicationMessage: { fontSize: 13, color: Colors.textMedium, marginBottom: 10, lineHeight: 20 },
   actionRow: { flexDirection: 'row', gap: 8 },
   acceptButton: {
     flex: 1,
-    backgroundColor: '#10B981',
-    borderRadius: 6,
+    backgroundColor: Colors.green,
+    borderRadius: Radius.xs,
     paddingVertical: 8,
     alignItems: 'center',
   },
-  acceptButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  acceptButtonText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
   rejectButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 6,
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.xs,
     paddingVertical: 8,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  rejectButtonText: { color: '#374151', fontSize: 13, fontWeight: '600' },
+  rejectButtonText: { color: Colors.textMedium, fontSize: 13, fontWeight: '600' as const },
 });

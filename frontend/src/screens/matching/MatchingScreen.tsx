@@ -9,10 +9,11 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import TravelerListItem from './TravelerListItem';
-import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface Traveler {
   user_id: string;
@@ -23,30 +24,25 @@ interface Traveler {
 
 function PulseRing() {
   const scale   = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0.6)).current;
+  const opacity = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.parallel([
         Animated.sequence([
-          Animated.timing(scale, { toValue: 1.5, duration: 1400, useNativeDriver: true }),
+          Animated.timing(scale, { toValue: 1.6, duration: 1500, useNativeDriver: true }),
           Animated.timing(scale, { toValue: 1,   duration: 0,    useNativeDriver: true }),
         ]),
         Animated.sequence([
-          Animated.timing(opacity, { toValue: 0, duration: 1400, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.6, duration: 0,  useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0, duration: 1500, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.5, duration: 0,  useNativeDriver: true }),
         ]),
       ]),
     ).start();
   }, []);
 
   return (
-    <Animated.View
-      style={[
-        styles.pulseRing,
-        { transform: [{ scale }], opacity },
-      ]}
-    />
+    <Animated.View style={[styles.pulseRing, { transform: [{ scale }], opacity }]} />
   );
 }
 
@@ -83,7 +79,7 @@ export default function MatchingScreen() {
     return (
       <View style={styles.root}>
         <LinearGradient
-          colors={['#1E3A8A', '#2563EB', '#0EA5E9']}
+          colors={[Colors.primaryDark, Colors.primary]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.header}
@@ -92,11 +88,10 @@ export default function MatchingScreen() {
         </LinearGradient>
 
         <View style={styles.emptyRoot}>
-          {/* 펄스 레이더 효과 */}
           <View style={styles.radarWrap}>
             <PulseRing />
             <View style={styles.radarDot}>
-              <Text style={styles.radarEmoji}>📍</Text>
+              <Ionicons name="location" size={28} color={Colors.primary} />
             </View>
           </View>
 
@@ -111,12 +106,13 @@ export default function MatchingScreen() {
             style={styles.registerBtnWrap}
           >
             <LinearGradient
-              colors={Gradients.sunset}
+              colors={Gradients.gold}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.registerBtn}
             >
-              <Text style={styles.registerBtnText}>📍 위치 등록하기</Text>
+              <Ionicons name="location-outline" size={16} color="#fff" />
+              <Text style={styles.registerBtnText}>위치 등록하기</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -127,7 +123,7 @@ export default function MatchingScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={['#1E3A8A', '#2563EB', '#0EA5E9']}
+        colors={[Colors.primaryDark, Colors.primary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -151,7 +147,7 @@ export default function MatchingScreen() {
         <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : travelers.length === 0 ? (
         <View style={styles.emptyRoot}>
-          <Text style={styles.emptyIcon}>🔍</Text>
+          <Ionicons name="search-outline" size={48} color={Colors.border} />
           <Text style={styles.emptyTitle}>이 지역에 여행자가 없습니다</Text>
           <Text style={styles.emptyDesc}>조금 더 기다려보세요!</Text>
         </View>
@@ -184,17 +180,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
     paddingBottom: 18,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff', marginBottom: 2 },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.78)' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.72)' },
   headerLocation: { fontWeight: '700' as const, color: '#fff' },
   changeBtn: {
-    backgroundColor: 'rgba(255,255,255,0.20)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderColor: 'rgba(255,255,255,0.28)',
     borderRadius: Radius.sm,
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -203,7 +199,6 @@ const styles = StyleSheet.create({
 
   listContent: { padding: 14, paddingBottom: 32 },
 
-  // 레이더 펄스
   radarWrap: {
     width: 120,
     height: 120,
@@ -216,7 +211,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: Colors.primary,
   },
   radarDot: {
@@ -230,25 +225,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadow.glow,
   },
-  radarEmoji: { fontSize: 28 },
 
   emptyRoot: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
+    gap: 8,
   },
-  emptyIcon: { fontSize: 50, marginBottom: 16 },
   emptyTitle: {
     fontSize: 19, fontWeight: '700' as const, color: Colors.text,
-    marginBottom: 8, textAlign: 'center',
+    textAlign: 'center', marginTop: 8,
   },
   emptyDesc: {
     fontSize: 14, color: Colors.textMedium, textAlign: 'center',
-    lineHeight: 22, marginBottom: 30,
+    lineHeight: 22, marginBottom: 24,
   },
-  registerBtnWrap: { borderRadius: Radius.md, overflow: 'hidden', ...Shadow.glowAccent },
-  registerBtn: { paddingHorizontal: 32, paddingVertical: 15 },
+  registerBtnWrap: { borderRadius: Radius.md, overflow: 'hidden', ...Shadow.glowGold },
+  registerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 28,
+    paddingVertical: 15,
+  },
   registerBtnText: { fontSize: 15, fontWeight: '700' as const, color: '#fff' },
 
   loader: { marginTop: 60 },

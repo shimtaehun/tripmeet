@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { supabase } from '../../services/supabaseClient';
@@ -21,20 +22,18 @@ WebBrowser.maybeCompleteAuthSession();
 
 const { width: W, height: H } = Dimensions.get('window');
 
-// ─── 떠다니는 여행 파티클 정의 ─────────────────────────────
+// 떠다니는 파티클 정의
 const PARTICLES = [
-  { emoji: '✈', top: 0.10, left: 0.08, size: 30, duration: 3200, delay: 0,    driftX: 12 },
-  { emoji: '🌍', top: 0.22, left: 0.75, size: 36, duration: 3800, delay: 600,  driftX: -8 },
-  { emoji: '🗺', top: 0.06, left: 0.50, size: 26, duration: 4200, delay: 1000, driftX: 10 },
-  { emoji: '⛵', top: 0.38, left: 0.04, size: 24, duration: 2900, delay: 1400, driftX: 14 },
-  { emoji: '☀️', top: 0.14, left: 0.82, size: 28, duration: 3500, delay: 300,  driftX: -10 },
-  { emoji: '🏔', top: 0.44, left: 0.88, size: 22, duration: 4600, delay: 900,  driftX: -6 },
-  { emoji: '🌊', top: 0.30, left: 0.32, size: 26, duration: 3900, delay: 1200, driftX: 8  },
-  { emoji: '⭐', top: 0.04, left: 0.68, size: 20, duration: 2600, delay: 400,  driftX: -12 },
-  { emoji: '🌺', top: 0.48, left: 0.18, size: 22, duration: 4100, delay: 800,  driftX: 10  },
+  { emoji: '✈', top: 0.10, left: 0.08, size: 28, duration: 3200, delay: 0,    driftX: 12 },
+  { emoji: '🌍', top: 0.22, left: 0.75, size: 34, duration: 3800, delay: 600,  driftX: -8 },
+  { emoji: '🗺', top: 0.06, left: 0.50, size: 24, duration: 4200, delay: 1000, driftX: 10 },
+  { emoji: '⛵', top: 0.38, left: 0.04, size: 22, duration: 2900, delay: 1400, driftX: 14 },
+  { emoji: '☀️', top: 0.14, left: 0.82, size: 26, duration: 3500, delay: 300,  driftX: -10 },
+  { emoji: '🏔', top: 0.44, left: 0.88, size: 20, duration: 4600, delay: 900,  driftX: -6 },
+  { emoji: '🌊', top: 0.30, left: 0.32, size: 24, duration: 3900, delay: 1200, driftX: 8  },
+  { emoji: '⭐', top: 0.04, left: 0.68, size: 18, duration: 2600, delay: 400,  driftX: -12 },
 ];
 
-// ─── 개별 파티클 컴포넌트 ─────────────────────────────────
 function FloatingParticle({
   emoji, top, left, size, duration, delay, driftX,
 }: (typeof PARTICLES)[0]) {
@@ -44,19 +43,17 @@ function FloatingParticle({
   const rotate     = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // 페이드인
     Animated.timing(opacity, {
-      toValue: 0.85,
+      toValue: 0.6,
       duration: 900,
       delay,
       useNativeDriver: true,
     }).start();
 
-    // 부유 루프
     const loop = Animated.loop(
       Animated.sequence([
         Animated.parallel([
-          Animated.timing(translateY, { toValue: -18, duration, useNativeDriver: true }),
+          Animated.timing(translateY, { toValue: -16, duration, useNativeDriver: true }),
           Animated.timing(translateX, { toValue: driftX, duration: duration * 0.75, useNativeDriver: true }),
           Animated.timing(rotate, { toValue: 1, duration: duration * 1.5, useNativeDriver: true }),
         ]),
@@ -72,7 +69,7 @@ function FloatingParticle({
     return () => { clearTimeout(timer); loop.stop(); };
   }, []);
 
-  const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['-8deg', '8deg'] });
+  const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['-6deg', '6deg'] });
 
   return (
     <Animated.Text
@@ -90,27 +87,21 @@ function FloatingParticle({
   );
 }
 
-// ─── 기능 소개 데이터 ──────────────────────────────────────
 const FEATURES = [
-  { icon: '✈', label: 'AI 맞춤 일정', desc: '목적지·기간·예산 입력으로 자동 생성' },
-  { icon: '📍', label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결' },
-  { icon: '🍜', label: '맛집 & 커뮤니티', desc: '현지인이 검증한 정보 공유' },
+  { icon: 'sparkles' as const,          label: 'AI 맞춤 일정',        desc: '목적지·기간·예산으로 자동 완성' },
+  { icon: 'location' as const,          label: '실시간 여행자 매칭',   desc: '같은 도시 여행자와 즉시 연결' },
+  { icon: 'restaurant' as const,        label: '맛집 & 커뮤니티',      desc: '현지인이 검증한 정보 공유' },
 ];
 
-// ─── 메인 컴포넌트 ─────────────────────────────────────────
 export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const loginInProgress = useRef(false);
 
-  // 카드 진입 애니메이션
-  const cardTranslate = useRef(new Animated.Value(70)).current;
+  const cardTranslate = useRef(new Animated.Value(60)).current;
   const cardOpacity   = useRef(new Animated.Value(0)).current;
-
-  // 버튼 shimmer
-  const shimmer = useRef(new Animated.Value(0)).current;
+  const shimmer       = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // 카드 슬라이드업
     Animated.parallel([
       Animated.timing(cardTranslate, {
         toValue: 0, duration: Animation.entrance, delay: 400, useNativeDriver: true,
@@ -120,11 +111,10 @@ export default function LoginScreen() {
       }),
     ]).start();
 
-    // 버튼 shimmer 루프 (2초마다)
     Animated.loop(
       Animated.sequence([
-        Animated.delay(2200),
-        Animated.timing(shimmer, { toValue: 1, duration: 700, useNativeDriver: true }),
+        Animated.delay(2500),
+        Animated.timing(shimmer, { toValue: 1, duration: 650, useNativeDriver: true }),
         Animated.timing(shimmer, { toValue: 0, duration: 0,   useNativeDriver: true }),
       ]),
     ).start();
@@ -180,7 +170,6 @@ export default function LoginScreen() {
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
 
-      {/* ── 딥 오션 그라디언트 배경 ── */}
       <LinearGradient
         colors={Gradients.hero}
         start={{ x: 0.1, y: 0 }}
@@ -188,44 +177,41 @@ export default function LoginScreen() {
         style={StyleSheet.absoluteFill}
       />
 
-      {/* ── 보조 빛 원형 글로우 ── */}
+      {/* 광원 효과 */}
       <View style={styles.glow1} />
       <View style={styles.glow2} />
 
-      {/* ── 떠다니는 파티클 ── */}
+      {/* 파티클 */}
       {PARTICLES.map((p, i) => <FloatingParticle key={i} {...p} />)}
 
-      {/* ── 브랜드 타이틀 (상단) ── */}
+      {/* 브랜드 타이틀 */}
       <View style={styles.titleSection}>
         <View style={styles.logoRing}>
           <Text style={styles.logoEmoji}>✈</Text>
         </View>
         <Text style={styles.appName}>TripMeet</Text>
+        <View style={styles.goldLine} />
         <Text style={styles.tagline}>혼자 떠나도{'\n'}함께하는 여행</Text>
       </View>
 
-      {/* ── 글래스모피즘 바텀 카드 ── */}
+      {/* 글래스모피즘 바텀 카드 */}
       <Animated.View
         style={[
           styles.cardWrap,
           { transform: [{ translateY: cardTranslate }], opacity: cardOpacity },
         ]}
       >
-        <BlurView intensity={55} tint="light" style={styles.blur}>
+        <BlurView intensity={50} tint="light" style={styles.blur}>
           <View style={styles.glassInner}>
 
-            {/* 기능 소개 */}
             {FEATURES.map((f, i) => (
               <View
                 key={i}
                 style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureDivider]}
               >
-                <LinearGradient
-                  colors={['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.2)']}
-                  style={styles.featureIconWrap}
-                >
-                  <Text style={styles.featureIcon}>{f.icon}</Text>
-                </LinearGradient>
+                <View style={styles.featureIconWrap}>
+                  <Ionicons name={f.icon} size={20} color={Colors.gold} />
+                </View>
                 <View style={styles.featureText}>
                   <Text style={styles.featureLabel}>{f.label}</Text>
                   <Text style={styles.featureDesc}>{f.desc}</Text>
@@ -233,10 +219,9 @@ export default function LoginScreen() {
               </View>
             ))}
 
-            {/* 구분선 */}
             <View style={styles.divider} />
 
-            {/* 그라디언트 CTA 버튼 */}
+            {/* 골드 CTA 버튼 */}
             <TouchableOpacity
               onPress={handleGoogleLogin}
               disabled={loading}
@@ -244,20 +229,15 @@ export default function LoginScreen() {
               style={styles.btnTouchable}
             >
               <LinearGradient
-                colors={Gradients.sunset}
+                colors={Gradients.gold}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[styles.btnGradient, loading && { opacity: 0.65 }]}
               >
-                {/* shimmer 레이어 */}
                 <Animated.View
-                  style={[
-                    styles.shimmerBar,
-                    { transform: [{ translateX: shimmerX }] },
-                  ]}
+                  style={[styles.shimmerBar, { transform: [{ translateX: shimmerX }] }]}
                   pointerEvents="none"
                 />
-
                 {loading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
@@ -279,34 +259,31 @@ export default function LoginScreen() {
   );
 }
 
-// ─── 스타일 ───────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#0F2B5B',
+    backgroundColor: Colors.primaryDeep,
   },
 
-  // 빛 원형 배경 장식
   glow1: {
     position: 'absolute',
-    width: 340,
-    height: 340,
-    borderRadius: 170,
-    backgroundColor: 'rgba(14,165,233,0.18)',
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: 'rgba(44,82,130,0.22)',
     top: -80,
-    right: -80,
+    right: -70,
   },
   glow2: {
     position: 'absolute',
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(124,58,237,0.14)',
-    top: H * 0.25,
-    left: -60,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: 'rgba(201,169,110,0.10)',
+    top: H * 0.28,
+    left: -50,
   },
 
-  // 브랜드 타이틀
   titleSection: {
     flex: 1,
     alignItems: 'center',
@@ -317,41 +294,44 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.35)',
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(201,169,110,0.50)',
+    backgroundColor: 'rgba(201,169,110,0.10)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    // 글로우
-    shadowColor: '#38BDF8',
+    shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 24,
+    shadowOpacity: 0.45,
+    shadowRadius: 20,
   },
-  logoEmoji: {
-    fontSize: 36,
-  },
+  logoEmoji: { fontSize: 36 },
   appName: {
-    fontSize: 44,
+    fontSize: 46,
     fontWeight: '800' as const,
     color: '#FFFFFF',
     letterSpacing: -1,
     marginBottom: 10,
-    // 텍스트 글로우 효과 (iOS)
-    textShadowColor: 'rgba(56,189,248,0.6)',
+    textShadowColor: 'rgba(201,169,110,0.40)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
+    textShadowRadius: 16,
+  },
+  goldLine: {
+    width: 40,
+    height: 2,
+    backgroundColor: Colors.gold,
+    borderRadius: 1,
+    marginBottom: 14,
+    opacity: 0.8,
   },
   tagline: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '500' as const,
-    color: 'rgba(255,255,255,0.80)',
+    color: 'rgba(255,255,255,0.72)',
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 26,
   },
 
-  // 글래스 카드
   cardWrap: {
     borderTopLeftRadius: Radius.xxl,
     borderTopRightRadius: Radius.xxl,
@@ -362,17 +342,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radius.xxl,
   },
   glassInner: {
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: 'rgba(255,255,255,0.11)',
     borderTopLeftRadius: Radius.xxl,
     borderTopRightRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.30)',
+    borderColor: 'rgba(255,255,255,0.22)',
     paddingHorizontal: 24,
     paddingTop: 32,
     paddingBottom: 44,
   },
 
-  // 기능 행
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -380,19 +359,19 @@ const styles = StyleSheet.create({
   },
   featureDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.18)',
+    borderBottomColor: 'rgba(255,255,255,0.15)',
   },
   featureIconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: Radius.md,
+    width: 44,
+    height: 44,
+    borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderColor: 'rgba(201,169,110,0.35)',
+    backgroundColor: 'rgba(201,169,110,0.10)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
   },
-  featureIcon: { fontSize: 22 },
   featureText: { flex: 1 },
   featureLabel: {
     fontSize: 15,
@@ -402,20 +381,19 @@ const styles = StyleSheet.create({
   },
   featureDesc: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.70)',
+    color: 'rgba(255,255,255,0.62)',
   },
 
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.20)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     marginVertical: 22,
   },
 
-  // 버튼
   btnTouchable: {
     borderRadius: Radius.md,
     overflow: 'hidden',
-    ...Shadow.glowAccent,
+    ...Shadow.glowGold,
   },
   btnGradient: {
     flexDirection: 'row',
@@ -429,8 +407,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    width: 80,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    width: 70,
+    backgroundColor: 'rgba(255,255,255,0.22)',
     transform: [{ skewX: '-20deg' }],
   },
   googleG: {
@@ -448,7 +426,7 @@ const styles = StyleSheet.create({
 
   terms: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.50)',
+    color: 'rgba(255,255,255,0.42)',
     textAlign: 'center',
     marginTop: 16,
     lineHeight: 17,

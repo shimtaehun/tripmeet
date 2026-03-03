@@ -11,9 +11,10 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface UserProfile {
   id: string;
@@ -75,7 +76,7 @@ export default function ProfileScreen() {
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* 그라디언트 프로필 헤더 */}
       <LinearGradient
-        colors={['#0F2B5B', '#1E3A8A', '#2563EB', '#0EA5E9']}
+        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -95,16 +96,17 @@ export default function ProfileScreen() {
             />
           </View>
           {/* 온라인 배지 */}
-          <LinearGradient colors={Gradients.emerald} style={styles.onlineBadge}>
+          <View style={styles.onlineBadge}>
+            <View style={styles.onlineDot} />
             <Text style={styles.onlineBadgeText}>여행중</Text>
-          </LinearGradient>
+          </View>
         </Animated.View>
 
         <Text style={styles.nickname}>{profile?.nickname ?? '닉네임 없음'}</Text>
         {profile?.bio ? (
           <Text style={styles.bio}>{profile.bio}</Text>
         ) : (
-          <Text style={styles.bioEmpty}>자기소개를 추가해보세요 ✏️</Text>
+          <Text style={styles.bioEmpty}>자기소개를 추가해보세요</Text>
         )}
       </LinearGradient>
 
@@ -115,11 +117,11 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate('ProfileEdit', { profile })}
           activeOpacity={0.7}
         >
-          <LinearGradient colors={Gradients.tileAI} style={styles.menuIconWrap}>
-            <Text style={styles.menuIconEmoji}>✏️</Text>
-          </LinearGradient>
+          <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
+            <Ionicons name="create-outline" size={18} color={Colors.primary} />
+          </View>
           <Text style={styles.menuLabel}>프로필 수정</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
         </TouchableOpacity>
 
         <View style={styles.menuDivider} />
@@ -129,11 +131,11 @@ export default function ProfileScreen() {
           onPress={handleLogout}
           activeOpacity={0.7}
         >
-          <LinearGradient colors={[Colors.redLight, '#FFE4E6']} style={styles.menuIconWrap}>
-            <Text style={styles.menuIconEmoji}>🚪</Text>
-          </LinearGradient>
+          <View style={[styles.menuIconWrap, { backgroundColor: Colors.redLight }]}>
+            <Ionicons name="log-out-outline" size={18} color={Colors.red} />
+          </View>
           <Text style={[styles.menuLabel, styles.menuLabelDestructive]}>로그아웃</Text>
-          <Text style={[styles.menuArrow, { color: Colors.red }]}>›</Text>
+          <Ionicons name="chevron-forward" size={16} color={Colors.red} />
         </TouchableOpacity>
       </View>
 
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(14,165,233,0.15)',
+    backgroundColor: 'rgba(201,169,110,0.12)',
     top: -60,
     right: -40,
   },
@@ -178,12 +180,22 @@ const styles = StyleSheet.create({
   },
   avatar: { width: '100%', height: '100%', borderRadius: 52 },
   onlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     marginTop: -12,
     borderRadius: Radius.full,
     paddingHorizontal: 12,
     paddingVertical: 4,
+    backgroundColor: Colors.green,
     borderWidth: 2,
     borderColor: '#fff',
+  },
+  onlineDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.8)',
   },
   onlineBadgeText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
   nickname: { fontSize: 24, fontWeight: '800' as const, color: '#fff', marginBottom: 6 },
@@ -193,7 +205,7 @@ const styles = StyleSheet.create({
   menuCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.screenPad,
     marginTop: 20,
     overflow: 'hidden',
     ...Shadow.card,
@@ -212,10 +224,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuIconEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '600' as const, color: Colors.text },
   menuLabelDestructive: { color: Colors.red },
-  menuArrow: { fontSize: 22, color: Colors.textLight },
   menuDivider: { height: 1, backgroundColor: Colors.divider, marginHorizontal: 16 },
 
   version: { textAlign: 'center', marginTop: 32, fontSize: 12, color: Colors.textLight },

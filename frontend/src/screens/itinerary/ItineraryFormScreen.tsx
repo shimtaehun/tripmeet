@@ -9,8 +9,11 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 export default function ItineraryFormScreen() {
   const navigation = useNavigation<any>();
@@ -66,83 +69,163 @@ export default function ItineraryFormScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>AI 여행 일정 만들기</Text>
-      <Text style={styles.description}>조건을 입력하면 AI가 완성된 일정을 만들어드려요.</Text>
+    <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <LinearGradient
+        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroBanner}
+      >
+        <View style={styles.heroIconWrap}>
+          <Ionicons name="sparkles" size={28} color={Colors.gold} />
+        </View>
+        <Text style={styles.heroTitle}>AI 여행 일정 만들기</Text>
+        <Text style={styles.heroDesc}>조건을 입력하면 AI가 완성된 일정을 만들어드려요.</Text>
+      </LinearGradient>
 
-      <Text style={styles.label}>여행지</Text>
-      <TextInput
-        style={styles.input}
-        value={destination}
-        onChangeText={setDestination}
-        placeholder="예: 제주도, 오사카, 방콕"
-      />
+      <View style={styles.formCard}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>여행지 <Text style={styles.required}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            value={destination}
+            onChangeText={setDestination}
+            placeholder="예: 제주도, 오사카, 방콕"
+            placeholderTextColor={Colors.textLight}
+          />
+        </View>
 
-      <Text style={styles.label}>여행 기간 (일)</Text>
-      <TextInput
-        style={styles.input}
-        value={durationDays}
-        onChangeText={setDurationDays}
-        placeholder="예: 3"
-        keyboardType="numeric"
-        maxLength={2}
-      />
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>여행 기간 <Text style={styles.required}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            value={durationDays}
+            onChangeText={setDurationDays}
+            placeholder="예: 3 (일)"
+            placeholderTextColor={Colors.textLight}
+            keyboardType="numeric"
+            maxLength={2}
+          />
+        </View>
 
-      <Text style={styles.label}>인원 수</Text>
-      <TextInput
-        style={styles.input}
-        value={travelersCount}
-        onChangeText={setTravelersCount}
-        placeholder="예: 1"
-        keyboardType="numeric"
-        maxLength={2}
-      />
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>인원 수</Text>
+          <TextInput
+            style={styles.input}
+            value={travelersCount}
+            onChangeText={setTravelersCount}
+            placeholder="예: 1 (명)"
+            placeholderTextColor={Colors.textLight}
+            keyboardType="numeric"
+            maxLength={2}
+          />
+        </View>
 
-      <Text style={styles.label}>예산 (원)</Text>
-      <TextInput
-        style={styles.input}
-        value={budgetWon}
-        onChangeText={setBudgetWon}
-        placeholder="예: 300000"
-        keyboardType="numeric"
-      />
+        <View style={[styles.fieldGroup, { borderBottomWidth: 0 }]}>
+          <Text style={styles.label}>예산 <Text style={styles.required}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            value={budgetWon}
+            onChangeText={setBudgetWon}
+            placeholder="예: 300000 (원)"
+            placeholderTextColor={Colors.textLight}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleGenerate} disabled={loading}>
-        {loading ? (
-          <View style={styles.loadingRow}>
-            <ActivityIndicator color="#fff" />
-            <Text style={styles.loadingText}>일정 생성 중...</Text>
-          </View>
-        ) : (
-          <Text style={styles.buttonText}>일정 만들기</Text>
-        )}
+      <TouchableOpacity
+        style={styles.btnWrap}
+        onPress={handleGenerate}
+        disabled={loading}
+        activeOpacity={0.85}
+      >
+        <LinearGradient
+          colors={Gradients.gold}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.btn, loading && { opacity: 0.65 }]}
+        >
+          {loading ? (
+            <>
+              <ActivityIndicator color="#fff" />
+              <Text style={styles.btnText}>일정 생성 중...</Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="sparkles" size={18} color="#fff" />
+              <Text style={styles.btnText}>일정 만들기</Text>
+            </>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 24 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#111827', marginTop: 24, marginBottom: 8 },
-  description: { fontSize: 14, color: '#6B7280', marginBottom: 32 },
-  label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 6, marginTop: 16 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 15,
-    color: '#111827',
-  },
-  button: {
-    marginTop: 36,
-    marginBottom: 40,
-    backgroundColor: '#3B82F6',
-    borderRadius: 10,
-    paddingVertical: 14,
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
+
+  heroBanner: {
     alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 40,
+    paddingHorizontal: Spacing.screenPad,
+    gap: 10,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  loadingRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  loadingText: { color: '#fff', fontSize: 15 },
+  heroIconWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(201,169,110,0.15)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(201,169,110,0.40)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  heroTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff', textAlign: 'center' },
+  heroDesc: { fontSize: 14, color: 'rgba(255,255,255,0.70)', textAlign: 'center', lineHeight: 20 },
+
+  formCard: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    marginHorizontal: Spacing.screenPad,
+    marginTop: 20,
+    overflow: 'hidden',
+    ...Shadow.card,
+  },
+  fieldGroup: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  label: { fontSize: 12, fontWeight: '600' as const, color: Colors.textMedium, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.8 },
+  required: { color: Colors.red },
+  input: {
+    fontSize: 15,
+    color: Colors.text,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingBottom: 10,
+  },
+
+  btnWrap: {
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+    marginHorizontal: Spacing.screenPad,
+    marginTop: 24,
+    ...Shadow.glowGold,
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 16,
+  },
+  btnText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
 });

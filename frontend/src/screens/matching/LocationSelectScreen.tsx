@@ -9,9 +9,11 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Radius, Shadow } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 export default function LocationSelectScreen() {
   const navigation = useNavigation<any>();
@@ -58,23 +60,27 @@ export default function LocationSelectScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={styles.backText}>← 뒤로</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <Text style={styles.backText}>뒤로</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 타이틀 */}
       <View style={styles.titleSection}>
-        <Text style={styles.titleIcon}>📍</Text>
+        <View style={styles.iconWrap}>
+          <Ionicons name="location" size={28} color={Colors.primary} />
+        </View>
         <Text style={styles.title}>현재 여행 중인 곳은?</Text>
         <Text style={styles.description}>
           GPS를 사용하지 않습니다.{'\n'}직접 입력해 같은 지역 여행자와 만나보세요.
         </Text>
       </View>
 
-      {/* 입력 폼 카드 */}
       <View style={styles.formCard}>
         <Text style={styles.label}>여행지 이름 <Text style={styles.required}>*</Text></Text>
         <TextInput
@@ -105,61 +111,73 @@ export default function LocationSelectScreen() {
       </View>
 
       <TouchableOpacity
-        style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+        style={styles.submitBtnWrap}
         onPress={handleRegister}
         disabled={loading}
         activeOpacity={0.85}
       >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.submitBtnText}>이 곳에 있어요</Text>
-        )}
+        <LinearGradient
+          colors={Gradients.gold}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.submitBtn, loading && { opacity: 0.65 }]}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+              <Text style={styles.submitBtnText}>이 곳에 있어요</Text>
+            </>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    paddingBottom: 48,
-  },
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
 
-  // 헤더
   header: {
     backgroundColor: Colors.card,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  backText: {
-    fontSize: 15,
-    color: Colors.primary,
-    fontWeight: '600' as const,
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
   },
+  backText: { fontSize: 15, color: Colors.primary, fontWeight: '600' as const },
 
-  // 타이틀
   titleSection: {
     alignItems: 'center',
     paddingTop: 36,
     paddingBottom: 28,
     paddingHorizontal: 24,
+    gap: 10,
   },
-  titleIcon: {
-    fontSize: 40,
-    marginBottom: 14,
+  iconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.primaryLight,
+    borderWidth: 1.5,
+    borderColor: Colors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
   },
   title: {
     fontSize: 22,
     fontWeight: '800' as const,
     color: Colors.text,
-    marginBottom: 10,
     textAlign: 'center',
   },
   description: {
@@ -169,11 +187,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // 폼 카드
   formCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.screenPad,
     padding: 20,
     ...Shadow.card,
   },
@@ -184,13 +201,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: 16,
   },
-  required: {
-    color: Colors.red,
-  },
-  labelOptional: {
-    fontWeight: '400' as const,
-    color: Colors.textLight,
-  },
+  required: { color: Colors.red },
+  labelOptional: { fontWeight: '400' as const, color: Colors.textLight },
   input: {
     backgroundColor: Colors.surface,
     borderWidth: 1,
@@ -201,22 +213,19 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
 
-  // 버튼
-  submitBtn: {
-    backgroundColor: Colors.primary,
+  submitBtnWrap: {
     borderRadius: Radius.md,
-    marginHorizontal: 16,
+    overflow: 'hidden',
+    marginHorizontal: Spacing.screenPad,
     marginTop: 24,
-    paddingVertical: 16,
+    ...Shadow.glowGold,
+  },
+  submitBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    ...Shadow.card,
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
   },
-  submitBtnDisabled: {
-    opacity: 0.6,
-  },
-  submitBtnText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700' as const,
-  },
+  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
 });

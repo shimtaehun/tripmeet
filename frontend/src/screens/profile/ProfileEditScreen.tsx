@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { compressImage } from '../../utils/imageCompressor';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '../../utils/theme';
 
 export default function ProfileEditScreen() {
@@ -120,7 +121,7 @@ export default function ProfileEditScreen() {
           disabled={loading}
           activeOpacity={0.8}
         >
-          <Text style={styles.imageBtnIcon}>📷</Text>
+          <Ionicons name="camera-outline" size={20} color={Colors.primary} />
           <Text style={styles.imageBtnText}>프로필 사진 변경</Text>
         </TouchableOpacity>
 
@@ -204,7 +205,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     ...Shadow.card,
   },
-  imageBtnIcon: { fontSize: 18 },
   imageBtnText: {
     color: Colors.primary,
     fontSize: 14,
