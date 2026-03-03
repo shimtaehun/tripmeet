@@ -71,7 +71,7 @@ export default function ItineraryFormScreen() {
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <LinearGradient
-        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
+        colors={Gradients.ai}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroBanner}
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
 
   formCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     marginHorizontal: Spacing.screenPad,
     marginTop: 20,
     overflow: 'hidden',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
 
   btnWrap: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.full,
     overflow: 'hidden',
     marginHorizontal: Spacing.screenPad,
     marginTop: 24,

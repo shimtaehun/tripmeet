@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: Colors.card,
     margin: Spacing.screenPad,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: 20,
     ...Shadow.card,
   },
@@ -172,8 +172,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   categoryBadge: {
-    borderRadius: Radius.xs,
-    paddingHorizontal: 8,
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
     paddingVertical: 3,
   },
   categoryBadgeText: { fontSize: 12, fontWeight: '700' as const },

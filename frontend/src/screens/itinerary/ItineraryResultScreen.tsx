@@ -64,7 +64,7 @@ export default function ItineraryResultScreen() {
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <LinearGradient
-        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
+        colors={Gradients.ai}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   headerBadge: { fontSize: 12, fontWeight: '600' as const, color: Colors.coral },
   cacheBadge: {
-    borderRadius: Radius.xs,
+    borderRadius: Radius.full,
     backgroundColor: 'rgba(255,255,255,0.18)',
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     paddingVertical: 2,
   },
   cacheBadgeText: { fontSize: 10, color: 'rgba(255,255,255,0.70)' },
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
 
   dayBlock: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
     ...Shadow.card,
   },
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   },
   dayNumBadge: {
     backgroundColor: Colors.primary,
-    borderRadius: Radius.xs,
-    paddingHorizontal: 8,
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
     paddingVertical: 3,
   },
   dayNumText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   activityCost: { fontSize: 12, color: Colors.textLight },
 
   shareWrap: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.full,
     overflow: 'hidden',
     margin: Spacing.screenPad,
     marginTop: 20,

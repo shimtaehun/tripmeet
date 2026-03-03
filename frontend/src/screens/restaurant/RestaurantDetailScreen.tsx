@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: Colors.card,
     margin: Spacing.screenPad,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: 20,
     ...Shadow.card,
   },

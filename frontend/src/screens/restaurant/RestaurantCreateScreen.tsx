@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
 
   imageRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   imageWrapper: { position: 'relative' },
-  imageThumbnail: { width: 80, height: 80, borderRadius: Radius.sm },
+  imageThumbnail: { width: 80, height: 80, borderRadius: Radius.md },
   removeButton: {
     position: 'absolute',
     top: -6,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   addImageButton: {
     width: 80,
     height: 80,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.md,
     borderWidth: 1.5,
     borderColor: Colors.border,
     borderStyle: 'dashed',

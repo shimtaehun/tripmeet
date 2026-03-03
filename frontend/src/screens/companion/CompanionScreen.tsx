@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
-import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 type StatusFilter = 'all' | 'open' | 'closed';
 
@@ -102,7 +102,7 @@ export default function CompanionScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={[Colors.primaryDark, Colors.primary]}
+        colors={Gradients.companion}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.28)',
-    borderRadius: Radius.sm,
-    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
     paddingVertical: 7,
   },
   addBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.md,
+    borderRadius: Radius.xl,
     padding: 16,
     ...Shadow.card,
   },
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusBadge: {
-    borderRadius: Radius.xs,
-    paddingHorizontal: 8,
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
     paddingVertical: 3,
     marginLeft: 8,
   },

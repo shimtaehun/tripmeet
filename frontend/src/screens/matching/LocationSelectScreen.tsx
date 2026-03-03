@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
 
   formCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     marginHorizontal: Spacing.screenPad,
     padding: 20,
     ...Shadow.card,
@@ -207,14 +207,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.md,
     padding: 14,
     fontSize: 15,
     color: Colors.text,
   },
 
   submitBtnWrap: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.full,
     overflow: 'hidden',
     marginHorizontal: Spacing.screenPad,
     marginTop: 24,

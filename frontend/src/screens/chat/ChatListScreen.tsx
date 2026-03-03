@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { db } from '../../services/firebaseClient';
-import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface ChatRoom {
   id: string;
@@ -77,7 +77,7 @@ export default function ChatListScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={[Colors.primaryDark, Colors.primary]}
+        colors={Gradients.chat}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
