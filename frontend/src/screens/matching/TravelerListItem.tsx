@@ -68,7 +68,7 @@ export default function TravelerListItem({
           activeOpacity={1}
         >
           <LinearGradient
-            colors={Gradients.gold}
+            colors={Gradients.coral}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.chatBtn}
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 9,
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
   chatBtnText: { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
 });

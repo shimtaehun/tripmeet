@@ -18,22 +18,13 @@ const TILE_WIDTH = (W - Spacing.screenPad * 2 - 12) / 2;
 
 const FEATURES = [
   {
-    icon: 'sparkles' as const,
-    title: 'AI 여행 일정',
-    desc: '목적지·기간·예산으로\n맞춤 일정 자동 완성',
-    screen: 'ItineraryForm',
-    tab: null,
-    gradient: Gradients.tileAI,
-    accent: Colors.primary,
-  },
-  {
     icon: 'location' as const,
     title: '지역 매칭',
     desc: '같은 도시 여행자와\n실시간 연결',
     screen: null,
     tab: 'Matching',
-    gradient: Gradients.tileMatch,
-    accent: Colors.green,
+    iconBg: Colors.greenLight,
+    iconColor: Colors.green,
   },
   {
     icon: 'chatbubbles' as const,
@@ -41,8 +32,8 @@ const FEATURES = [
     desc: '여행 정보·질문·후기\n함께 공유',
     screen: null,
     tab: 'Community',
-    gradient: Gradients.tileCommunity,
-    accent: Colors.amber,
+    iconBg: Colors.primaryLight,
+    iconColor: Colors.primary,
   },
   {
     icon: 'restaurant' as const,
@@ -50,8 +41,8 @@ const FEATURES = [
     desc: '현지 맛집 사진과\n별점 리뷰 공유',
     screen: null,
     tab: 'Restaurant',
-    gradient: Gradients.tileRestaurant,
-    accent: Colors.red,
+    iconBg: Colors.redLight,
+    iconColor: Colors.red,
   },
   {
     icon: 'people' as const,
@@ -59,8 +50,8 @@ const FEATURES = [
     desc: '함께 여행할 동반자를\n미리 모집',
     screen: null,
     tab: 'Companion',
-    gradient: Gradients.tileCompanion,
-    accent: Colors.amber,
+    iconBg: Colors.amberLight,
+    iconColor: Colors.amber,
   },
 ] as const;
 
@@ -75,16 +66,16 @@ function FeatureTile({
 }) {
   const scale      = useRef(new Animated.Value(1)).current;
   const opacity    = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(28)).current;
+  const translateY = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1, duration: Animation.entrance,
-        delay: 80 + index * 70, useNativeDriver: true,
+        delay: 80 + index * 60, useNativeDriver: true,
       }),
       Animated.spring(translateY, {
-        toValue: 0, delay: 80 + index * 70,
+        toValue: 0, delay: 80 + index * 60,
         tension: 70, friction: 9, useNativeDriver: true,
       }),
     ]).start();
@@ -95,14 +86,10 @@ function FeatureTile({
   const onPressOut = () =>
     Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 200 }).start();
 
-  const isLast     = index === FEATURES.length - 1;
-  const isOdd      = FEATURES.length % 2 !== 0;
-  const fullWidth  = isLast && isOdd;
-
   return (
     <Animated.View
       style={[
-        { width: fullWidth ? '100%' : TILE_WIDTH },
+        { width: TILE_WIDTH },
         { opacity, transform: [{ scale }, { translateY }] },
       ]}
     >
@@ -113,18 +100,13 @@ function FeatureTile({
         activeOpacity={1}
         accessibilityLabel={feature.title}
       >
-        <LinearGradient
-          colors={feature.gradient as unknown as string[]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.tile, { borderLeftColor: feature.accent + '50', borderLeftWidth: 3 }]}
-        >
-          <View style={[styles.tileIconWrap, { backgroundColor: feature.accent + '18' }]}>
-            <Ionicons name={feature.icon} size={22} color={feature.accent} />
+        <View style={styles.tile}>
+          <View style={[styles.tileIconWrap, { backgroundColor: feature.iconBg }]}>
+            <Ionicons name={feature.icon} size={22} color={feature.iconColor} />
           </View>
-          <Text style={[styles.tileTitle, { color: feature.accent }]}>{feature.title}</Text>
+          <Text style={styles.tileTitle}>{feature.title}</Text>
           <Text style={styles.tileDesc}>{feature.desc}</Text>
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -139,7 +121,7 @@ export default function HomeScreen() {
   useEffect(() => {
     Animated.parallel([
       Animated.spring(bannerScale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
-      Animated.timing(bannerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(bannerOpacity, { toValue: 1, duration: Animation.entrance, useNativeDriver: true }),
     ]).start();
   }, []);
 
@@ -166,17 +148,15 @@ export default function HomeScreen() {
           style={styles.banner}
         >
           <View style={styles.bannerGlow} />
-
           <View style={styles.bannerContent}>
             <View style={styles.bannerBadge}>
               <Ionicons name="globe-outline" size={12} color="rgba(255,255,255,0.90)" />
               <Text style={styles.bannerBadgeText}>여행자 커뮤니티</Text>
             </View>
             <Text style={styles.bannerTitle}>TripMeet</Text>
-            <View style={styles.goldAccentLine} />
+            <View style={styles.accentLine} />
             <Text style={styles.bannerSub}>혼자 떠나도 함께하는 여행</Text>
           </View>
-
           <View style={styles.bannerWave} />
         </LinearGradient>
       </Animated.View>
@@ -188,7 +168,7 @@ export default function HomeScreen() {
         activeOpacity={0.88}
       >
         <LinearGradient
-          colors={Gradients.gold}
+          colors={Gradients.coral}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.quickGradient}
@@ -198,8 +178,8 @@ export default function HomeScreen() {
             <Text style={styles.quickTitle}>일정을 자동으로 만들어드려요</Text>
             <Text style={styles.quickDesc}>목적지와 기간만 알려주세요</Text>
           </View>
-          <View style={styles.quickArrow}>
-            <Ionicons name="arrow-forward" size={18} color="#fff" />
+          <View style={styles.quickIconWrap}>
+            <Ionicons name="sparkles" size={20} color="#fff" />
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -249,7 +229,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(44,82,130,0.25)',
+    backgroundColor: 'rgba(59,130,246,0.22)',
     top: -40,
     right: -20,
   },
@@ -279,10 +259,10 @@ const styles = StyleSheet.create({
     letterSpacing: -0.8,
     marginBottom: 10,
   },
-  goldAccentLine: {
+  accentLine: {
     width: 36,
     height: 2,
-    backgroundColor: Colors.gold,
+    backgroundColor: Colors.coral,
     borderRadius: 1,
     marginBottom: 10,
   },
@@ -304,11 +284,10 @@ const styles = StyleSheet.create({
 
   quickCard: {
     marginHorizontal: Spacing.screenPad,
-    marginTop: 0,
     marginBottom: 4,
     borderRadius: Radius.lg,
     overflow: 'hidden',
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
   quickGradient: {
     flexDirection: 'row',
@@ -336,10 +315,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(255,255,255,0.72)',
   },
-  quickArrow: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  quickIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.20)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -365,9 +344,11 @@ const styles = StyleSheet.create({
   },
 
   tile: {
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: 18,
-    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border,
     ...Shadow.card,
   },
   tileIconWrap: {
@@ -381,6 +362,7 @@ const styles = StyleSheet.create({
   tileTitle: {
     fontSize: 14,
     fontWeight: '800' as const,
+    color: Colors.text,
     marginBottom: 5,
   },
   tileDesc: {

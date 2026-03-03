@@ -117,7 +117,7 @@ export default function RestaurantListScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={[Colors.primaryDark, Colors.primary]}
+        colors={Gradients.food}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -145,7 +145,7 @@ export default function RestaurantListScreen() {
         />
         <TouchableOpacity onPress={handleSearch} activeOpacity={0.85}>
           <LinearGradient
-            colors={Gradients.gold}
+            colors={Gradients.coral}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.searchBtn}

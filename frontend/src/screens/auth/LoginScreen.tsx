@@ -11,86 +11,20 @@ import {
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Gradients, Radius, Shadow, Animation } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const { width: W, height: H } = Dimensions.get('window');
-
-// 떠다니는 파티클 정의
-const PARTICLES = [
-  { emoji: '✈', top: 0.10, left: 0.08, size: 28, duration: 3200, delay: 0,    driftX: 12 },
-  { emoji: '🌍', top: 0.22, left: 0.75, size: 34, duration: 3800, delay: 600,  driftX: -8 },
-  { emoji: '🗺', top: 0.06, left: 0.50, size: 24, duration: 4200, delay: 1000, driftX: 10 },
-  { emoji: '⛵', top: 0.38, left: 0.04, size: 22, duration: 2900, delay: 1400, driftX: 14 },
-  { emoji: '☀️', top: 0.14, left: 0.82, size: 26, duration: 3500, delay: 300,  driftX: -10 },
-  { emoji: '🏔', top: 0.44, left: 0.88, size: 20, duration: 4600, delay: 900,  driftX: -6 },
-  { emoji: '🌊', top: 0.30, left: 0.32, size: 24, duration: 3900, delay: 1200, driftX: 8  },
-  { emoji: '⭐', top: 0.04, left: 0.68, size: 18, duration: 2600, delay: 400,  driftX: -12 },
-];
-
-function FloatingParticle({
-  emoji, top, left, size, duration, delay, driftX,
-}: (typeof PARTICLES)[0]) {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const translateX = useRef(new Animated.Value(0)).current;
-  const opacity    = useRef(new Animated.Value(0)).current;
-  const rotate     = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 0.6,
-      duration: 900,
-      delay,
-      useNativeDriver: true,
-    }).start();
-
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(translateY, { toValue: -16, duration, useNativeDriver: true }),
-          Animated.timing(translateX, { toValue: driftX, duration: duration * 0.75, useNativeDriver: true }),
-          Animated.timing(rotate, { toValue: 1, duration: duration * 1.5, useNativeDriver: true }),
-        ]),
-        Animated.parallel([
-          Animated.timing(translateY, { toValue: 0, duration, useNativeDriver: true }),
-          Animated.timing(translateX, { toValue: 0, duration: duration * 0.75, useNativeDriver: true }),
-          Animated.timing(rotate, { toValue: 0, duration: duration * 1.5, useNativeDriver: true }),
-        ]),
-      ]),
-    );
-
-    const timer = setTimeout(() => loop.start(), delay);
-    return () => { clearTimeout(timer); loop.stop(); };
-  }, []);
-
-  const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['-6deg', '6deg'] });
-
-  return (
-    <Animated.Text
-      style={{
-        position: 'absolute',
-        top: H * top,
-        left: W * left,
-        fontSize: size,
-        opacity,
-        transform: [{ translateY }, { translateX }, { rotate: spin }],
-      }}
-    >
-      {emoji}
-    </Animated.Text>
-  );
-}
+const { width: W } = Dimensions.get('window');
 
 const FEATURES = [
-  { icon: 'sparkles' as const,          label: 'AI 맞춤 일정',        desc: '목적지·기간·예산으로 자동 완성' },
-  { icon: 'location' as const,          label: '실시간 여행자 매칭',   desc: '같은 도시 여행자와 즉시 연결' },
-  { icon: 'restaurant' as const,        label: '맛집 & 커뮤니티',      desc: '현지인이 검증한 정보 공유' },
+  { icon: 'sparkles' as const,    label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성' },
+  { icon: 'location' as const,    label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결' },
+  { icon: 'restaurant' as const,  label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유' },
 ];
 
 export default function LoginScreen() {
@@ -99,31 +33,25 @@ export default function LoginScreen() {
 
   const cardTranslate = useRef(new Animated.Value(60)).current;
   const cardOpacity   = useRef(new Animated.Value(0)).current;
-  const shimmer       = useRef(new Animated.Value(0)).current;
+  const logoScale     = useRef(new Animated.Value(0.8)).current;
+  const logoOpacity   = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
+      Animated.spring(logoScale, {
+        toValue: 1, tension: 70, friction: 8, useNativeDriver: true,
+      }),
+      Animated.timing(logoOpacity, {
+        toValue: 1, duration: Animation.entrance, useNativeDriver: true,
+      }),
       Animated.timing(cardTranslate, {
-        toValue: 0, duration: Animation.entrance, delay: 400, useNativeDriver: true,
+        toValue: 0, duration: Animation.entrance, delay: 200, useNativeDriver: true,
       }),
       Animated.timing(cardOpacity, {
-        toValue: 1, duration: Animation.entrance, delay: 400, useNativeDriver: true,
+        toValue: 1, duration: Animation.entrance, delay: 200, useNativeDriver: true,
       }),
     ]).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.delay(2500),
-        Animated.timing(shimmer, { toValue: 1, duration: 650, useNativeDriver: true }),
-        Animated.timing(shimmer, { toValue: 0, duration: 0,   useNativeDriver: true }),
-      ]),
-    ).start();
   }, []);
-
-  const shimmerX = shimmer.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-W * 0.7, W * 0.7],
-  });
 
   const handleGoogleLogin = async () => {
     if (loginInProgress.current) return;
@@ -177,83 +105,74 @@ export default function LoginScreen() {
         style={StyleSheet.absoluteFill}
       />
 
-      {/* 광원 효과 */}
+      {/* 배경 광원 */}
       <View style={styles.glow1} />
       <View style={styles.glow2} />
 
-      {/* 파티클 */}
-      {PARTICLES.map((p, i) => <FloatingParticle key={i} {...p} />)}
-
-      {/* 브랜드 타이틀 */}
-      <View style={styles.titleSection}>
+      {/* 브랜드 영역 */}
+      <Animated.View
+        style={[styles.titleSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}
+      >
         <View style={styles.logoRing}>
-          <Text style={styles.logoEmoji}>✈</Text>
+          <Ionicons name="airplane" size={32} color={Colors.coral} />
         </View>
         <Text style={styles.appName}>TripMeet</Text>
-        <View style={styles.goldLine} />
+        <View style={styles.accentLine} />
         <Text style={styles.tagline}>혼자 떠나도{'\n'}함께하는 여행</Text>
-      </View>
+      </Animated.View>
 
-      {/* 글래스모피즘 바텀 카드 */}
+      {/* 바텀 카드 */}
       <Animated.View
         style={[
           styles.cardWrap,
           { transform: [{ translateY: cardTranslate }], opacity: cardOpacity },
         ]}
       >
-        <BlurView intensity={50} tint="light" style={styles.blur}>
-          <View style={styles.glassInner}>
-
-            {FEATURES.map((f, i) => (
-              <View
-                key={i}
-                style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureDivider]}
-              >
-                <View style={styles.featureIconWrap}>
-                  <Ionicons name={f.icon} size={20} color={Colors.gold} />
-                </View>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureLabel}>{f.label}</Text>
-                  <Text style={styles.featureDesc}>{f.desc}</Text>
-                </View>
-              </View>
-            ))}
-
-            <View style={styles.divider} />
-
-            {/* 골드 CTA 버튼 */}
-            <TouchableOpacity
-              onPress={handleGoogleLogin}
-              disabled={loading}
-              activeOpacity={0.88}
-              style={styles.btnTouchable}
+        <View style={styles.card}>
+          {FEATURES.map((f, i) => (
+            <View
+              key={i}
+              style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureDivider]}
             >
-              <LinearGradient
-                colors={Gradients.gold}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={[styles.btnGradient, loading && { opacity: 0.65 }]}
-              >
-                <Animated.View
-                  style={[styles.shimmerBar, { transform: [{ translateX: shimmerX }] }]}
-                  pointerEvents="none"
-                />
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <>
-                    <Text style={styles.googleG}>G</Text>
-                    <Text style={styles.btnText}>Google로 시작하기</Text>
-                  </>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
+              <View style={styles.featureIconWrap}>
+                <Ionicons name={f.icon} size={20} color={Colors.primary} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureLabel}>{f.label}</Text>
+                <Text style={styles.featureDesc}>{f.desc}</Text>
+              </View>
+            </View>
+          ))}
 
-            <Text style={styles.terms}>
-              시작하면 이용약관 및 개인정보처리방침에 동의한 것으로 간주합니다.
-            </Text>
-          </View>
-        </BlurView>
+          <View style={styles.divider} />
+
+          <TouchableOpacity
+            onPress={handleGoogleLogin}
+            disabled={loading}
+            activeOpacity={0.88}
+            style={[styles.btn, loading && styles.btnDisabled]}
+          >
+            <LinearGradient
+              colors={Gradients.coral}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.btnGradient}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <>
+                  <Text style={styles.googleG}>G</Text>
+                  <Text style={styles.btnText}>Google로 시작하기</Text>
+                </>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <Text style={styles.terms}>
+            시작하면 이용약관 및 개인정보처리방침에 동의한 것으로 간주합니다.
+          </Text>
+        </View>
       </Animated.View>
     </View>
   );
@@ -267,20 +186,20 @@ const styles = StyleSheet.create({
 
   glow1: {
     position: 'absolute',
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: 'rgba(44,82,130,0.22)',
-    top: -80,
-    right: -70,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(59,130,246,0.20)',
+    top: -60,
+    right: -60,
   },
   glow2: {
     position: 'absolute',
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(201,169,110,0.10)',
-    top: H * 0.28,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(255,107,53,0.08)',
+    top: '30%',
     left: -50,
   },
 
@@ -295,39 +214,31 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 1.5,
-    borderColor: 'rgba(201,169,110,0.50)',
-    backgroundColor: 'rgba(201,169,110,0.10)',
+    borderColor: 'rgba(255,107,53,0.45)',
+    backgroundColor: 'rgba(255,107,53,0.10)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    shadowColor: Colors.gold,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius: 20,
   },
-  logoEmoji: { fontSize: 36 },
   appName: {
     fontSize: 46,
     fontWeight: '800' as const,
     color: '#FFFFFF',
     letterSpacing: -1,
     marginBottom: 10,
-    textShadowColor: 'rgba(201,169,110,0.40)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 16,
   },
-  goldLine: {
+  accentLine: {
     width: 40,
     height: 2,
-    backgroundColor: Colors.gold,
+    backgroundColor: Colors.coral,
     borderRadius: 1,
     marginBottom: 14,
-    opacity: 0.8,
+    opacity: 0.85,
   },
   tagline: {
     fontSize: 17,
     fontWeight: '500' as const,
-    color: 'rgba(255,255,255,0.72)',
+    color: 'rgba(255,255,255,0.70)',
     textAlign: 'center',
     lineHeight: 26,
   },
@@ -337,17 +248,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radius.xxl,
     overflow: 'hidden',
   },
-  blur: {
+  card: {
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: Radius.xxl,
     borderTopRightRadius: Radius.xxl,
-  },
-  glassInner: {
-    backgroundColor: 'rgba(255,255,255,0.11)',
-    borderTopLeftRadius: Radius.xxl,
-    borderTopRightRadius: Radius.xxl,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.22)',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.screenPad,
     paddingTop: 32,
     paddingBottom: 44,
   },
@@ -359,15 +264,15 @@ const styles = StyleSheet.create({
   },
   featureDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.15)',
+    borderBottomColor: Colors.border,
   },
   featureIconWrap: {
     width: 44,
     height: 44,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(201,169,110,0.35)',
-    backgroundColor: 'rgba(201,169,110,0.10)',
+    borderColor: Colors.primaryBorder,
+    backgroundColor: Colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
@@ -376,40 +281,32 @@ const styles = StyleSheet.create({
   featureLabel: {
     fontSize: 15,
     fontWeight: '700' as const,
-    color: '#FFFFFF',
+    color: Colors.text,
     marginBottom: 2,
   },
   featureDesc: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.62)',
+    color: Colors.textLight,
   },
 
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: Colors.border,
     marginVertical: 22,
   },
 
-  btnTouchable: {
+  btn: {
     borderRadius: Radius.md,
     overflow: 'hidden',
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
+  btnDisabled: { opacity: 0.65 },
   btnGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
     gap: 10,
-    overflow: 'hidden',
-  },
-  shimmerBar: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 70,
-    backgroundColor: 'rgba(255,255,255,0.22)',
-    transform: [{ skewX: '-20deg' }],
   },
   googleG: {
     fontSize: 20,
@@ -426,7 +323,7 @@ const styles = StyleSheet.create({
 
   terms: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.42)',
+    color: Colors.textLight,
     textAlign: 'center',
     marginTop: 16,
     lineHeight: 17,

@@ -117,7 +117,7 @@ export default function CommunityScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={[Colors.primaryDark, Colors.primary]}
+        colors={Gradients.community}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}

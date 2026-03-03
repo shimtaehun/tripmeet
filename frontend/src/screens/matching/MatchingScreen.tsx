@@ -79,7 +79,7 @@ export default function MatchingScreen() {
     return (
       <View style={styles.root}>
         <LinearGradient
-          colors={[Colors.primaryDark, Colors.primary]}
+          colors={Gradients.matching}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.header}
@@ -91,7 +91,7 @@ export default function MatchingScreen() {
           <View style={styles.radarWrap}>
             <PulseRing />
             <View style={styles.radarDot}>
-              <Ionicons name="location" size={28} color={Colors.primary} />
+              <Ionicons name="location" size={28} color={Colors.green} />
             </View>
           </View>
 
@@ -106,7 +106,7 @@ export default function MatchingScreen() {
             style={styles.registerBtnWrap}
           >
             <LinearGradient
-              colors={Gradients.gold}
+              colors={Gradients.coral}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.registerBtn}
@@ -123,7 +123,7 @@ export default function MatchingScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={[Colors.primaryDark, Colors.primary]}
+        colors={Gradients.matching}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -144,7 +144,7 @@ export default function MatchingScreen() {
       </LinearGradient>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
+        <ActivityIndicator style={styles.loader} size="large" color={Colors.green} />
       ) : travelers.length === 0 ? (
         <View style={styles.emptyRoot}>
           <Ionicons name="search-outline" size={48} color={Colors.border} />
@@ -185,12 +185,12 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff', marginBottom: 2 },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.72)' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
   headerLocation: { fontWeight: '700' as const, color: '#fff' },
   changeBtn: {
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.28)',
+    borderColor: 'rgba(255,255,255,0.30)',
     borderRadius: Radius.sm,
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -212,18 +212,18 @@ const styles = StyleSheet.create({
     height: 110,
     borderRadius: 55,
     borderWidth: 1.5,
-    borderColor: Colors.primary,
+    borderColor: Colors.green,
   },
   radarDot: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.greenLight,
     borderWidth: 2,
-    borderColor: Colors.primaryBorder,
+    borderColor: Colors.greenBorder,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadow.glow,
+    ...Shadow.primary,
   },
 
   emptyRoot: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     fontSize: 14, color: Colors.textMedium, textAlign: 'center',
     lineHeight: 22, marginBottom: 24,
   },
-  registerBtnWrap: { borderRadius: Radius.md, overflow: 'hidden', ...Shadow.glowGold },
+  registerBtnWrap: { borderRadius: Radius.md, overflow: 'hidden', ...Shadow.coral },
   registerBtn: {
     flexDirection: 'row',
     alignItems: 'center',

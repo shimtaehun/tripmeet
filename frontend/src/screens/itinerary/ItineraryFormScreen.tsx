@@ -77,7 +77,7 @@ export default function ItineraryFormScreen() {
         style={styles.heroBanner}
       >
         <View style={styles.heroIconWrap}>
-          <Ionicons name="sparkles" size={28} color={Colors.gold} />
+          <Ionicons name="sparkles" size={28} color={Colors.coral} />
         </View>
         <Text style={styles.heroTitle}>AI 여행 일정 만들기</Text>
         <Text style={styles.heroDesc}>조건을 입력하면 AI가 완성된 일정을 만들어드려요.</Text>
@@ -141,7 +141,7 @@ export default function ItineraryFormScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.gold}
+          colors={Gradients.coral}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.btn, loading && { opacity: 0.65 }]}
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginHorizontal: Spacing.screenPad,
     marginTop: 24,
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
   btn: {
     flexDirection: 'row',

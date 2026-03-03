@@ -76,7 +76,7 @@ export default function ProfileScreen() {
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* 그라디언트 프로필 헤더 */}
       <LinearGradient
-        colors={[Colors.primaryDeep, Colors.primaryDark, Colors.primary]}
+        colors={Gradients.profile}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(201,169,110,0.12)',
+    backgroundColor: 'rgba(255,107,53,0.10)',
     top: -60,
     right: -40,
   },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.50)',
     overflow: 'hidden',
-    ...Shadow.strong,
+    ...Shadow.lg,
   },
   avatar: { width: '100%', height: '100%', borderRadius: 52 },
   onlineBadge: {

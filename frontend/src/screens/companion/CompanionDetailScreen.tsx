@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     backgroundColor: Colors.card,
     marginBottom: 10,
-    ...Shadow.subtle,
+    ...Shadow.xs,
   },
   applicationTop: {
     flexDirection: 'row',

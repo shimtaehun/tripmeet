@@ -70,7 +70,7 @@ export default function ItineraryResultScreen() {
         style={styles.header}
       >
         <View style={styles.headerRow}>
-          <Ionicons name="sparkles" size={18} color={Colors.gold} />
+          <Ionicons name="sparkles" size={18} color={Colors.coral} />
           <Text style={styles.headerBadge}>AI 생성 일정</Text>
           {itinerary.is_cached && (
             <View style={styles.cacheBadge}>
@@ -122,7 +122,7 @@ export default function ItineraryResultScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.gold}
+          colors={Gradients.coral}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.shareBtn}
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
-  headerBadge: { fontSize: 12, fontWeight: '600' as const, color: Colors.gold },
+  headerBadge: { fontSize: 12, fontWeight: '600' as const, color: Colors.coral },
   cacheBadge: {
     borderRadius: Radius.xs,
     backgroundColor: 'rgba(255,255,255,0.18)',
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     margin: Spacing.screenPad,
     marginTop: 20,
     marginBottom: 40,
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
   shareBtn: {
     flexDirection: 'row',

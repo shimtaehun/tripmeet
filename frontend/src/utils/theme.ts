@@ -1,158 +1,156 @@
 // ─────────────────────────────────────────────────────────────
-// Voyage Design System v3.0  — Editorial Premium
+// Skyline Design System v1.0  — Clean Functional Premium
+// Primary: Electric Blue (#2563EB) / CTA: Warm Coral (#FF6B35)
 // ─────────────────────────────────────────────────────────────
 
 // ─── 색상 ─────────────────────────────────────────────────────
 export const Colors = {
-  // Primary — 딥 네이비
-  primary: '#1B3A5C',
-  primaryDark: '#0D2137',
-  primaryDeep: '#071524',
-  primaryLight: '#EEF4FA',
-  primaryBorder: '#C2D8EC',
+  // Primary — 일렉트릭 블루
+  primary: '#2563EB',
+  primaryDark: '#1D4ED8',
+  primaryDeep: '#1E3A8A',
+  primaryLight: '#EFF6FF',
+  primaryBorder: '#BFDBFE',
 
-  // Accent — 샴페인 골드
-  gold: '#C9A96E',
-  goldDark: '#A8824A',
-  goldLight: '#FBF5E8',
-  goldBorder: '#E8D5B0',
+  // CTA — 웜 코랄
+  coral: '#FF6B35',
+  coralDark: '#E55520',
+  coralLight: '#FFF4EF',
+  coralBorder: '#FDCBB5',
 
   // 시맨틱
-  green: '#2A9D6F',
-  greenLight: '#E8F7F1',
-  greenBorder: '#A7DFC8',
-  red: '#D64045',
-  redLight: '#FDEAEA',
-  amber: '#E8A020',
-  amberLight: '#FDF3E0',
+  green: '#10B981',
+  greenLight: '#D1FAE5',
+  greenBorder: '#6EE7B7',
+  red: '#EF4444',
+  redLight: '#FEE2E2',
+  redBorder: '#FECACA',
+  amber: '#F59E0B',
+  amberLight: '#FEF3C7',
+  amberBorder: '#FDE68A',
+  purple: '#7C3AED',
+  purpleLight: '#EDE9FE',
+  purpleBorder: '#DDD6FE',
 
   // 서피스
-  background: '#FAF9F7',
-  backgroundDeep: '#F2EDE4',
+  background: '#F8FAFC',
   card: '#FFFFFF',
-  surface: '#F7F5F2',
+  surface: '#F1F5F9',
+  surfaceHover: '#E8EEF6',
 
   // 텍스트
-  text: '#1A1A2E',
-  textMedium: '#4A5568',
-  textLight: '#8A9AB0',
+  text: '#0F172A',
+  textMedium: '#475569',
+  textLight: '#94A3B8',
   textOnDark: '#FFFFFF',
-  textOnDarkSub: 'rgba(255,255,255,0.72)',
+  textOnDarkSub: 'rgba(255,255,255,0.75)',
 
   // 선
-  border: '#E8E0D4',
-  divider: '#F0EBE3',
-
-  // 글래스
-  glass: 'rgba(255,255,255,0.12)',
-  glassBorder: 'rgba(255,255,255,0.24)',
-  glassDark: 'rgba(0,0,0,0.10)',
+  border: '#E2E8F0',
+  borderStrong: '#CBD5E1',
+  divider: '#F1F5F9',
 
   // 탭
-  tabActive: '#1B3A5C',
-  tabInactive: '#A0AEC0',
+  tabActive: '#2563EB',
+  tabInactive: '#94A3B8',
 };
 
 // ─── 그라디언트 ─────────────────────────────────────────────────
 export const Gradients = {
-  // 히어로 — 딥 오션 네이비
-  hero: ['#071524', '#0D2137', '#1B3A5C', '#2C5282'] as string[],
+  // 코랄 CTA
+  coral: ['#FF6B35', '#FF8C5A'] as string[],
 
-  // 골드 CTA
-  gold: ['#C9A96E', '#D4B87A', '#B8895C'] as string[],
+  // 히어로 배너 (AI 일정)
+  hero: ['#1E3A8A', '#1D4ED8', '#2563EB'] as string[],
 
-  // 카드 서피스
-  card: ['#FFFFFF', '#FDFCFB'] as string[],
+  // 기능별 섹션 헤더
+  ai:        ['#6D28D9', '#7C3AED', '#8B5CF6'] as string[],
+  matching:  ['#047857', '#059669', '#10B981'] as string[],
+  food:      ['#B91C1C', '#DC2626', '#EF4444'] as string[],
+  companion: ['#B45309', '#D97706', '#F59E0B'] as string[],
+  community: ['#1D4ED8', '#2563EB', '#3B82F6'] as string[],
+  chat:      ['#0369A1', '#0284C7', '#0EA5E9'] as string[],
+  profile:   ['#1E3A8A', '#1D4ED8', '#2563EB'] as string[],
 
-  // 미드나잇 오버레이
-  midnight: ['rgba(7,21,36,0)', 'rgba(7,21,36,0.82)'] as string[],
-
-  // 에메랄드
-  emerald: ['#2A9D6F', '#3EBD8A', '#56D4A2'] as string[],
-
-  // 섹션별 타일 (에디토리얼 무드)
-  tileAI:         ['#EEF4FA', '#D9EAF7'] as string[],
-  tileMatch:      ['#E8F4F0', '#CDE9DF'] as string[],
-  tileCommunity:  ['#FBF5E8', '#F5EDD6'] as string[],
-  tileRestaurant: ['#FDEAEA', '#F8D8D8'] as string[],
-  tileCompanion:  ['#F0EDF8', '#E4DEF4'] as string[],
+  // 오버레이
+  overlay: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)'] as string[],
 };
 
 // ─── 반경 ────────────────────────────────────────────────────
 export const Radius = {
   xs: 4,
   sm: 8,
-  md: 14,
-  lg: 20,
-  xl: 28,
-  xxl: 36,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
   full: 999,
 };
 
 // ─── 그림자 ──────────────────────────────────────────────────
 export const Shadow = {
-  subtle: {
-    shadowColor: '#1A1A2E',
+  xs: {
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
     elevation: 1,
   },
+  sm: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+  },
   card: {
-    shadowColor: '#1A1A2E',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 3,
+    elevation: 4,
   },
-  strong: {
-    shadowColor: '#1A1A2E',
-    shadowOffset: { width: 0, height: 8 },
+  md: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.10,
+    shadowRadius: 18,
+    elevation: 6,
+  },
+  lg: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.14,
-    shadowRadius: 24,
-    elevation: 8,
+    shadowRadius: 28,
+    elevation: 10,
   },
-  glow: {
-    shadowColor: '#1B3A5C',
+  coral: {
+    shadowColor: '#FF6B35',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.30,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  primary: {
+    shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
-    shadowRadius: 14,
+    shadowRadius: 12,
     elevation: 6,
-  },
-  glowGold: {
-    shadowColor: '#C9A96E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.38,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  glowAccent: {
-    shadowColor: '#C9A96E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.38,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  none: {
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
   },
 };
 
 // ─── 타이포그래피 ─────────────────────────────────────────────
 export const Typography = {
-  display: { fontSize: 38, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.8 },
+  display: { fontSize: 32, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.8 },
   h1:      { fontSize: 28, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.4 },
   h2:      { fontSize: 22, fontWeight: '700' as const, color: Colors.text, letterSpacing: -0.2 },
-  h3:      { fontSize: 17, fontWeight: '700' as const, color: Colors.text },
-  h4:      { fontSize: 15, fontWeight: '600' as const, color: Colors.text },
+  h3:      { fontSize: 18, fontWeight: '700' as const, color: Colors.text },
+  h4:      { fontSize: 16, fontWeight: '600' as const, color: Colors.text },
   body:    { fontSize: 15, fontWeight: '400' as const, color: Colors.text, lineHeight: 24 },
   bodyMd:  { fontSize: 14, fontWeight: '400' as const, color: Colors.textMedium, lineHeight: 22 },
   caption: { fontSize: 12, fontWeight: '400' as const, color: Colors.textLight, lineHeight: 18 },
-  label:   { fontSize: 12, fontWeight: '700' as const, color: Colors.textMedium, letterSpacing: 0.8 },
+  label:   { fontSize: 12, fontWeight: '700' as const, color: Colors.textMedium, letterSpacing: 0.6, textTransform: 'uppercase' as const },
   overline:{ fontSize: 11, fontWeight: '700' as const, color: Colors.textLight, letterSpacing: 1.2, textTransform: 'uppercase' as const },
   buttonLg:{ fontSize: 16, fontWeight: '700' as const, letterSpacing: 0.2 },
   buttonMd:{ fontSize: 14, fontWeight: '700' as const },
@@ -173,7 +171,7 @@ export const Spacing = {
 // ─── 애니메이션 타이밍 ─────────────────────────────────────────
 export const Animation = {
   fast: 150,
-  normal: 280,
-  slow: 480,
-  entrance: 600,
+  normal: 220,
+  entrance: 300,
+  slow: 420,
 };

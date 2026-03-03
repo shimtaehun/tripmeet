@@ -117,7 +117,7 @@ export default function LocationSelectScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.gold}
+          colors={Gradients.coral}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.submitBtn, loading && { opacity: 0.65 }]}
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginHorizontal: Spacing.screenPad,
     marginTop: 24,
-    ...Shadow.glowGold,
+    ...Shadow.coral,
   },
   submitBtn: {
     flexDirection: 'row',
