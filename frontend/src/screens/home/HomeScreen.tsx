@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,16 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { Colors, Radius, Shadow, Typography } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation } from '../../utils/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = (SCREEN_WIDTH - 16 * 2 - 12) / 2;
+const { width: W } = Dimensions.get('window');
+const TILE_WIDTH = (W - 16 * 2 - 12) / 2;
 
+// ─── 기능 타일 데이터 ───────────────────────────────────────
 const FEATURES = [
   {
     icon: '✈',
@@ -20,26 +23,29 @@ const FEATURES = [
     desc: '목적지·기간·예산으로\n맞춤 일정 자동 완성',
     screen: 'ItineraryForm',
     tab: null,
+    gradient: Gradients.tileAI,
     accent: Colors.primary,
-    bg: Colors.primaryLight,
+    glowColor: '#2563EB',
   },
   {
     icon: '📍',
     title: '지역 매칭',
-    desc: '같은 도시의\n여행자와 실시간 연결',
+    desc: '같은 도시 여행자와\n실시간 연결',
     screen: null,
     tab: 'Matching',
+    gradient: Gradients.tileMatch,
     accent: Colors.green,
-    bg: Colors.greenLight,
+    glowColor: '#10B981',
   },
   {
     icon: '💬',
     title: '커뮤니티',
-    desc: '여행 질문·후기·\n정보를 함께 공유',
+    desc: '여행 정보·질문·후기\n함께 공유',
     screen: null,
     tab: 'Community',
+    gradient: Gradients.tileCommunity,
     accent: Colors.accent,
-    bg: Colors.accentLight,
+    glowColor: '#F97316',
   },
   {
     icon: '🍜',
@@ -47,24 +53,163 @@ const FEATURES = [
     desc: '현지 맛집 사진과\n별점 리뷰 공유',
     screen: null,
     tab: 'Restaurant',
+    gradient: Gradients.tileRestaurant,
     accent: Colors.red,
-    bg: Colors.redLight,
+    glowColor: '#EF4444',
   },
   {
     icon: '🤝',
     title: '동행 구인',
-    desc: '함께 여행할\n동반자를 미리 모집',
+    desc: '함께 여행할 동반자를\n미리 모집',
     screen: null,
     tab: 'Companion',
+    gradient: Gradients.tileCompanion,
     accent: Colors.amber,
-    bg: Colors.amberLight,
+    glowColor: '#F59E0B',
   },
+] as const;
+
+// ─── 배너 플로팅 파티클 ─────────────────────────────────────
+const BANNER_PARTICLES = [
+  { emoji: '✈', right: 24, top: 28, size: 22, delay: 0 },
+  { emoji: '🌍', right: 70, top: 60, size: 18, delay: 400 },
+  { emoji: '⭐', right: 16, top: 72, size: 14, delay: 800 },
 ];
 
+function BannerParticle({ emoji, right, top, size, delay }: typeof BANNER_PARTICLES[0]) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: -10, duration: 2400, delay, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0,   duration: 2400, useNativeDriver: true }),
+      ]),
+    ).start();
+  }, []);
+  return (
+    <Animated.Text
+      style={{
+        position: 'absolute',
+        right, top, fontSize: size,
+        opacity: 0.7,
+        transform: [{ translateY: anim }],
+      }}
+    >
+      {emoji}
+    </Animated.Text>
+  );
+}
+
+// ─── 기능 타일 컴포넌트 ─────────────────────────────────────
+function FeatureTile({
+  feature,
+  index,
+  onPress,
+}: {
+  feature: typeof FEATURES[number];
+  index: number;
+  onPress: () => void;
+}) {
+  const scale    = useRef(new Animated.Value(1)).current;
+  const opacity  = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1, duration: Animation.entrance,
+        delay: 100 + index * 80,
+        useNativeDriver: true,
+      }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        delay: 100 + index * 80,
+        tension: 70,
+        friction: 9,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  const onPressIn  = () =>
+    Animated.spring(scale, { toValue: 0.95, useNativeDriver: true, tension: 200 }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1,    useNativeDriver: true, tension: 200 }).start();
+
+  const isLast  = index === FEATURES.length - 1;
+  const isOdd   = FEATURES.length % 2 !== 0;
+  const fullWidth = isLast && isOdd;
+
+  return (
+    <Animated.View
+      style={[
+        { width: fullWidth ? '100%' : TILE_WIDTH },
+        { opacity, transform: [{ scale }, { translateY }] },
+      ]}
+    >
+      <TouchableOpacity
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        activeOpacity={1}
+        accessibilityLabel={feature.title}
+      >
+        <LinearGradient
+          colors={feature.gradient as unknown as string[]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[
+            styles.tile,
+            {
+              shadowColor: feature.glowColor,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.18,
+              shadowRadius: 14,
+              elevation: 6,
+            },
+          ]}
+        >
+          {/* 아이콘 */}
+          <View style={[styles.tileIconRing, { borderColor: feature.accent + '30' }]}>
+            <LinearGradient
+              colors={[feature.accent + '22', feature.accent + '08']}
+              style={styles.tileIconGradient}
+            >
+              <Text style={styles.tileIconEmoji}>{feature.icon}</Text>
+            </LinearGradient>
+          </View>
+
+          <Text style={[styles.tileTitle, { color: feature.accent }]}>{feature.title}</Text>
+          <Text style={styles.tileDesc}>{feature.desc}</Text>
+
+          {/* 하단 액센트 라인 */}
+          <LinearGradient
+            colors={[feature.accent, feature.accent + '00']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.tileAccentLine}
+          />
+        </LinearGradient>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+// ─── 메인 컴포넌트 ─────────────────────────────────────────
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
 
-  const handlePress = (feature: typeof FEATURES[0]) => {
+  const bannerScale = useRef(new Animated.Value(0.96)).current;
+  const bannerOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(bannerScale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
+      Animated.timing(bannerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const handlePress = (feature: typeof FEATURES[number]) => {
     if (feature.screen) {
       navigation.navigate(feature.screen);
     } else if (feature.tab) {
@@ -78,142 +223,214 @@ export default function HomeScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* 헤더 배너 */}
-      <View style={styles.banner}>
-        <View>
-          <Text style={styles.bannerTitle}>TripMeet</Text>
-          <Text style={styles.bannerTagline}>혼자 떠나도 함께하는 여행</Text>
-        </View>
-        <View style={styles.bannerBadge}>
-          <Text style={styles.bannerBadgeText}>✈ 여행중</Text>
-        </View>
+      {/* ── 히어로 배너 ── */}
+      <Animated.View style={{ opacity: bannerOpacity, transform: [{ scale: bannerScale }] }}>
+        <LinearGradient
+          colors={['#0F2B5B', '#1E3A8A', '#2563EB', '#0EA5E9']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.banner}
+        >
+          {/* 빛 원형 장식 */}
+          <View style={styles.bannerGlow} />
+
+          {/* 파티클 */}
+          {BANNER_PARTICLES.map((p, i) => <BannerParticle key={i} {...p} />)}
+
+          <View style={styles.bannerContent}>
+            <View style={styles.bannerBadge}>
+              <Text style={styles.bannerBadgeText}>🌍 여행자 커뮤니티</Text>
+            </View>
+            <Text style={styles.bannerTitle}>TripMeet</Text>
+            <Text style={styles.bannerSub}>혼자 떠나도 함께하는 여행</Text>
+          </View>
+
+          {/* 하단 웨이브 커브 */}
+          <View style={styles.bannerWave} />
+        </LinearGradient>
+      </Animated.View>
+
+      {/* ── AI 일정 빠른 시작 카드 ── */}
+      <View style={styles.quickCard}>
+        <LinearGradient
+          colors={Gradients.violet}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.quickGradient}
+        >
+          <View style={styles.quickLeft}>
+            <Text style={styles.quickLabel}>지금 바로 시작</Text>
+            <Text style={styles.quickTitle}>AI가 일정을 짜줄게요</Text>
+            <Text style={styles.quickDesc}>목적지와 기간만 알려주세요</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.quickBtn}
+            onPress={() => navigation.navigate('ItineraryForm')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.quickBtnText}>시작 →</Text>
+          </TouchableOpacity>
+        </LinearGradient>
       </View>
 
-      {/* 빠른 시작 힌트 */}
-      <View style={styles.hint}>
-        <Text style={styles.hintIcon}>💡</Text>
-        <Text style={styles.hintText}>
-          먼저 <Text style={styles.hintBold}>AI 여행 일정</Text>으로 계획을 세워보세요!
-        </Text>
-      </View>
-
-      {/* 기능 타일 그리드 */}
+      {/* ── 기능 타일 ── */}
       <Text style={styles.sectionTitle}>무엇을 도와드릴까요?</Text>
 
       <View style={styles.grid}>
-        {FEATURES.map((f, i) => {
-          // 마지막 항목이 홀수 번째면 전체 너비
-          const isLast = i === FEATURES.length - 1;
-          const isOdd = FEATURES.length % 2 !== 0;
-          const fullWidth = isLast && isOdd;
-
-          return (
-            <TouchableOpacity
-              key={f.title}
-              style={[
-                styles.tile,
-                { backgroundColor: f.bg, width: fullWidth ? '100%' : CARD_WIDTH },
-              ]}
-              onPress={() => handlePress(f)}
-              activeOpacity={0.75}
-            >
-              <View style={[styles.tileIconWrap, { backgroundColor: f.accent + '22' }]}>
-                <Text style={styles.tileIcon}>{f.icon}</Text>
-              </View>
-              <Text style={[styles.tileTitle, { color: f.accent }]}>{f.title}</Text>
-              <Text style={styles.tileDesc}>{f.desc}</Text>
-            </TouchableOpacity>
-          );
-        })}
+        {FEATURES.map((f, i) => (
+          <FeatureTile
+            key={f.title}
+            feature={f}
+            index={i}
+            onPress={() => handlePress(f)}
+          />
+        ))}
       </View>
 
-      {/* 하단 안내 */}
+      {/* ── 하단 안내 ── */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>GPS를 사용하지 않습니다. 위치는 직접 입력합니다.</Text>
+        <LinearGradient
+          colors={['#F0F4FF', '#E8EEFF']}
+          style={styles.footerCard}
+        >
+          <Text style={styles.footerIcon}>🔒</Text>
+          <Text style={styles.footerText}>
+            GPS를 사용하지 않습니다.{'\n'}위치는 직접 선택합니다.
+          </Text>
+        </LinearGradient>
       </View>
     </ScrollView>
   );
 }
 
+// ─── 스타일 ───────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.background,
   },
   content: {
-    paddingBottom: 40,
+    paddingBottom: 48,
   },
 
   // 배너
   banner: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 20,
     paddingTop: 56,
-    paddingBottom: 28,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    paddingBottom: 36,
+    paddingHorizontal: 20,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  bannerTitle: {
-    fontSize: 30,
-    fontWeight: '800' as const,
-    color: '#fff',
-    letterSpacing: -0.5,
-    marginBottom: 4,
+  bannerGlow: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(56,189,248,0.15)',
+    top: -50,
+    right: -30,
   },
-  bannerTagline: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    fontWeight: '500' as const,
+  bannerContent: {
+    zIndex: 1,
   },
   bannerBadge: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.30)',
     borderRadius: Radius.full,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
+    marginBottom: 14,
   },
   bannerBadgeText: {
-    color: '#fff',
     fontSize: 12,
     fontWeight: '600' as const,
+    color: 'rgba(255,255,255,0.95)',
+  },
+  bannerTitle: {
+    fontSize: 38,
+    fontWeight: '800' as const,
+    color: '#fff',
+    letterSpacing: -0.8,
+    marginBottom: 6,
+    textShadowColor: 'rgba(14,165,233,0.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 16,
+  },
+  bannerSub: {
+    fontSize: 15,
+    fontWeight: '500' as const,
+    color: 'rgba(255,255,255,0.78)',
+  },
+  bannerWave: {
+    position: 'absolute',
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 24,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
 
-  // 힌트
-  hint: {
+  // AI 빠른 시작 카드
+  quickCard: {
+    marginHorizontal: 16,
+    marginTop: -2,
+    marginBottom: 4,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    ...Shadow.strong,
+  },
+  quickGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primaryLight,
-    borderRadius: Radius.md,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: Colors.primaryBorder,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    gap: 12,
   },
-  hintIcon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  hintText: {
-    fontSize: 13,
-    color: Colors.textMedium,
-    flex: 1,
-    lineHeight: 18,
-  },
-  hintBold: {
+  quickLeft: { flex: 1 },
+  quickLabel: {
+    fontSize: 11,
     fontWeight: '700' as const,
-    color: Colors.primary,
+    color: 'rgba(255,255,255,0.70)',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  quickTitle: {
+    fontSize: 17,
+    fontWeight: '800' as const,
+    color: '#fff',
+    marginBottom: 3,
+  },
+  quickDesc: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.72)',
+  },
+  quickBtn: {
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    borderRadius: Radius.md,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
+  quickBtnText: {
+    fontSize: 14,
+    fontWeight: '700' as const,
+    color: '#fff',
   },
 
   // 섹션 타이틀
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
+    fontSize: 18,
+    fontWeight: '800' as const,
     color: Colors.text,
     marginHorizontal: 16,
     marginTop: 24,
-    marginBottom: 12,
+    marginBottom: 14,
   },
 
   // 그리드
@@ -223,25 +440,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 12,
   },
+
+  // 타일
   tile: {
     borderRadius: Radius.lg,
     padding: 18,
-    ...Shadow.card,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  tileIconWrap: {
-    width: 44,
-    height: 44,
+  tileIconRing: {
+    width: 52,
+    height: 52,
     borderRadius: Radius.md,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+    marginBottom: 14,
+  },
+  tileIconGradient: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
   },
-  tileIcon: {
-    fontSize: 22,
-  },
+  tileIconEmoji: { fontSize: 24 },
   tileTitle: {
     fontSize: 15,
-    fontWeight: '700' as const,
+    fontWeight: '800' as const,
     marginBottom: 6,
   },
   tileDesc: {
@@ -249,15 +472,34 @@ const styles = StyleSheet.create({
     color: Colors.textMedium,
     lineHeight: 18,
   },
+  tileAccentLine: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+  },
 
   // 하단
   footer: {
-    alignItems: 'center',
-    paddingTop: 24,
     paddingHorizontal: 16,
+    paddingTop: 20,
   },
+  footerCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: Radius.md,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: Colors.primaryBorder,
+  },
+  footerIcon: { fontSize: 16 },
   footerText: {
     fontSize: 12,
-    color: Colors.textLight,
+    color: Colors.textMedium,
+    lineHeight: 18,
+    flex: 1,
   },
 });

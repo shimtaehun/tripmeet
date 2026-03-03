@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,29 +7,74 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
-import { Colors, Radius, Shadow } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation } from '../../utils/theme';
 
 const CATEGORIES = [
-  { label: '전체', value: undefined },
-  { label: '질문', value: 'question' },
-  { label: '후기', value: 'review' },
-  { label: '정보', value: 'info' },
+  { label: '전체', value: undefined,    color: Colors.primary },
+  { label: '질문', value: 'question',   color: Colors.primary },
+  { label: '후기', value: 'review',     color: Colors.green   },
+  { label: '정보', value: 'info',       color: Colors.accent  },
 ];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  question: '질문',
-  review: '후기',
-  info: '정보',
+const CAT_META: Record<string, { label: string; bg: string; text: string; gradient: string[] }> = {
+  question: { label: '질문', bg: Colors.primaryLight, text: Colors.primary,
+               gradient: [Colors.primaryLight, '#DBEAFE'] },
+  review:   { label: '후기', bg: Colors.greenLight,   text: Colors.green,
+               gradient: [Colors.greenLight, '#D1FAE5'] },
+  info:     { label: '정보', bg: Colors.accentLight,  text: Colors.accent,
+               gradient: [Colors.accentLight, '#FEF3C7'] },
 };
 
-const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  question: { bg: Colors.primaryLight, text: Colors.primary },
-  review: { bg: Colors.greenLight, text: Colors.green },
-  info: { bg: Colors.accentLight, text: Colors.accent },
-};
+function PostCard({ item, index }: { item: PostSummary; index: number }) {
+  const navigation = useNavigation<any>();
+  const scale     = useRef(new Animated.Value(1)).current;
+  const opacity   = useRef(new Animated.Value(0)).current;
+  const slideY    = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 350, delay: index * 60, useNativeDriver: true }),
+      Animated.spring(slideY, { toValue: 0, delay: index * 60, tension: 80, friction: 9, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const onPressIn  = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, tension: 200 }).start();
+  const onPressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 200 }).start();
+
+  const meta = CAT_META[item.category] ?? { label: item.category, bg: Colors.surface, text: Colors.textMedium, gradient: [Colors.surface, Colors.background] };
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ scale }, { translateY: slideY }] }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        activeOpacity={1}
+      >
+        <LinearGradient colors={Gradients.card} style={styles.postCard}>
+          {/* 왼쪽 카테고리 컬러 바 */}
+          <View style={[styles.catBar, { backgroundColor: meta.text }]} />
+
+          <View style={styles.postBody}>
+            <View style={styles.postTop}>
+              <LinearGradient colors={meta.gradient} style={styles.catBadge}>
+                <Text style={[styles.catBadgeText, { color: meta.text }]}>{meta.label}</Text>
+              </LinearGradient>
+              <Text style={styles.viewCount}>👁 {item.view_count}</Text>
+            </View>
+            <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
+            <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 export default function CommunityScreen() {
   const navigation = useNavigation<any>();
@@ -43,15 +88,10 @@ export default function CommunityScreen() {
   const fetchPosts = useCallback(async (category: string | undefined, cursor?: string) => {
     try {
       const res = await getPosts(category, cursor);
-      if (cursor) {
-        setPosts(prev => [...prev, ...res.items]);
-      } else {
-        setPosts(res.items);
-      }
+      if (cursor) { setPosts(prev => [...prev, ...res.items]); }
+      else { setPosts(res.items); }
       setNextCursor(res.next_cursor);
-    } catch (e) {
-      console.error('게시글 목록 조회 오류:', e);
-    }
+    } catch (e) { console.error('게시글 목록 조회 오류:', e); }
   }, []);
 
   useEffect(() => {
@@ -72,46 +112,24 @@ export default function CommunityScreen() {
     setLoadingMore(false);
   };
 
-  const handleCategorySelect = (value: string | undefined) => {
-    if (value === selectedCategory) return;
-    setSelectedCategory(value);
-  };
-
-  const renderItem = ({ item }: { item: PostSummary }) => {
-    const catStyle = CATEGORY_COLORS[item.category] ?? { bg: Colors.surface, text: Colors.textMedium };
-    return (
-      <TouchableOpacity
-        style={styles.postCard}
-        onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
-        activeOpacity={0.75}
-      >
-        <View style={styles.postMeta}>
-          <View style={[styles.catBadge, { backgroundColor: catStyle.bg }]}>
-            <Text style={[styles.catBadgeText, { color: catStyle.text }]}>
-              {CATEGORY_LABELS[item.category]}
-            </Text>
-          </View>
-          <Text style={styles.viewCount}>조회 {item.view_count}</Text>
-        </View>
-        <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={styles.root}>
-      {/* 헤더 */}
-      <View style={styles.header}>
+      {/* 그라디언트 헤더 */}
+      <LinearGradient
+        colors={['#1E3A8A', '#2563EB']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <Text style={styles.headerTitle}>커뮤니티</Text>
         <TouchableOpacity
           style={styles.writeBtn}
           onPress={() => navigation.navigate('PostCreate')}
           activeOpacity={0.85}
         >
-          <Text style={styles.writeBtnText}>+ 글쓰기</Text>
+          <Text style={styles.writeBtnText}>✍ 글쓰기</Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       {/* 카테고리 탭 */}
       <View style={styles.tabBar}>
@@ -119,14 +137,24 @@ export default function CommunityScreen() {
           const active = selectedCategory === cat.value;
           return (
             <TouchableOpacity
-              key={cat.label}
-              style={[styles.tab, active && styles.tabActive]}
-              onPress={() => handleCategorySelect(cat.value)}
-              activeOpacity={0.7}
+              key={String(cat.value)}
+              onPress={() => { if (cat.value !== selectedCategory) setSelectedCategory(cat.value); }}
+              activeOpacity={0.75}
             >
-              <Text style={[styles.tabText, active && styles.tabTextActive]}>
-                {cat.label}
-              </Text>
+              {active ? (
+                <LinearGradient
+                  colors={[cat.color, cat.color + 'BB']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.tabActive}
+                >
+                  <Text style={styles.tabTextActive}>{cat.label}</Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.tab}>
+                  <Text style={styles.tabText}>{cat.label}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -138,23 +166,23 @@ export default function CommunityScreen() {
         <FlatList
           data={posts}
           keyExtractor={item => item.id}
-          renderItem={renderItem}
+          renderItem={({ item, index }) => <PostCard item={item} index={index} />}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
           }
           contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>💬</Text>
-              <Text style={styles.emptyText}>아직 게시글이 없습니다.</Text>
+              <Text style={styles.emptyTitle}>아직 게시글이 없습니다</Text>
               <Text style={styles.emptyHint}>첫 번째 글을 작성해보세요!</Text>
             </View>
           }
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={styles.footerLoader} color={Colors.primary} /> : null
+            loadingMore ? <ActivityIndicator style={{ paddingVertical: 16 }} color={Colors.primary} /> : null
           }
         />
       )}
@@ -163,84 +191,62 @@ export default function CommunityScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  root: { flex: 1, backgroundColor: Colors.background },
 
-  // 헤더
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     paddingHorizontal: 16,
     paddingTop: 52,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '800' as const,
-    color: Colors.text,
-  },
+  headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   writeBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
     borderRadius: Radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  writeBtnText: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
+  writeBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
 
-  // 탭
   tabBar: {
     flexDirection: 'row',
     backgroundColor: Colors.card,
     paddingHorizontal: 12,
-    paddingBottom: 10,
-    gap: 6,
+    paddingVertical: 10,
+    gap: 8,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   tab: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
     borderRadius: Radius.full,
     backgroundColor: Colors.surface,
   },
   tabActive: {
-    backgroundColor: Colors.primary,
-  },
-  tabText: {
-    fontSize: 13,
-    fontWeight: '500' as const,
-    color: Colors.textMedium,
-  },
-  tabTextActive: {
-    color: '#fff',
-    fontWeight: '700' as const,
-  },
-
-  // 리스트
-  listContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  postCard: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.md,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: Radius.full,
     ...Shadow.card,
   },
-  separator: {
-    height: 10,
+  tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
+  tabTextActive: { fontSize: 13, color: '#fff', fontWeight: '700' as const },
+
+  listContent: { padding: 14, paddingBottom: 32 },
+
+  postCard: {
+    flexDirection: 'row',
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+    ...Shadow.card,
   },
-  postMeta: {
+  catBar: { width: 4 },
+  postBody: { flex: 1, padding: 14 },
+  postTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -251,42 +257,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  catBadgeText: {
-    fontSize: 11,
-    fontWeight: '700' as const,
-  },
-  viewCount: {
-    fontSize: 12,
-    color: Colors.textLight,
-  },
+  catBadgeText: { fontSize: 11, fontWeight: '700' as const },
+  viewCount: { fontSize: 11, color: Colors.textLight },
   postTitle: {
-    fontSize: 15,
-    fontWeight: '600' as const,
-    color: Colors.text,
-    lineHeight: 22,
-    marginBottom: 8,
+    fontSize: 15, fontWeight: '600' as const, color: Colors.text,
+    lineHeight: 22, marginBottom: 8,
   },
-  postDate: {
-    fontSize: 12,
-    color: Colors.textLight,
-  },
+  postDate: { fontSize: 11, color: Colors.textLight },
 
-  // 기타
   loader: { marginTop: 60 },
-  footerLoader: { paddingVertical: 16 },
-  empty: {
-    alignItems: 'center',
-    paddingTop: 80,
-  },
-  emptyIcon: { fontSize: 40, marginBottom: 12 },
-  emptyText: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-    color: Colors.textMedium,
-    marginBottom: 6,
-  },
-  emptyHint: {
-    fontSize: 13,
-    color: Colors.textLight,
-  },
+  empty: { alignItems: 'center', paddingTop: 80 },
+  emptyIcon: { fontSize: 44, marginBottom: 14 },
+  emptyTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textMedium, marginBottom: 6 },
+  emptyHint: { fontSize: 13, color: Colors.textLight },
 });

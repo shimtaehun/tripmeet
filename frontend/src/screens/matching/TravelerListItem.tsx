@@ -1,6 +1,14 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors, Radius, Shadow } from '../../utils/theme';
+import React, { useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
 
 interface Props {
   userId: string;
@@ -8,41 +16,67 @@ interface Props {
   profileImageUrl: string | null;
   bio: string | null;
   onChatPress: (userId: string, nickname: string) => void;
+  index?: number;
 }
 
 export default function TravelerListItem({
-  userId,
-  nickname,
-  profileImageUrl,
-  bio,
-  onChatPress,
+  userId, nickname, profileImageUrl, bio, onChatPress, index = 0,
 }: Props) {
+  const scale   = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideX  = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 350, delay: index * 70, useNativeDriver: true }),
+      Animated.spring(slideX, { toValue: 0, delay: index * 70, tension: 80, friction: 9, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const onPressIn  = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, tension: 200 }).start();
+  const onPressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 200 }).start();
+
   return (
-    <View style={styles.card}>
-      <Image
-        source={
-          profileImageUrl
-            ? { uri: profileImageUrl }
-            : require('../../../assets/icon.png')
-        }
-        style={styles.avatar}
-      />
-      <View style={styles.info}>
-        <Text style={styles.nickname}>{nickname}</Text>
-        {bio ? (
-          <Text style={styles.bio} numberOfLines={1}>{bio}</Text>
-        ) : (
-          <Text style={styles.bioEmpty}>자기소개 없음</Text>
-        )}
-      </View>
-      <TouchableOpacity
-        style={styles.chatBtn}
-        onPress={() => onChatPress(userId, nickname)}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.chatBtnText}>💬 채팅</Text>
-      </TouchableOpacity>
-    </View>
+    <Animated.View style={{ opacity, transform: [{ scale }, { translateX: slideX }] }}>
+      <LinearGradient colors={Gradients.card} style={styles.card}>
+        {/* 프로필 사진 */}
+        <View style={styles.avatarWrap}>
+          <Image
+            source={profileImageUrl ? { uri: profileImageUrl } : require('../../../assets/icon.png')}
+            style={styles.avatar}
+          />
+          {/* 온라인 인디케이터 */}
+          <View style={styles.onlineDot} />
+        </View>
+
+        {/* 정보 */}
+        <View style={styles.info}>
+          <Text style={styles.nickname}>{nickname}</Text>
+          {bio ? (
+            <Text style={styles.bio} numberOfLines={1}>{bio}</Text>
+          ) : (
+            <Text style={styles.bioEmpty}>자기소개 없음</Text>
+          )}
+        </View>
+
+        {/* 채팅 버튼 */}
+        <TouchableOpacity
+          onPressIn={onPressIn}
+          onPressOut={onPressOut}
+          onPress={() => onChatPress(userId, nickname)}
+          activeOpacity={1}
+        >
+          <LinearGradient
+            colors={['#2563EB', '#0EA5E9']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.chatBtn}
+          >
+            <Text style={styles.chatBtnText}>채팅</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </LinearGradient>
+    </Animated.View>
   );
 }
 
@@ -50,47 +84,42 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     padding: 14,
     ...Shadow.card,
   },
+  avatarWrap: {
+    position: 'relative',
+    marginRight: 14,
+  },
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: Radius.full,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: Colors.surface,
-    marginRight: 12,
-  },
-  info: {
-    flex: 1,
-  },
-  nickname: {
-    fontSize: 15,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 3,
-  },
-  bio: {
-    fontSize: 12,
-    color: Colors.textMedium,
-  },
-  bioEmpty: {
-    fontSize: 12,
-    color: Colors.textLight,
-    fontStyle: 'italic',
-  },
-  chatBtn: {
-    backgroundColor: Colors.primaryLight,
-    borderRadius: Radius.sm,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: Colors.primaryBorder,
   },
-  chatBtnText: {
-    color: Colors.primary,
-    fontSize: 13,
-    fontWeight: '700' as const,
+  onlineDot: {
+    position: 'absolute',
+    bottom: 1,
+    right: 1,
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    backgroundColor: Colors.green,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
+  info: { flex: 1 },
+  nickname: { fontSize: 15, fontWeight: '700' as const, color: Colors.text, marginBottom: 3 },
+  bio: { fontSize: 12, color: Colors.textMedium },
+  bioEmpty: { fontSize: 12, color: Colors.textLight, fontStyle: 'italic' },
+  chatBtn: {
+    borderRadius: Radius.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    ...Shadow.glow,
+  },
+  chatBtnText: { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
 });

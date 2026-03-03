@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Radius, Shadow, Typography } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
 
 interface UserProfile {
   id: string;
@@ -20,33 +22,30 @@ interface UserProfile {
   bio: string | null;
 }
 
-const MENU_ITEMS = [
-  { label: '프로필 수정', icon: '✏️', action: 'edit' },
-  { label: '로그아웃', icon: '🚪', action: 'logout', destructive: true },
-];
-
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const avatarScale = useRef(new Animated.Value(0.85)).current;
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setLoading(false);
-        return;
-      }
+      if (!session) { setLoading(false); return; }
 
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-
       if (!res.ok) throw new Error('프로필 조회 실패');
 
       const data = await res.json();
       setProfile(data);
+
+      // 아바타 팝인 애니메이션
+      Animated.spring(avatarScale, {
+        toValue: 1, tension: 80, friction: 6, useNativeDriver: true,
+      }).start();
     } catch (e) {
       console.error('프로필 조회 오류:', e);
       Alert.alert('오류', '프로필을 불러올 수 없습니다.');
@@ -55,29 +54,18 @@ export default function ProfileScreen() {
     }
   }, []);
 
-  // 프로필 수정 후 돌아왔을 때 자동 갱신
-  useFocusEffect(
-    useCallback(() => {
-      fetchProfile();
-    }, [fetchProfile]),
-  );
+  useFocusEffect(useCallback(() => { fetchProfile(); }, [fetchProfile]));
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     Alert.alert('로그아웃', '로그아웃하시겠습니까?', [
       { text: '취소', style: 'cancel' },
-      {
-        text: '로그아웃',
-        style: 'destructive',
-        onPress: async () => {
-          await supabase.auth.signOut();
-        },
-      },
+      { text: '로그아웃', style: 'destructive', onPress: () => supabase.auth.signOut() },
     ]);
   };
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loadingRoot}>
         <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
@@ -85,25 +73,40 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      {/* 프로필 헤더 */}
-      <View style={styles.header}>
-        <View style={styles.avatarWrap}>
-          <Image
-            source={
-              profile?.profile_image_url
-                ? { uri: profile.profile_image_url }
-                : require('../../../assets/icon.png')
-            }
-            style={styles.avatar}
-          />
-        </View>
+      {/* 그라디언트 프로필 헤더 */}
+      <LinearGradient
+        colors={['#0F2B5B', '#1E3A8A', '#2563EB', '#0EA5E9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        {/* 배경 장식 */}
+        <View style={styles.headerGlow} />
+
+        <Animated.View style={[styles.avatarContainer, { transform: [{ scale: avatarScale }] }]}>
+          <View style={styles.avatarRing}>
+            <Image
+              source={
+                profile?.profile_image_url
+                  ? { uri: profile.profile_image_url }
+                  : require('../../../assets/icon.png')
+              }
+              style={styles.avatar}
+            />
+          </View>
+          {/* 온라인 배지 */}
+          <LinearGradient colors={Gradients.emerald} style={styles.onlineBadge}>
+            <Text style={styles.onlineBadgeText}>여행중</Text>
+          </LinearGradient>
+        </Animated.View>
+
         <Text style={styles.nickname}>{profile?.nickname ?? '닉네임 없음'}</Text>
         {profile?.bio ? (
           <Text style={styles.bio}>{profile.bio}</Text>
         ) : (
-          <Text style={styles.bioEmpty}>자기소개를 추가해보세요</Text>
+          <Text style={styles.bioEmpty}>자기소개를 추가해보세요 ✏️</Text>
         )}
-      </View>
+      </LinearGradient>
 
       {/* 메뉴 카드 */}
       <View style={styles.menuCard}>
@@ -112,7 +115,9 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate('ProfileEdit', { profile })}
           activeOpacity={0.7}
         >
-          <Text style={styles.menuIcon}>✏️</Text>
+          <LinearGradient colors={Gradients.tileAI} style={styles.menuIconWrap}>
+            <Text style={styles.menuIconEmoji}>✏️</Text>
+          </LinearGradient>
           <Text style={styles.menuLabel}>프로필 수정</Text>
           <Text style={styles.menuArrow}>›</Text>
         </TouchableOpacity>
@@ -124,116 +129,94 @@ export default function ProfileScreen() {
           onPress={handleLogout}
           activeOpacity={0.7}
         >
-          <Text style={styles.menuIcon}>🚪</Text>
+          <LinearGradient colors={[Colors.redLight, '#FFE4E6']} style={styles.menuIconWrap}>
+            <Text style={styles.menuIconEmoji}>🚪</Text>
+          </LinearGradient>
           <Text style={[styles.menuLabel, styles.menuLabelDestructive]}>로그아웃</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Text style={[styles.menuArrow, { color: Colors.red }]}>›</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.appVersion}>TripMeet v1.0.0</Text>
+      <Text style={styles.version}>TripMeet v1.0.0</Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
-  root: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    paddingBottom: 48,
-  },
+  loadingRoot: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
+  root: { flex: 1, backgroundColor: Colors.background },
+  content: { paddingBottom: 48 },
 
-  // 헤더
   header: {
-    backgroundColor: Colors.primary,
     alignItems: 'center',
     paddingTop: 56,
-    paddingBottom: 40,
+    paddingBottom: 44,
     paddingHorizontal: 24,
-  },
-  avatarWrap: {
-    width: 100,
-    height: 100,
-    borderRadius: Radius.full,
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.5)',
-    marginBottom: 14,
     overflow: 'hidden',
-    backgroundColor: Colors.primaryLight,
+    position: 'relative',
   },
-  avatar: {
-    width: '100%',
-    height: '100%',
+  headerGlow: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(14,165,233,0.15)',
+    top: -60,
+    right: -40,
   },
-  nickname: {
-    fontSize: 22,
-    fontWeight: '800' as const,
-    color: '#fff',
-    marginBottom: 6,
+  avatarContainer: { alignItems: 'center', marginBottom: 16 },
+  avatarRing: {
+    width: 108,
+    height: 108,
+    borderRadius: 54,
+    padding: 3,
+    backgroundColor: 'rgba(255,255,255,0.30)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.50)',
+    overflow: 'hidden',
+    ...Shadow.strong,
   },
-  bio: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
-    lineHeight: 20,
+  avatar: { width: '100%', height: '100%', borderRadius: 52 },
+  onlineBadge: {
+    marginTop: -12,
+    borderRadius: Radius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
-  bioEmpty: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.5)',
-    fontStyle: 'italic',
-  },
+  onlineBadgeText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
+  nickname: { fontSize: 24, fontWeight: '800' as const, color: '#fff', marginBottom: 6 },
+  bio: { fontSize: 14, color: 'rgba(255,255,255,0.80)', textAlign: 'center', lineHeight: 20 },
+  bioEmpty: { fontSize: 13, color: 'rgba(255,255,255,0.50)', fontStyle: 'italic' },
 
-  // 메뉴 카드
   menuCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     marginHorizontal: 16,
     marginTop: 20,
-    ...Shadow.card,
     overflow: 'hidden',
+    ...Shadow.card,
   },
   menuRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
     paddingVertical: 16,
+    gap: 12,
   },
-  menuIcon: {
-    fontSize: 18,
-    marginRight: 12,
-    width: 24,
-    textAlign: 'center',
+  menuIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  menuLabel: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '500' as const,
-    color: Colors.text,
-  },
-  menuLabelDestructive: {
-    color: Colors.red,
-  },
-  menuArrow: {
-    fontSize: 20,
-    color: Colors.textLight,
-  },
-  menuDivider: {
-    height: 1,
-    backgroundColor: Colors.divider,
-    marginHorizontal: 18,
-  },
+  menuIconEmoji: { fontSize: 18 },
+  menuLabel: { flex: 1, fontSize: 15, fontWeight: '600' as const, color: Colors.text },
+  menuLabelDestructive: { color: Colors.red },
+  menuArrow: { fontSize: 22, color: Colors.textLight },
+  menuDivider: { height: 1, backgroundColor: Colors.divider, marginHorizontal: 16 },
 
-  appVersion: {
-    textAlign: 'center',
-    marginTop: 32,
-    fontSize: 12,
-    color: Colors.textLight,
-  },
+  version: { textAlign: 'center', marginTop: 32, fontSize: 12, color: Colors.textLight },
 });
