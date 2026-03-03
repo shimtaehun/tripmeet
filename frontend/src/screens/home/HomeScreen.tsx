@@ -14,44 +14,44 @@ import { useNavigation } from '@react-navigation/native';
 import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
 
 const { width: W } = Dimensions.get('window');
-const TILE_WIDTH = (W - Spacing.screenPad * 2 - 12) / 2;
+const TILE_W = (W - Spacing.screenPad * 2 - 12) / 2;
 
 const FEATURES = [
   {
     icon: 'location' as const,
     title: '지역 매칭',
     desc: '같은 도시 여행자와\n실시간 연결',
-    screen: null,
     tab: 'Matching',
     iconBg: Colors.greenLight,
     iconColor: Colors.green,
+    accentColor: Colors.green,
   },
   {
     icon: 'chatbubbles' as const,
     title: '커뮤니티',
     desc: '여행 정보·질문·후기\n함께 공유',
-    screen: null,
     tab: 'Community',
     iconBg: Colors.primaryLight,
     iconColor: Colors.primary,
+    accentColor: Colors.primary,
   },
   {
     icon: 'restaurant' as const,
     title: '맛집 리뷰',
     desc: '현지 맛집 사진과\n별점 리뷰 공유',
-    screen: null,
     tab: 'Restaurant',
     iconBg: Colors.redLight,
     iconColor: Colors.red,
+    accentColor: Colors.red,
   },
   {
     icon: 'people' as const,
     title: '동행 구인',
     desc: '함께 여행할 동반자를\n미리 모집',
-    screen: null,
     tab: 'Companion',
     iconBg: Colors.amberLight,
     iconColor: Colors.amber,
+    accentColor: Colors.amber,
   },
 ] as const;
 
@@ -64,9 +64,9 @@ function FeatureTile({
   index: number;
   onPress: () => void;
 }) {
-  const scale      = useRef(new Animated.Value(1)).current;
-  const opacity    = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(24)).current;
+  const scale   = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideY  = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -74,7 +74,7 @@ function FeatureTile({
         toValue: 1, duration: Animation.entrance,
         delay: 80 + index * 60, useNativeDriver: true,
       }),
-      Animated.spring(translateY, {
+      Animated.spring(slideY, {
         toValue: 0, delay: 80 + index * 60,
         tension: 70, friction: 9, useNativeDriver: true,
       }),
@@ -87,21 +87,15 @@ function FeatureTile({
     Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 200 }).start();
 
   return (
-    <Animated.View
-      style={[
-        { width: TILE_WIDTH },
-        { opacity, transform: [{ scale }, { translateY }] },
-      ]}
-    >
+    <Animated.View style={[{ width: TILE_W }, { opacity, transform: [{ scale }, { translateY: slideY }] }]}>
       <TouchableOpacity
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         activeOpacity={1}
-        accessibilityLabel={feature.title}
       >
-        <View style={styles.tile}>
-          <View style={[styles.tileIconWrap, { backgroundColor: feature.iconBg }]}>
+        <View style={[styles.tile, { borderTopColor: feature.accentColor, borderTopWidth: 3 }]}>
+          <View style={[styles.tileIcon, { backgroundColor: feature.iconBg }]}>
             <Ionicons name={feature.icon} size={22} color={feature.iconColor} />
           </View>
           <Text style={styles.tileTitle}>{feature.title}</Text>
@@ -115,30 +109,23 @@ function FeatureTile({
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
 
-  const bannerScale   = useRef(new Animated.Value(0.97)).current;
   const bannerOpacity = useRef(new Animated.Value(0)).current;
+  const bannerScale   = useRef(new Animated.Value(0.97)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(bannerScale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
       Animated.timing(bannerOpacity, { toValue: 1, duration: Animation.entrance, useNativeDriver: true }),
+      Animated.spring(bannerScale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
     ]).start();
   }, []);
 
-  const handlePress = (feature: typeof FEATURES[number]) => {
-    if (feature.screen) {
-      navigation.navigate(feature.screen);
-    } else if (feature.tab) {
-      navigation.navigate('Main', { screen: feature.tab });
-    }
+  const handleFeaturePress = (tab: string) => {
+    navigation.navigate('Main', { screen: tab });
   };
 
   return (
-    <ScrollView
-      style={styles.root}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
       {/* 히어로 배너 */}
       <Animated.View style={{ opacity: bannerOpacity, transform: [{ scale: bannerScale }] }}>
         <LinearGradient
@@ -154,16 +141,16 @@ export default function HomeScreen() {
               <Text style={styles.bannerBadgeText}>여행자 커뮤니티</Text>
             </View>
             <Text style={styles.bannerTitle}>TripMeet</Text>
-            <View style={styles.accentLine} />
+            <View style={styles.blueAccentLine} />
             <Text style={styles.bannerSub}>혼자 떠나도 함께하는 여행</Text>
           </View>
           <View style={styles.bannerWave} />
         </LinearGradient>
       </Animated.View>
 
-      {/* AI 일정 빠른 시작 */}
+      {/* AI 일정 퀵 카드 */}
       <TouchableOpacity
-        style={styles.quickCard}
+        style={styles.aiCard}
         onPress={() => navigation.navigate('ItineraryForm')}
         activeOpacity={0.88}
       >
@@ -171,15 +158,15 @@ export default function HomeScreen() {
           colors={Gradients.coral}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={styles.quickGradient}
+          style={styles.aiGradient}
         >
-          <View style={styles.quickLeft}>
-            <Text style={styles.quickOverline}>AI 추천</Text>
-            <Text style={styles.quickTitle}>일정을 자동으로 만들어드려요</Text>
-            <Text style={styles.quickDesc}>목적지와 기간만 알려주세요</Text>
+          <View style={styles.aiLeft}>
+            <Text style={styles.aiOverline}>AI 추천</Text>
+            <Text style={styles.aiTitle}>일정을 자동으로 만들어드려요</Text>
+            <Text style={styles.aiDesc}>목적지와 기간만 알려주세요</Text>
           </View>
-          <View style={styles.quickIconWrap}>
-            <Ionicons name="sparkles" size={20} color="#fff" />
+          <View style={styles.aiIconWrap}>
+            <Ionicons name="sparkles" size={22} color="#fff" />
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -195,20 +182,19 @@ export default function HomeScreen() {
             key={f.title}
             feature={f}
             index={i}
-            onPress={() => handlePress(f)}
+            onPress={() => handleFeaturePress(f.tab)}
           />
         ))}
       </View>
 
-      {/* 하단 안내 */}
-      <View style={styles.footer}>
-        <View style={styles.footerCard}>
-          <Ionicons name="shield-checkmark-outline" size={18} color={Colors.primary} />
-          <Text style={styles.footerText}>
-            GPS를 사용하지 않습니다. 위치는 직접 선택합니다.
-          </Text>
-        </View>
+      {/* 안전 안내 */}
+      <View style={styles.safetyCard}>
+        <Ionicons name="shield-checkmark-outline" size={18} color={Colors.primary} />
+        <Text style={styles.safetyText}>
+          GPS를 사용하지 않습니다. 위치는 직접 선택합니다.
+        </Text>
       </View>
+
     </ScrollView>
   );
 }
@@ -217,21 +203,22 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
   content: { paddingBottom: 48 },
 
+  /* 배너 */
   banner: {
     paddingTop: 56,
-    paddingBottom: 38,
+    paddingBottom: 40,
     paddingHorizontal: Spacing.screenPad,
     overflow: 'hidden',
     position: 'relative',
   },
   bannerGlow: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(59,130,246,0.22)',
-    top: -40,
-    right: -20,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(59,130,246,0.20)',
+    top: -50,
+    right: -30,
   },
   bannerContent: { zIndex: 1 },
   bannerBadge: {
@@ -239,38 +226,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
+    borderColor: 'rgba(255,255,255,0.22)',
     borderRadius: Radius.full,
     paddingHorizontal: 12,
     paddingVertical: 5,
     marginBottom: 16,
   },
-  bannerBadgeText: {
-    fontSize: 12,
-    fontWeight: '600' as const,
-    color: 'rgba(255,255,255,0.92)',
-  },
+  bannerBadgeText: { fontSize: 12, fontWeight: '600' as const, color: 'rgba(255,255,255,0.92)' },
   bannerTitle: {
-    fontSize: 40,
-    fontWeight: '800' as const,
+    fontSize: 42,
+    fontWeight: '900' as const,
     color: '#fff',
-    letterSpacing: -0.8,
+    letterSpacing: -1,
     marginBottom: 10,
   },
-  accentLine: {
+  blueAccentLine: {
     width: 36,
-    height: 2,
-    backgroundColor: Colors.coral,
-    borderRadius: 1,
+    height: 3,
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
     marginBottom: 10,
   },
-  bannerSub: {
-    fontSize: 15,
-    fontWeight: '500' as const,
-    color: 'rgba(255,255,255,0.72)',
-  },
+  bannerSub: { fontSize: 15, fontWeight: '500' as const, color: 'rgba(255,255,255,0.72)' },
   bannerWave: {
     position: 'absolute',
     bottom: -1,
@@ -282,22 +261,23 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
   },
 
-  quickCard: {
+  /* AI 카드 */
+  aiCard: {
     marginHorizontal: Spacing.screenPad,
     marginBottom: 4,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
-    ...Shadow.coral,
+    ...Shadow.blue,
   },
-  quickGradient: {
+  aiGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 18,
     gap: 12,
   },
-  quickLeft: { flex: 1 },
-  quickOverline: {
+  aiLeft: { flex: 1 },
+  aiOverline: {
     fontSize: 11,
     fontWeight: '700' as const,
     color: 'rgba(255,255,255,0.70)',
@@ -305,53 +285,42 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     marginBottom: 4,
   },
-  quickTitle: {
-    fontSize: 16,
-    fontWeight: '800' as const,
-    color: '#fff',
-    marginBottom: 3,
-  },
-  quickDesc: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.72)',
-  },
-  quickIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.20)',
+  aiTitle: { fontSize: 16, fontWeight: '800' as const, color: '#fff', marginBottom: 3 },
+  aiDesc: { fontSize: 13, color: 'rgba(255,255,255,0.72)' },
+  aiIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
+  /* 섹션 헤더 */
   sectionHeader: {
     paddingHorizontal: Spacing.screenPad,
-    paddingTop: 26,
+    paddingTop: 28,
     paddingBottom: 14,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '800' as const,
-    color: Colors.text,
-    letterSpacing: -0.3,
-  },
+  sectionTitle: { fontSize: 18, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.3 },
 
+  /* 그리드 */
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: Spacing.screenPad,
     gap: 12,
   },
-
   tile: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: 18,
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
     ...Shadow.card,
   },
-  tileIconWrap: {
+  tileIcon: {
     width: 46,
     height: 46,
     borderRadius: Radius.md,
@@ -359,38 +328,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
   },
-  tileTitle: {
-    fontSize: 14,
-    fontWeight: '800' as const,
-    color: Colors.text,
-    marginBottom: 5,
-  },
-  tileDesc: {
-    fontSize: 12,
-    color: Colors.textMedium,
-    lineHeight: 18,
-  },
+  tileTitle: { fontSize: 14, fontWeight: '800' as const, color: Colors.text, marginBottom: 5 },
+  tileDesc: { fontSize: 12, color: Colors.textMedium, lineHeight: 18 },
 
-  footer: {
-    paddingHorizontal: Spacing.screenPad,
-    paddingTop: 24,
-  },
-  footerCard: {
+  /* 안전 안내 */
+  safetyCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginHorizontal: Spacing.screenPad,
+    marginTop: 24,
     backgroundColor: Colors.primaryLight,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderWidth: 1,
     borderColor: Colors.primaryBorder,
   },
-  footerText: {
+  safetyText: {
+    flex: 1,
     fontSize: 12,
     color: Colors.primary,
     lineHeight: 18,
-    flex: 1,
     fontWeight: '500' as const,
   },
 });

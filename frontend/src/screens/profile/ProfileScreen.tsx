@@ -204,10 +204,12 @@ const styles = StyleSheet.create({
 
   menuCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     marginHorizontal: Spacing.screenPad,
     marginTop: 20,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border,
     ...Shadow.card,
   },
   menuRow: {

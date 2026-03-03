@@ -236,10 +236,12 @@ const styles = StyleSheet.create({
 
   card: {
     flexDirection: 'row',
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: 12,
     alignItems: 'center',
     backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
     ...Shadow.card,
   },
   thumbnail: { width: 84, height: 84, borderRadius: Radius.md, marginRight: 14 },

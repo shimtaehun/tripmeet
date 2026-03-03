@@ -83,7 +83,7 @@ export default function MainTabs() {
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarShowLabel: true,
           tabBarStyle: {
-            backgroundColor: '#fff',
+            backgroundColor: Colors.card,
             borderTopColor: Colors.border,
             borderTopWidth: 1,
             height: 64,

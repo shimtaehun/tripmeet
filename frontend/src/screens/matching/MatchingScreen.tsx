@@ -24,18 +24,18 @@ interface Traveler {
 
 function PulseRing() {
   const scale   = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0.5)).current;
+  const opacity = useRef(new Animated.Value(0.45)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.parallel([
         Animated.sequence([
-          Animated.timing(scale, { toValue: 1.6, duration: 1500, useNativeDriver: true }),
-          Animated.timing(scale, { toValue: 1,   duration: 0,    useNativeDriver: true }),
+          Animated.timing(scale, { toValue: 1.7, duration: 1600, useNativeDriver: true }),
+          Animated.timing(scale, { toValue: 1, duration: 0, useNativeDriver: true }),
         ]),
         Animated.sequence([
-          Animated.timing(opacity, { toValue: 0, duration: 1500, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.5, duration: 0,  useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0, duration: 1600, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.45, duration: 0, useNativeDriver: true }),
         ]),
       ]),
     ).start();
@@ -91,7 +91,7 @@ export default function MatchingScreen() {
           <View style={styles.radarWrap}>
             <PulseRing />
             <View style={styles.radarDot}>
-              <Ionicons name="location" size={28} color={Colors.green} />
+              <Ionicons name="location" size={30} color={Colors.primary} />
             </View>
           </View>
 
@@ -111,7 +111,7 @@ export default function MatchingScreen() {
               end={{ x: 1, y: 0 }}
               style={styles.registerBtn}
             >
-              <Ionicons name="location-outline" size={16} color="#fff" />
+              <Ionicons name="location-outline" size={17} color="#fff" />
               <Text style={styles.registerBtnText}>위치 등록하기</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -144,7 +144,7 @@ export default function MatchingScreen() {
       </LinearGradient>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color={Colors.green} />
+        <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : travelers.length === 0 ? (
         <View style={styles.emptyRoot}>
           <Ionicons name="search-outline" size={48} color={Colors.border} />
@@ -191,8 +191,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.30)',
-    borderRadius: Radius.sm,
-    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
     paddingVertical: 7,
   },
   changeBtnText: { fontSize: 13, color: '#fff', fontWeight: '600' as const },
@@ -200,27 +200,27 @@ const styles = StyleSheet.create({
   listContent: { padding: 14, paddingBottom: 32 },
 
   radarWrap: {
-    width: 120,
-    height: 120,
+    width: 130,
+    height: 130,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 28,
   },
   pulseRing: {
     position: 'absolute',
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     borderWidth: 1.5,
-    borderColor: Colors.green,
+    borderColor: Colors.primary,
   },
   radarDot: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.greenLight,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: Colors.primaryLight,
     borderWidth: 2,
-    borderColor: Colors.greenBorder,
+    borderColor: Colors.primaryBorder,
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadow.primary,
@@ -241,13 +241,13 @@ const styles = StyleSheet.create({
     fontSize: 14, color: Colors.textMedium, textAlign: 'center',
     lineHeight: 22, marginBottom: 24,
   },
-  registerBtnWrap: { borderRadius: Radius.md, overflow: 'hidden', ...Shadow.coral },
+  registerBtnWrap: { borderRadius: Radius.full, overflow: 'hidden', ...Shadow.blue },
   registerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 15,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   registerBtnText: { fontSize: 15, fontWeight: '700' as const, color: '#fff' },
 

@@ -86,9 +86,11 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: 14,
     backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
     ...Shadow.card,
   },
   avatarWrap: {
@@ -122,10 +124,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.full,
     paddingHorizontal: 14,
     paddingVertical: 9,
-    ...Shadow.coral,
+    ...Shadow.blue,
   },
   chatBtnText: { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
 });

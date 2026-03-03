@@ -19,31 +19,27 @@ import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../uti
 
 WebBrowser.maybeCompleteAuthSession();
 
-const { width: W } = Dimensions.get('window');
+const { height: H } = Dimensions.get('window');
 
 const FEATURES = [
-  { icon: 'sparkles' as const,    label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성' },
-  { icon: 'location' as const,    label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결' },
-  { icon: 'restaurant' as const,  label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유' },
+  { icon: 'sparkles' as const,   label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성' },
+  { icon: 'location' as const,   label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결' },
+  { icon: 'restaurant' as const, label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유' },
 ];
 
 export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const loginInProgress = useRef(false);
 
+  const logoOpacity   = useRef(new Animated.Value(0)).current;
+  const logoScale     = useRef(new Animated.Value(0.8)).current;
   const cardTranslate = useRef(new Animated.Value(60)).current;
   const cardOpacity   = useRef(new Animated.Value(0)).current;
-  const logoScale     = useRef(new Animated.Value(0.8)).current;
-  const logoOpacity   = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(logoScale, {
-        toValue: 1, tension: 70, friction: 8, useNativeDriver: true,
-      }),
-      Animated.timing(logoOpacity, {
-        toValue: 1, duration: Animation.entrance, useNativeDriver: true,
-      }),
+      Animated.spring(logoScale, { toValue: 1, tension: 70, friction: 8, useNativeDriver: true }),
+      Animated.timing(logoOpacity, { toValue: 1, duration: Animation.entrance, useNativeDriver: true }),
       Animated.timing(cardTranslate, {
         toValue: 0, duration: Animation.entrance, delay: 200, useNativeDriver: true,
       }),
@@ -114,10 +110,10 @@ export default function LoginScreen() {
         style={[styles.titleSection, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}
       >
         <View style={styles.logoRing}>
-          <Ionicons name="airplane" size={32} color={Colors.coral} />
+          <Ionicons name="airplane" size={34} color={Colors.primary} />
         </View>
         <Text style={styles.appName}>TripMeet</Text>
-        <View style={styles.accentLine} />
+        <View style={styles.blueAccentLine} />
         <Text style={styles.tagline}>혼자 떠나도{'\n'}함께하는 여행</Text>
       </Animated.View>
 
@@ -129,6 +125,8 @@ export default function LoginScreen() {
         ]}
       >
         <View style={styles.card}>
+
+          {/* 기능 목록 */}
           {FEATURES.map((f, i) => (
             <View
               key={i}
@@ -146,6 +144,7 @@ export default function LoginScreen() {
 
           <View style={styles.divider} />
 
+          {/* Google 로그인 버튼 */}
           <TouchableOpacity
             onPress={handleGoogleLogin}
             disabled={loading}
@@ -189,7 +188,7 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: 'rgba(59,130,246,0.20)',
+    backgroundColor: 'rgba(59,130,246,0.18)',
     top: -60,
     right: -60,
   },
@@ -198,8 +197,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(255,107,53,0.08)',
-    top: '30%',
+    backgroundColor: 'rgba(30,64,175,0.12)',
+    top: H * 0.30,
     left: -50,
   },
 
@@ -210,35 +209,35 @@ const styles = StyleSheet.create({
     paddingTop: 48,
   },
   logoRing: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,107,53,0.45)',
-    backgroundColor: 'rgba(255,107,53,0.10)',
+    borderColor: 'rgba(59,130,246,0.50)',
+    backgroundColor: 'rgba(59,130,246,0.10)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 22,
   },
   appName: {
-    fontSize: 46,
-    fontWeight: '800' as const,
+    fontSize: 48,
+    fontWeight: '900' as const,
     color: '#FFFFFF',
-    letterSpacing: -1,
-    marginBottom: 10,
+    letterSpacing: -1.2,
+    marginBottom: 12,
   },
-  accentLine: {
+  blueAccentLine: {
     width: 40,
-    height: 2,
-    backgroundColor: Colors.coral,
-    borderRadius: 1,
-    marginBottom: 14,
-    opacity: 0.85,
+    height: 3,
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
+    marginBottom: 16,
+    opacity: 0.9,
   },
   tagline: {
     fontSize: 17,
     fontWeight: '500' as const,
-    color: 'rgba(255,255,255,0.70)',
+    color: 'rgba(255,255,255,0.68)',
     textAlign: 'center',
     lineHeight: 26,
   },
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.card,
     borderTopLeftRadius: Radius.xxl,
     borderTopRightRadius: Radius.xxl,
     paddingHorizontal: Spacing.screenPad,
@@ -284,33 +283,26 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 2,
   },
-  featureDesc: {
-    fontSize: 12,
-    color: Colors.textLight,
-  },
+  featureDesc: { fontSize: 12, color: Colors.textLight },
 
-  divider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: 22,
-  },
+  divider: { height: 1, backgroundColor: Colors.border, marginVertical: 22 },
 
   btn: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.full,
     overflow: 'hidden',
-    ...Shadow.coral,
+    ...Shadow.blue,
   },
   btnDisabled: { opacity: 0.65 },
   btnGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 17,
     gap: 10,
   },
   googleG: {
     fontSize: 20,
-    fontWeight: '800' as const,
+    fontWeight: '900' as const,
     color: '#fff',
     fontStyle: 'italic',
   },
