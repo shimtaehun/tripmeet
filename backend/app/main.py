@@ -8,11 +8,14 @@ app = FastAPI(title="TripMeet API")
 # - Expo 개발 서버 (로컬)
 # - Expo Go 앱 (LAN 접속)
 # - 웹 빌드 로컬 서버
+# - Render.com 프로덕션 서비스
 ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://localhost:19006",
     "http://localhost:3000",
     "exp://localhost:8081",
+    "https://tripmeet-app.onrender.com",
+    "https://tripmeet-landing.onrender.com",
 ]
 
 app.add_middleware(
