@@ -856,7 +856,9 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   /* Responsive */
   @media (max-width: 900px) {
-    nav { padding: 16px 24px; }
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .nav-cta { padding: 10px 18px; font-size: 13px; }
     .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
     .hero-right { display: none; }
     .hero-title { font-size: 42px; }
