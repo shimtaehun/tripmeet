@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -51,7 +52,7 @@ export async function getCompanions(status?: 'open' | 'closed', cursor?: string)
   if (cursor) params.append('cursor', cursor);
   const query = params.toString() ? `?${params.toString()}` : '';
 
-  const res = await fetch(`${API_URL}/companions/${query}`, {
+  const res = await apiFetch(`${API_URL}/companions/${query}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('동행 구인 목록 조회 실패');
@@ -66,7 +67,7 @@ export async function createCompanion(params: {
   max_participants: number;
 }): Promise<CompanionDetail> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/companions/`, {
+  const res = await apiFetch(`${API_URL}/companions/`, {
     method: 'POST',
     headers: { Authorization: auth, 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -77,7 +78,7 @@ export async function createCompanion(params: {
 
 export async function getCompanion(id: string): Promise<CompanionDetail> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/companions/${id}`, {
+  const res = await apiFetch(`${API_URL}/companions/${id}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('동행 구인 조회 실패');
@@ -86,7 +87,7 @@ export async function getCompanion(id: string): Promise<CompanionDetail> {
 
 export async function closeCompanion(id: string): Promise<void> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/companions/${id}/close`, {
+  const res = await apiFetch(`${API_URL}/companions/${id}/close`, {
     method: 'PATCH',
     headers: { Authorization: auth },
   });
@@ -95,7 +96,7 @@ export async function closeCompanion(id: string): Promise<void> {
 
 export async function applyCompanion(id: string, message?: string): Promise<ApplicationInfo> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/companions/${id}/apply`, {
+  const res = await apiFetch(`${API_URL}/companions/${id}/apply`, {
     method: 'POST',
     headers: { Authorization: auth, 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: message ?? '' }),
@@ -110,7 +111,7 @@ export async function updateApplicationStatus(
   status: 'accepted' | 'rejected',
 ): Promise<void> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/companions/${companionId}/applications/${applicationId}`, {
+  const res = await apiFetch(`${API_URL}/companions/${companionId}/applications/${applicationId}`, {
     method: 'PATCH',
     headers: { Authorization: auth, 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),

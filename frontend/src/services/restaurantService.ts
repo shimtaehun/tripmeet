@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -55,7 +56,7 @@ export async function getRestaurants(locationName?: string, cursor?: string): Pr
   if (cursor) params.append('cursor', cursor);
   const query = params.toString() ? `?${params.toString()}` : '';
 
-  const res = await fetch(`${API_URL}/restaurants/${query}`, {
+  const res = await apiFetch(`${API_URL}/restaurants/${query}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('맛집 목록 조회 실패');
@@ -80,7 +81,7 @@ export async function createRestaurant(params: CreateRestaurantParams): Promise<
     } as any);
   });
 
-  const res = await fetch(`${API_URL}/restaurants/`, {
+  const res = await apiFetch(`${API_URL}/restaurants/`, {
     method: 'POST',
     headers: { Authorization: auth },
     body: formData,
@@ -91,7 +92,7 @@ export async function createRestaurant(params: CreateRestaurantParams): Promise<
 
 export async function getRestaurant(id: string): Promise<Restaurant> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/restaurants/${id}`, {
+  const res = await apiFetch(`${API_URL}/restaurants/${id}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('맛집 조회 실패');
@@ -100,7 +101,7 @@ export async function getRestaurant(id: string): Promise<Restaurant> {
 
 export async function deleteRestaurant(id: string): Promise<void> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/restaurants/${id}`, {
+  const res = await apiFetch(`${API_URL}/restaurants/${id}`, {
     method: 'DELETE',
     headers: { Authorization: auth },
   });

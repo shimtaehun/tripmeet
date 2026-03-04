@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -46,7 +47,7 @@ export async function getPosts(category?: string, cursor?: string): Promise<Post
   if (cursor) params.append('cursor', cursor);
   const query = params.toString() ? `?${params.toString()}` : '';
 
-  const res = await fetch(`${API_URL}/posts/${query}`, {
+  const res = await apiFetch(`${API_URL}/posts/${query}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('게시글 목록 조회 실패');
@@ -55,7 +56,7 @@ export async function getPosts(category?: string, cursor?: string): Promise<Post
 
 export async function createPost(category: string, title: string, content: string): Promise<Post> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/posts/`, {
+  const res = await apiFetch(`${API_URL}/posts/`, {
     method: 'POST',
     headers: { Authorization: auth, 'Content-Type': 'application/json' },
     body: JSON.stringify({ category, title, content }),
@@ -66,7 +67,7 @@ export async function createPost(category: string, title: string, content: strin
 
 export async function getPost(id: string): Promise<Post> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/posts/${id}`, {
+  const res = await apiFetch(`${API_URL}/posts/${id}`, {
     headers: { Authorization: auth },
   });
   if (!res.ok) throw new Error('게시글 조회 실패');
@@ -75,7 +76,7 @@ export async function getPost(id: string): Promise<Post> {
 
 export async function updatePost(id: string, title: string, content: string): Promise<Post> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/posts/${id}`, {
+  const res = await apiFetch(`${API_URL}/posts/${id}`, {
     method: 'PATCH',
     headers: { Authorization: auth, 'Content-Type': 'application/json' },
     body: JSON.stringify({ title, content }),
@@ -86,7 +87,7 @@ export async function updatePost(id: string, title: string, content: string): Pr
 
 export async function deletePost(id: string): Promise<void> {
   const auth = await getAuthHeader();
-  const res = await fetch(`${API_URL}/posts/${id}`, {
+  const res = await apiFetch(`${API_URL}/posts/${id}`, {
     method: 'DELETE',
     headers: { Authorization: auth },
   });
