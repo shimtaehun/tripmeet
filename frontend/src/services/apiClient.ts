@@ -1,4 +1,4 @@
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 60000;
 
 /**
  * 타임아웃이 있는 fetch 래퍼.
