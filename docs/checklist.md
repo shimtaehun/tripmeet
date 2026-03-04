@@ -199,5 +199,5 @@
 - [x] **[8-2-1]** `render.yaml` 수정: `R2_ACCOUNT_ID` 항목을 `R2_ENDPOINT_URL`로 교체 (storage_service.py와 키 이름 일치)
 - [x] **[8-2-2]** `frontend/app.json` 수정: `scheme` 필드 추가 ("tripmeet"), 앱 이름(TripMeet)/슬러그(tripmeet)/번들ID 확정
 - [x] **[8-2-3]** `frontend/eas.json` 작성: EAS Build 프로필 정의 (development, preview, production)
-- [ ] **[8-2-4]** [수동 작업] Supabase 대시보드: 프로덕션 리다이렉트 URL 등록 (`tripmeet://auth/callback`), Expo Go URL도 병행 등록
-- [ ] **[8-2-5]** [수동 작업] Render.com 대시보드: 환경변수 11개 전체 등록 및 배포 실행 후 `/health` 엔드포인트 응답 확인
+- [x] **[8-2-4]** [수동 작업] Supabase 대시보드: 프로덕션 리다이렉트 URL 등록 (`tripmeet://auth/callback`), Expo Go URL도 병행 등록
+- [x] **[8-2-5]** [수동 작업] Render.com 대시보드: 환경변수 11개 전체 등록 및 배포 실행 후 `/health` 엔드포인트 응답 확인
