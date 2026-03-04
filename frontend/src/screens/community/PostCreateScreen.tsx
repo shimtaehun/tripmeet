@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,14 +30,16 @@ export default function PostCreateScreen() {
   const [title, setTitle] = useState(editPost?.title ?? '');
   const [content, setContent] = useState(editPost?.content ?? '');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async () => {
+    setErrorMsg(null);
     if (!title.trim()) {
-      Alert.alert('알림', '제목을 입력해주세요.');
+      setErrorMsg('제목을 입력해주세요.');
       return;
     }
     if (!content.trim()) {
-      Alert.alert('알림', '내용을 입력해주세요.');
+      setErrorMsg('내용을 입력해주세요.');
       return;
     }
 
@@ -50,9 +51,9 @@ export default function PostCreateScreen() {
         await createPost(category, title.trim(), content.trim());
       }
       navigation.goBack();
-    } catch (e) {
+    } catch (e: any) {
       console.error('게시글 저장 오류:', e);
-      Alert.alert('오류', isEditMode ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.');
+      setErrorMsg(e?.message ?? (isEditMode ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.'));
     } finally {
       setLoading(false);
     }
@@ -128,6 +129,12 @@ export default function PostCreateScreen() {
           textAlignVertical="top"
         />
       </View>
+
+      {errorMsg && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -187,4 +194,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     lineHeight: 24,
   },
+  errorBox: {
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+  errorText: { fontSize: 13, color: '#DC2626' },
 });

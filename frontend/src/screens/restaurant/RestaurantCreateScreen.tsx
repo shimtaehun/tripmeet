@@ -10,6 +10,7 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+// Alert은 ImagePicker 권한 거부 안내용으로만 유지
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -39,6 +40,7 @@ export default function RestaurantCreateScreen() {
   const [rating, setRating] = useState(0);
   const [images, setImages] = useState<{ uri: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handlePickImages = async () => {
     if (images.length >= MAX_IMAGES) {
@@ -65,16 +67,17 @@ export default function RestaurantCreateScreen() {
   };
 
   const handleSubmit = async () => {
+    setErrorMsg(null);
     if (!name.trim()) {
-      Alert.alert('알림', '가게 이름을 입력해주세요.');
+      setErrorMsg('가게 이름을 입력해주세요.');
       return;
     }
     if (!locationName.trim()) {
-      Alert.alert('알림', '위치를 입력해주세요.');
+      setErrorMsg('위치를 입력해주세요.');
       return;
     }
     if (rating === 0) {
-      Alert.alert('알림', '별점을 선택해주세요.');
+      setErrorMsg('별점을 선택해주세요.');
       return;
     }
 
@@ -100,9 +103,9 @@ export default function RestaurantCreateScreen() {
       });
 
       navigation.goBack();
-    } catch (e) {
+    } catch (e: any) {
       console.error('맛집 등록 오류:', e);
-      Alert.alert('오류', '맛집 등록에 실패했습니다.');
+      setErrorMsg(e?.message ?? '맛집 등록에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -170,6 +173,12 @@ export default function RestaurantCreateScreen() {
         <Text style={styles.label}>별점 <Text style={styles.required}>*</Text></Text>
         <StarSelector rating={rating} onSelect={setRating} />
       </View>
+
+      {errorMsg && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        </View>
+      )}
 
       <View style={[styles.section, { borderBottomWidth: 0 }]}>
         <Text style={styles.label}>사진 ({images.length}/{MAX_IMAGES})</Text>
@@ -272,4 +281,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addImageText: { fontSize: 11, color: Colors.textLight },
+  errorBox: {
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+  errorText: { fontSize: 13, color: '#DC2626' },
 });

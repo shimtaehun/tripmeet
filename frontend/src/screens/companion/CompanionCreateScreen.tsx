@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,28 +21,30 @@ export default function CompanionCreateScreen() {
   const [description, setDescription] = useState('');
   const [maxParticipants, setMaxParticipants] = useState('2');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async () => {
+    setErrorMsg(null);
     if (!destination.trim()) {
-      Alert.alert('알림', '여행지를 입력해주세요.');
+      setErrorMsg('여행지를 입력해주세요.');
       return;
     }
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(startDate.trim()) || !dateRegex.test(endDate.trim())) {
-      Alert.alert('알림', '날짜 형식을 YYYY-MM-DD로 입력해주세요.');
+      setErrorMsg('날짜 형식을 YYYY-MM-DD로 입력해주세요.');
       return;
     }
     if (startDate > endDate) {
-      Alert.alert('알림', '시작일이 종료일보다 늦을 수 없습니다.');
+      setErrorMsg('시작일이 종료일보다 늦을 수 없습니다.');
       return;
     }
     if (!description.trim()) {
-      Alert.alert('알림', '동행 조건을 입력해주세요.');
+      setErrorMsg('동행 조건을 입력해주세요.');
       return;
     }
     const max = parseInt(maxParticipants, 10);
     if (isNaN(max) || max < 2 || max > 10) {
-      Alert.alert('알림', '모집 인원은 2~10명 사이로 입력해주세요.');
+      setErrorMsg('모집 인원은 2~10명 사이로 입력해주세요.');
       return;
     }
 
@@ -57,9 +58,9 @@ export default function CompanionCreateScreen() {
         max_participants: max,
       });
       navigation.goBack();
-    } catch (e) {
+    } catch (e: any) {
       console.error('동행 구인 등록 오류:', e);
-      Alert.alert('오류', '동행 구인 등록에 실패했습니다.');
+      setErrorMsg(e?.message ?? '동행 구인 등록에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -149,6 +150,12 @@ export default function CompanionCreateScreen() {
           maxLength={1000}
         />
       </View>
+
+      {errorMsg && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -199,4 +206,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     lineHeight: 24,
   },
+  errorBox: {
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+  errorText: { fontSize: 13, color: '#DC2626' },
 });

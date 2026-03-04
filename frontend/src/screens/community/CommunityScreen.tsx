@@ -91,14 +91,19 @@ export default function CommunityScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async (category: string | undefined, cursor?: string) => {
     try {
+      setFetchError(null);
       const res = await getPosts(category, cursor);
       if (cursor) { setPosts(prev => [...prev, ...res.items]); }
       else { setPosts(res.items); }
       setNextCursor(res.next_cursor);
-    } catch (e) { console.error('게시글 목록 조회 오류:', e); }
+    } catch (e: any) {
+      console.error('게시글 목록 조회 오류:', e);
+      setFetchError(e?.message ?? String(e));
+    }
   }, []);
 
   useFocusEffect(
@@ -192,8 +197,17 @@ export default function CommunityScreen() {
           ListEmptyComponent={
             <View style={styles.empty}>
               <Ionicons name="chatbubbles-outline" size={48} color={Colors.border} />
-              <Text style={styles.emptyTitle}>아직 게시글이 없습니다</Text>
-              <Text style={styles.emptyHint}>첫 번째 글을 작성해보세요!</Text>
+              {fetchError ? (
+                <>
+                  <Text style={styles.emptyTitle}>목록을 불러올 수 없습니다</Text>
+                  <Text style={[styles.emptyHint, { color: 'red' }]}>{fetchError}</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.emptyTitle}>아직 게시글이 없습니다</Text>
+                  <Text style={styles.emptyHint}>첫 번째 글을 작성해보세요!</Text>
+                </>
+              )}
             </View>
           }
           ListFooterComponent={
