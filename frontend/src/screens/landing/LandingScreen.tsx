@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Platform } from 'react-native';
 
 interface Props {
   onStart: () => void;
@@ -1202,19 +1202,8 @@ const LANDING_HTML = `<!DOCTYPE html>
 </html>`;
 
 export default function LandingScreen({ onStart }: Props) {
-  const containerRef = useRef<any>(null);
-
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-
-    const iframe = document.createElement('iframe');
-    iframe.srcdoc = LANDING_HTML;
-    iframe.setAttribute('style', 'width:100%;height:100%;border:none;display:block;');
-
-    const container = containerRef.current;
-    if (container) {
-      container.appendChild(iframe);
-    }
 
     const handleMessage = (event: MessageEvent) => {
       if (event.data === 'navigate:login') {
@@ -1225,17 +1214,22 @@ export default function LandingScreen({ onStart }: Props) {
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      if (container && iframe.parentNode === container) {
-        container.removeChild(iframe);
-      }
     };
   }, [onStart]);
 
-  return <View ref={containerRef} style={styles.container} />;
-}
+  if (Platform.OS !== 'web') {
+    return <View style={{ flex: 1 }} />;
+  }
 
-const styles = {
-  container: {
-    flex: 1,
-  },
-};
+  // 웹 전용: iframe 엘리먼트를 React로 직접 렌더링 (ref.appendChild 우회)
+  const Iframe = 'iframe' as any;
+  return (
+    <View style={{ flex: 1 }}>
+      <Iframe
+        srcDoc={LANDING_HTML}
+        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+        title="TripMeet Landing"
+      />
+    </View>
+  );
+}
