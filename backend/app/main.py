@@ -14,7 +14,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:19006",
     "http://localhost:3000",
     "exp://localhost:8081",
-    "https://tripmeet-app.onrender.com",
+    "https://tripmeet.onrender.com",
     "https://tripmeet-landing.onrender.com",
 ]
 
