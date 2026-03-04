@@ -21,6 +21,37 @@ import LocationSelectScreen from '../screens/matching/LocationSelectScreen';
 
 const Stack = createStackNavigator();
 
+const linking = {
+  prefixes: [],
+  config: {
+    screens: {
+      Login: 'login',
+      Main: {
+        path: '',
+        screens: {
+          Home: '',
+          Matching: 'matching',
+          Community: 'community',
+          Restaurant: 'restaurant',
+          Companion: 'companion',
+          Profile: 'profile',
+        },
+      },
+      PostCreate: 'post/create',
+      PostDetail: 'post/:postId',
+      RestaurantCreate: 'restaurant/create',
+      RestaurantDetail: 'restaurant/:restaurantId',
+      CompanionCreate: 'companion/create',
+      CompanionDetail: 'companion/:companionId',
+      ProfileEdit: 'profile/edit',
+      ItineraryForm: 'itinerary/form',
+      ItineraryResult: 'itinerary/result',
+      Chat: 'chat',
+      LocationSelect: 'location/select',
+    },
+  },
+};
+
 // auth/callback 딥링크에서 code를 추출해 세션 교환
 async function handleAuthCallback(url: string) {
   if (!url.includes('auth/callback')) return;
@@ -72,7 +103,7 @@ export default function RootNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {session ? (
           <>
