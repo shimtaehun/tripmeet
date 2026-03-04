@@ -15,15 +15,16 @@ const LANDING_HTML = `<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #FF4757;
-    --secondary: #FF6B81;
-    --accent: #FFA502;
-    --teal: #1E90FF;
-    --dark: #0F0F0F;
-    --dark2: #1A1A2E;
+    --primary: #3B82F6;
+    --primaryDark: #1E40AF;
+    --primaryLight: #EFF6FF;
+    --secondary: #60A5FA;
+    --accent: #0EA5E9;
+    --dark: #0F172A;
+    --dark2: #1E293B;
     --white: #FFFFFF;
-    --gray: #F0F0F0;
-    --text-gray: #888;
+    --gray: #F8FAFC;
+    --text-gray: #64748B;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,7 +33,7 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    background: #FAFAFA;
+    background: #F8FAFC;
     color: var(--dark);
     overflow-x: hidden;
   }
@@ -46,16 +47,16 @@ const LANDING_HTML = `<!DOCTYPE html>
     align-items: center;
     justify-content: space-between;
     padding: 20px 60px;
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.9);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(59,130,246,0.08);
   }
 
   .logo {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 24px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -1px;
@@ -72,7 +73,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   .nav-links a:hover { color: var(--primary); }
 
   .nav-cta {
-    background: var(--dark);
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     color: white;
     border: none;
     padding: 12px 28px;
@@ -84,11 +85,11 @@ const LANDING_HTML = `<!DOCTYPE html>
     font-family: 'Noto Sans KR', sans-serif;
     text-decoration: none;
     display: inline-block;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.25);
   }
   .nav-cta:hover {
-    background: var(--primary);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255,71,87,0.3);
+    box-shadow: 0 8px 24px rgba(59,130,246,0.35);
   }
 
   /* HERO */
@@ -101,6 +102,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     gap: 60px;
     position: relative;
     overflow: hidden;
+    background: linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 60%, #DBEAFE 100%);
   }
 
   .hero::before {
@@ -108,7 +110,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     position: absolute;
     top: -200px; right: -200px;
     width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(255,71,87,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
     border-radius: 50%;
     animation: pulse 6s ease-in-out infinite;
   }
@@ -118,7 +120,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     position: absolute;
     bottom: -100px; left: -100px;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(30,144,255,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(30,64,175,0.08) 0%, transparent 70%);
     border-radius: 50%;
     animation: pulse 8s ease-in-out infinite reverse;
   }
@@ -134,13 +136,14 @@ const LANDING_HTML = `<!DOCTYPE html>
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,71,87,0.08);
-    color: var(--primary);
+    background: rgba(59,130,246,0.10);
+    color: var(--primaryDark);
     padding: 8px 16px;
     border-radius: 100px;
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 28px;
+    border: 1px solid rgba(59,130,246,0.15);
     animation: fadeInUp 0.6s ease both;
   }
 
@@ -153,11 +156,12 @@ const LANDING_HTML = `<!DOCTYPE html>
     line-height: 1.05;
     letter-spacing: -2px;
     margin-bottom: 24px;
+    color: var(--dark);
     animation: fadeInUp 0.6s ease 0.1s both;
   }
 
   .hero-title .highlight {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primaryDark) 0%, var(--primary) 50%, var(--accent) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     display: block;
@@ -180,7 +184,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--primary), #FF6B35);
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     color: white;
     border: none;
     padding: 18px 40px;
@@ -189,7 +193,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 8px 32px rgba(255,71,87,0.3);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.35);
     font-family: 'Noto Sans KR', sans-serif;
     text-decoration: none;
     display: inline-block;
@@ -197,14 +201,14 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 48px rgba(255,71,87,0.4);
+    box-shadow: 0 16px 48px rgba(59,130,246,0.45);
   }
 
   .btn-ghost {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: var(--dark);
+    color: var(--primaryDark);
     font-size: 15px;
     font-weight: 600;
     text-decoration: none;
@@ -218,7 +222,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     gap: 40px;
     margin-top: 56px;
     padding-top: 40px;
-    border-top: 1px solid rgba(0,0,0,0.06);
+    border-top: 1px solid rgba(59,130,246,0.12);
     animation: fadeInUp 0.6s ease 0.4s both;
   }
 
@@ -227,7 +231,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     font-family: 'Montserrat', sans-serif;
     font-size: 32px;
     font-weight: 900;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -248,7 +252,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     background: var(--dark2);
     border-radius: 40px;
     padding: 20px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1);
+    box-shadow: 0 40px 100px rgba(15,23,42,0.25), 0 0 0 1px rgba(255,255,255,0.08), 0 0 60px rgba(59,130,246,0.15);
     position: relative;
     transform: rotate(3deg);
   }
@@ -256,7 +260,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   .phone-screen {
     width: 100%;
     height: 100%;
-    background: linear-gradient(160deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+    background: linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #1E40AF 100%);
     border-radius: 28px;
     overflow: hidden;
     position: relative;
@@ -273,7 +277,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 18px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--secondary), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -286,8 +290,8 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .phone-location-card {
     margin: 8px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(59,130,246,0.2);
     border-radius: 16px;
     padding: 12px 16px;
     display: flex;
@@ -312,8 +316,8 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .traveler-card {
     margin: 4px 16px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(59,130,246,0.12);
     border-radius: 14px;
     padding: 12px;
     display: flex;
@@ -345,7 +349,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   .traveler-from { color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 2px; }
 
   .chat-btn {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     color: white;
     border: none;
     padding: 6px 12px;
@@ -360,11 +364,12 @@ const LANDING_HTML = `<!DOCTYPE html>
     background: white;
     border-radius: 16px;
     padding: 10px 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.15);
     font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
     animation: float 3s ease-in-out infinite;
+    border: 1px solid rgba(59,130,246,0.1);
   }
 
   .badge-1 {
@@ -386,7 +391,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   .about {
     padding: 80px 60px;
     background: white;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
+    border-bottom: 1px solid rgba(59,130,246,0.06);
   }
 
   .about-inner {
@@ -408,7 +413,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .about-title span {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -439,7 +444,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     color: white;
     display: flex;
     align-items: center;
@@ -456,8 +461,8 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .mini-card {
-    background: #FAFAFA;
-    border: 1px solid rgba(0,0,0,0.06);
+    background: #F8FAFC;
+    border: 1px solid rgba(59,130,246,0.08);
     border-radius: 20px;
     padding: 18px 22px;
     display: flex;
@@ -469,13 +474,13 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .mini-card:hover {
     transform: translateX(8px);
-    border-color: rgba(255,71,87,0.15);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    border-color: rgba(59,130,246,0.2);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.08);
   }
 
   .mini-card-accent {
-    background: linear-gradient(135deg, rgba(255,71,87,0.04), rgba(255,165,2,0.04));
-    border-color: rgba(255,71,87,0.1);
+    background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(30,64,175,0.04));
+    border-color: rgba(59,130,246,0.12);
   }
 
   .mini-icon {
@@ -487,7 +492,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     justify-content: center;
     background: white;
     border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 12px rgba(59,130,246,0.1);
     flex-shrink: 0;
   }
 
@@ -516,8 +521,8 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .how-success {
     margin-top: 64px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
     border-radius: 20px;
     padding: 24px 36px;
     display: flex;
@@ -556,13 +561,14 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .section-tag {
     display: inline-block;
-    background: rgba(255,71,87,0.08);
-    color: var(--primary);
+    background: rgba(59,130,246,0.08);
+    color: var(--primaryDark);
     padding: 6px 16px;
     border-radius: 100px;
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 16px;
+    border: 1px solid rgba(59,130,246,0.12);
   }
 
   .section-title {
@@ -574,7 +580,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .section-title span {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -586,8 +592,8 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .feature-card {
-    background: #FAFAFA;
-    border: 1px solid rgba(0,0,0,0.05);
+    background: #F8FAFC;
+    border: 1px solid rgba(59,130,246,0.07);
     border-radius: 24px;
     padding: 36px 32px;
     transition: all 0.3s;
@@ -596,8 +602,8 @@ const LANDING_HTML = `<!DOCTYPE html>
 
   .feature-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 24px 64px rgba(0,0,0,0.08);
-    border-color: rgba(255,71,87,0.1);
+    box-shadow: 0 24px 64px rgba(59,130,246,0.10);
+    border-color: rgba(59,130,246,0.18);
   }
 
   .feature-icon {
@@ -627,13 +633,15 @@ const LANDING_HTML = `<!DOCTYPE html>
   /* HOW IT WORKS */
   .how {
     padding: 100px 60px;
-    background: var(--dark2);
+    background: linear-gradient(160deg, var(--dark) 0%, var(--dark2) 50%, #1E3A8A 100%);
     color: white;
   }
 
   .how .section-title { color: white; }
   .how .section-tag {
-    background: rgba(255,71,87,0.15);
+    background: rgba(59,130,246,0.15);
+    color: var(--secondary);
+    border-color: rgba(59,130,246,0.2);
   }
 
   .steps {
@@ -649,8 +657,8 @@ const LANDING_HTML = `<!DOCTYPE html>
     position: absolute;
     top: 32px; left: 10%; right: 10%;
     height: 2px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    opacity: 0.3;
+    background: linear-gradient(90deg, var(--primaryDark), var(--primary), var(--accent));
+    opacity: 0.35;
   }
 
   .step {
@@ -661,7 +669,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   .step-num {
     width: 64px; height: 64px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -669,7 +677,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     font-size: 22px;
     font-weight: 900;
     margin: 0 auto 20px;
-    box-shadow: 0 8px 24px rgba(255,71,87,0.3);
+    box-shadow: 0 8px 24px rgba(59,130,246,0.4);
   }
 
   .step-title {
@@ -725,7 +733,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+    background: linear-gradient(to top, rgba(15,23,42,0.7) 0%, transparent 60%);
   }
 
   .dest-info { position: relative; z-index: 1; color: white; }
@@ -737,16 +745,16 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
   .dest-count { font-size: 12px; opacity: 0.7; margin-top: 4px; }
 
-  .dest-seoul { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-  .dest-tokyo { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-  .dest-paris { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-  .dest-bali { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-  .dest-nyc { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+  .dest-seoul { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); }
+  .dest-tokyo { background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 100%); }
+  .dest-paris { background: linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%); }
+  .dest-bali { background: linear-gradient(135deg, #065F46 0%, #10B981 100%); }
+  .dest-nyc { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); }
 
   /* CTA */
   .cta {
     padding: 120px 60px;
-    background: linear-gradient(135deg, var(--dark2) 0%, #0F3460 100%);
+    background: linear-gradient(135deg, var(--dark) 0%, #1E3A8A 60%, var(--primaryDark) 100%);
     text-align: center;
     color: white;
     position: relative;
@@ -759,7 +767,7 @@ const LANDING_HTML = `<!DOCTYPE html>
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 800px; height: 800px;
-    background: radial-gradient(circle, rgba(255,71,87,0.1) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 60%);
     border-radius: 50%;
     animation: pulse 5s ease-in-out infinite;
   }
@@ -776,7 +784,7 @@ const LANDING_HTML = `<!DOCTYPE html>
   }
 
   .cta-title span {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--secondary), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -822,18 +830,19 @@ const LANDING_HTML = `<!DOCTYPE html>
   /* FOOTER */
   footer {
     background: var(--dark);
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.35);
     padding: 40px 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-top: 1px solid rgba(59,130,246,0.1);
   }
 
   .footer-logo {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 20px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -936,7 +945,7 @@ const LANDING_HTML = `<!DOCTYPE html>
           </div>
           <div class="phone-section-title">근처 여행자 3명</div>
           <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">😊</div>
+            <div class="traveler-avatar" style="background: linear-gradient(135deg, #1E40AF, #3B82F6);">😊</div>
             <div class="traveler-info">
               <div class="traveler-name">지민 · 25세</div>
               <div class="traveler-from">서울에서 · 혼자 여행 중</div>
@@ -944,7 +953,7 @@ const LANDING_HTML = `<!DOCTYPE html>
             <button class="chat-btn">채팅</button>
           </div>
           <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #4FACFE, #00F2FE);">🧳</div>
+            <div class="traveler-avatar" style="background: linear-gradient(135deg, #0369A1, #0EA5E9);">🧳</div>
             <div class="traveler-info">
               <div class="traveler-name">준혁 · 28세</div>
               <div class="traveler-from">부산에서 · 혼자 여행 중</div>
@@ -952,7 +961,7 @@ const LANDING_HTML = `<!DOCTYPE html>
             <button class="chat-btn">채팅</button>
           </div>
           <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #43E97B, #38F9D7);">✈️</div>
+            <div class="traveler-avatar" style="background: linear-gradient(135deg, #065F46, #10B981);">✈️</div>
             <div class="traveler-info">
               <div class="traveler-name">수아 · 23세</div>
               <div class="traveler-from">인천에서 · 혼자 여행 중</div>
@@ -1034,32 +1043,32 @@ const LANDING_HTML = `<!DOCTYPE html>
   </div>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(255,71,87,0.1);">🤝</div>
+      <div class="feature-icon" style="background: rgba(59,130,246,0.1);">🤝</div>
       <div class="feature-title">실시간 여행자 매칭</div>
       <div class="feature-desc">같은 지역에 있는 여행자와 즉시 연결돼요. GPS 없이 직접 선택한 위치 기반으로 안전하게 매칭됩니다.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(30,144,255,0.1);">🤖</div>
+      <div class="feature-icon" style="background: rgba(124,58,237,0.1);">🤖</div>
       <div class="feature-title">AI 맞춤 일정 생성</div>
       <div class="feature-desc">"제주도 2박3일, 혼자, 예산 30만원"만 입력하면 완성된 여행 일정을 바로 받아볼 수 있어요.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(255,165,2,0.1);">🍜</div>
+      <div class="feature-icon" style="background: rgba(239,68,68,0.1);">🍜</div>
       <div class="feature-title">여행자 맛집 공유</div>
       <div class="feature-desc">현지 여행자들이 직접 다녀온 진짜 맛집만 공유해요. 관광객용 리뷰가 아닌 생생한 후기를 확인하세요.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(67,233,123,0.1);">💬</div>
+      <div class="feature-icon" style="background: rgba(16,185,129,0.1);">💬</div>
       <div class="feature-title">실시간 채팅</div>
       <div class="feature-desc">마음에 드는 여행자를 발견했다면 즉시 채팅을 시작하세요. 함께 밥 먹고, 관광하고, 새로운 친구를 만들어요.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(244,67,54,0.1);">🗺️</div>
+      <div class="feature-icon" style="background: rgba(245,158,11,0.1);">🗺️</div>
       <div class="feature-title">동행 구인 게시판</div>
       <div class="feature-desc">"다음 달 오사카 동행 구해요" 미리 게시하고 같이 여행할 사람을 찾아보세요.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(156,39,176,0.1);">🏘️</div>
+      <div class="feature-icon" style="background: rgba(14,165,233,0.1);">🏘️</div>
       <div class="feature-title">여행자 커뮤니티</div>
       <div class="feature-desc">여행 꿀팁, 질문, 후기를 자유롭게 나눠요. 네이버 카페보다 훨씬 빠르고 편리한 여행 커뮤니티.</div>
     </div>
