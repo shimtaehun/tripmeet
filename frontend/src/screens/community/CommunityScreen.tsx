@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
 import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
@@ -101,10 +101,12 @@ export default function CommunityScreen() {
     } catch (e) { console.error('게시글 목록 조회 오류:', e); }
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchPosts(selectedCategory).finally(() => setLoading(false));
-  }, [selectedCategory, fetchPosts]);
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      fetchPosts(selectedCategory).finally(() => setLoading(false));
+    }, [selectedCategory, fetchPosts])
+  );
 
   const handleRefresh = async () => {
     setRefreshing(true);
