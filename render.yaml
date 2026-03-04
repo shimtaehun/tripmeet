@@ -32,6 +32,27 @@ services:
       - key: R2_PUBLIC_URL
         sync: false
 
+  # ─── 프론트엔드 웹앱 (Expo Web Static Site) ────────────────────
+  - type: web
+    name: tripmeet-app
+    env: static
+    region: singapore
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npx expo export --platform web
+    staticPublishPath: dist
+    envVars:
+      - key: EXPO_PUBLIC_API_URL
+        sync: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
   # ─── 랜딩페이지 (Static Site) ──────────────────────────────────
   - type: web
     name: tripmeet-landing

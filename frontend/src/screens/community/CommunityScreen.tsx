@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
 import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
+import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 const CATEGORIES = [
   { label: '전체',  value: undefined,    color: Colors.primary },
@@ -62,13 +63,14 @@ function PostCard({ item, index }: { item: PostSummary; index: number }) {
               <View style={[styles.catBadge, { backgroundColor: meta.bg }]}>
                 <Text style={[styles.catBadgeText, { color: meta.text }]}>{meta.label}</Text>
               </View>
-              <View style={styles.viewRow}>
-                <Ionicons name="eye-outline" size={11} color={Colors.textLight} />
-                <Text style={styles.viewCount}>{item.view_count}</Text>
-              </View>
             </View>
             <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
-            <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
+            <View style={styles.postFooter}>
+              <Text style={styles.postDate}>{new Date(item.created_at).toLocaleDateString('ko-KR')}</Text>
+              <Text style={styles.postFooterDot}>·</Text>
+              <Ionicons name="eye-outline" size={11} color={Colors.textLight} />
+              <Text style={styles.postFooterView}>{item.view_count}</Text>
+            </View>
           </View>
 
           <Ionicons name="chevron-forward" size={16} color={Colors.border} style={{ alignSelf: 'center' }} />
@@ -80,6 +82,9 @@ function PostCard({ item, index }: { item: PostSummary; index: number }) {
 
 export default function CommunityScreen() {
   const navigation = useNavigation<any>();
+  const { isDesktop } = useResponsive();
+  // 데스크톱: 2열 그리드, 모바일: 1열 리스트
+  const numCols = isDesktop ? 2 : 1;
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [posts, setPosts] = useState<PostSummary[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -116,53 +121,72 @@ export default function CommunityScreen() {
 
   return (
     <View style={styles.root}>
+      {/* 그라디언트 헤더 — 데스크톱에서 상단 네비 높이만큼 paddingTop 추가 */}
       <LinearGradient
         colors={Gradients.community}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.header}
+        style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
       >
-        <Text style={styles.headerTitle}>커뮤니티</Text>
-        <TouchableOpacity
-          style={styles.writeBtn}
-          onPress={() => navigation.navigate('PostCreate')}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="create-outline" size={14} color="#fff" />
-          <Text style={styles.writeBtnText}>글쓰기</Text>
-        </TouchableOpacity>
+        <View style={[styles.headerInner, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
+          <Text style={[styles.headerTitle, isDesktop && { fontSize: 28 }]}>커뮤니티</Text>
+          <TouchableOpacity
+            style={styles.writeBtn}
+            onPress={() => navigation.navigate('PostCreate')}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="create-outline" size={14} color="#fff" />
+            <Text style={styles.writeBtnText}>글쓰기</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
-      <View style={styles.tabBar}>
-        {CATEGORIES.map(cat => {
-          const active = selectedCategory === cat.value;
-          return (
-            <TouchableOpacity
-              key={String(cat.value)}
-              onPress={() => { if (cat.value !== selectedCategory) setSelectedCategory(cat.value); }}
-              activeOpacity={0.75}
-              style={[styles.tab, active && { backgroundColor: cat.color }]}
-            >
-              <Text style={[styles.tabText, active && styles.tabTextActive]}>{cat.label}</Text>
-            </TouchableOpacity>
-          );
-        })}
+      {/* 카테고리 탭 */}
+      <View style={[styles.tabBarWrap, isDesktop && styles.tabBarWrapDesktop]}>
+        <View style={[styles.tabBar, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
+          {CATEGORIES.map(cat => {
+            const active = selectedCategory === cat.value;
+            return (
+              <TouchableOpacity
+                key={String(cat.value)}
+                onPress={() => { if (cat.value !== selectedCategory) setSelectedCategory(cat.value); }}
+                activeOpacity={0.75}
+                style={[styles.tab, active && { backgroundColor: cat.color }]}
+              >
+                <Text style={[styles.tabText, active && styles.tabTextActive]}>{cat.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
       {loading ? (
         <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : (
         <FlatList
+          // numColumns 변경 시 key로 강제 재렌더링
+          key={numCols}
           data={posts}
           keyExtractor={item => item.id}
-          renderItem={({ item, index }) => <PostCard item={item} index={index} />}
+          numColumns={numCols}
+          // 2열일 때 columnWrapperStyle로 열 간격 지정
+          columnWrapperStyle={numCols > 1 ? styles.columnWrapper : undefined}
+          renderItem={({ item, index }) => (
+            <View style={numCols > 1 ? styles.gridItem : undefined}>
+              <PostCard item={item} index={index} />
+            </View>
+          )}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
           }
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+          contentContainerStyle={[
+            styles.listContent,
+            isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' },
+          ]}
+          ItemSeparatorComponent={numCols === 1 ? () => <View style={{ height: 8 }} /> : undefined}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Ionicons name="chatbubbles-outline" size={48} color={Colors.border} />
@@ -183,12 +207,15 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
 
   header: {
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 20,
+  },
+  // 헤더 내부 flex row — max-width 중앙 정렬에 사용
+  headerInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.screenPad,
-    paddingTop: 52,
-    paddingBottom: 16,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   writeBtn: {
@@ -204,14 +231,17 @@ const styles = StyleSheet.create({
   },
   writeBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
 
+  tabBarWrap: {
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  tabBarWrapDesktop: { paddingHorizontal: Spacing.screenPad },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   tab: {
     paddingHorizontal: 16,
@@ -222,7 +252,11 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
   tabTextActive: { fontSize: 13, color: '#fff', fontWeight: '700' as const },
 
-  listContent: { padding: 14, paddingBottom: 32 },
+  listContent: { padding: 14, paddingBottom: 48 },
+  // 2열 그리드: 열 간격
+  columnWrapper: { gap: 10, marginBottom: 10 },
+  // 2열 그리드: 각 아이템이 균등하게 공간 차지
+  gridItem: { flex: 1 },
 
   postCard: {
     flexDirection: 'row',
@@ -234,13 +268,13 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     ...Shadow.card,
   },
-  catBar: { width: 4 },
-  postBody: { flex: 1, padding: 14 },
+  catBar: { width: 5 },
+  postBody: { flex: 1, padding: 16 },
   postTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   catBadge: {
     borderRadius: Radius.xs,
@@ -248,13 +282,14 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   catBadgeText: { fontSize: 11, fontWeight: '700' as const },
-  viewRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  viewCount: { fontSize: 11, color: Colors.textLight },
   postTitle: {
-    fontSize: 15, fontWeight: '600' as const, color: Colors.text,
-    lineHeight: 22, marginBottom: 8,
+    fontSize: 15, fontWeight: '800' as const, color: Colors.text,
+    lineHeight: 22, marginBottom: 10,
   },
+  postFooter: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   postDate: { fontSize: 11, color: Colors.textLight },
+  postFooterDot: { fontSize: 11, color: Colors.textLight },
+  postFooterView: { fontSize: 11, color: Colors.textLight },
 
   loader: { marginTop: 60 },
   empty: { alignItems: 'center', paddingTop: 80, gap: 10 },

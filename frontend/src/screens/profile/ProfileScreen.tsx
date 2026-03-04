@@ -9,12 +9,14 @@ import {
   Alert,
   ScrollView,
   Animated,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
+import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 interface UserProfile {
   id: string;
@@ -25,6 +27,7 @@ interface UserProfile {
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
+  const { isDesktop } = useResponsive();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const avatarScale = useRef(new Animated.Value(0.85)).current;
@@ -57,11 +60,30 @@ export default function ProfileScreen() {
 
   useFocusEffect(useCallback(() => { fetchProfile(); }, [fetchProfile]));
 
-  const handleLogout = () => {
-    Alert.alert('로그아웃', '로그아웃하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      { text: '로그아웃', style: 'destructive', onPress: () => supabase.auth.signOut() },
-    ]);
+  const handleLogout = async () => {
+    // 웹에서는 Alert.alert의 다중 버튼 onPress가 동작하지 않으므로
+    // window.confirm으로 대체하고, 네이티브는 Alert.alert를 유지한다.
+    const confirmed = await new Promise<boolean>((resolve) => {
+      if (Platform.OS === 'web') {
+        // eslint-disable-next-line no-alert
+        resolve(window.confirm('로그아웃하시겠습니까?'));
+      } else {
+        Alert.alert('로그아웃', '로그아웃하시겠습니까?', [
+          { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+          { text: '로그아웃', style: 'destructive', onPress: () => resolve(true) },
+        ]);
+      }
+    });
+
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      // onAuthStateChange가 session=null로 변경하면 RootNavigator가 자동으로 LoginScreen으로 이동
+    } catch (e) {
+      Alert.alert('오류', '로그아웃 중 문제가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   if (loading) {
@@ -79,13 +101,12 @@ export default function ProfileScreen() {
         colors={Gradients.profile}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.header}
+        style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 40 }]}
       >
-        {/* 배경 장식 */}
         <View style={styles.headerGlow} />
 
         <Animated.View style={[styles.avatarContainer, { transform: [{ scale: avatarScale }] }]}>
-          <View style={styles.avatarRing}>
+          <View style={[styles.avatarRing, isDesktop && { width: 140, height: 140, borderRadius: 70 }]}>
             <Image
               source={
                 profile?.profile_image_url
@@ -95,48 +116,111 @@ export default function ProfileScreen() {
               style={styles.avatar}
             />
           </View>
-          {/* 온라인 배지 */}
           <View style={styles.onlineBadge}>
             <View style={styles.onlineDot} />
-            <Text style={styles.onlineBadgeText}>여행중</Text>
+            <Text style={styles.onlineBadgeText}>활동중</Text>
           </View>
         </Animated.View>
 
-        <Text style={styles.nickname}>{profile?.nickname ?? '닉네임 없음'}</Text>
+        <Text style={[styles.nickname, isDesktop && { fontSize: 30 }]}>
+          {profile?.nickname ?? '닉네임 없음'}
+        </Text>
         {profile?.bio ? (
           <Text style={styles.bio}>{profile.bio}</Text>
         ) : (
           <Text style={styles.bioEmpty}>자기소개를 추가해보세요</Text>
         )}
+
+        {/* 통계 row */}
+        <View style={styles.statsRow}>
+          <View style={styles.statsPill}>
+            <Text style={styles.statsPillText}>게시글 0개</Text>
+          </View>
+          <View style={styles.statsPill}>
+            <Text style={styles.statsPillText}>동행 0개</Text>
+          </View>
+          <View style={styles.statsPill}>
+            <Text style={styles.statsPillText}>팔로워 0명</Text>
+          </View>
+        </View>
       </LinearGradient>
 
-      {/* 메뉴 카드 */}
-      <View style={styles.menuCard}>
-        <TouchableOpacity
-          style={styles.menuRow}
-          onPress={() => navigation.navigate('ProfileEdit', { profile })}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
-            <Ionicons name="create-outline" size={18} color={Colors.primary} />
-          </View>
-          <Text style={styles.menuLabel}>프로필 수정</Text>
-          <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
-        </TouchableOpacity>
+      {/* 계정 섹션 */}
+      <View style={[styles.sectionWrap, isDesktop && { maxWidth: 600, alignSelf: 'center', width: '100%' }]}>
+        <Text style={styles.sectionLabel}>계정 설정</Text>
+        <View style={styles.menuCard}>
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => navigation.navigate('ProfileEdit', { profile })}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
+              <Ionicons name="create-outline" size={18} color={Colors.primary} />
+            </View>
+            <Text style={styles.menuLabel}>프로필 수정</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
+          </TouchableOpacity>
 
-        <View style={styles.menuDivider} />
+          <View style={styles.menuDivider} />
 
-        <TouchableOpacity
-          style={styles.menuRow}
-          onPress={handleLogout}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.menuIconWrap, { backgroundColor: Colors.redLight }]}>
-            <Ionicons name="log-out-outline" size={18} color={Colors.red} />
-          </View>
-          <Text style={[styles.menuLabel, styles.menuLabelDestructive]}>로그아웃</Text>
-          <Ionicons name="chevron-forward" size={16} color={Colors.red} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => navigation.navigate('Community')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
+              <Ionicons name="document-text-outline" size={18} color={Colors.primary} />
+            </View>
+            <Text style={styles.menuLabel}>내가 쓴 글</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* 앱 정보 섹션 */}
+      <View style={[styles.sectionWrap, isDesktop && { maxWidth: 600, alignSelf: 'center', width: '100%' }]}>
+        <Text style={styles.sectionLabel}>앱 정보</Text>
+        <View style={styles.menuCard}>
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => Alert.alert('공지사항', '준비 중입니다.')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: Colors.amberLight }]}>
+              <Ionicons name="megaphone-outline" size={18} color={Colors.amber} />
+            </View>
+            <Text style={styles.menuLabel}>공지사항</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
+          </TouchableOpacity>
+
+          <View style={styles.menuDivider} />
+
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => Alert.alert('이용약관', '준비 중입니다.')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: Colors.amberLight }]}>
+              <Ionicons name="document-outline" size={18} color={Colors.amber} />
+            </View>
+            <Text style={styles.menuLabel}>이용약관</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
+          </TouchableOpacity>
+
+          <View style={styles.menuDivider} />
+
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={handleLogout}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: Colors.redLight }]}>
+              <Ionicons name="log-out-outline" size={18} color={Colors.red} />
+            </View>
+            <Text style={[styles.menuLabel, styles.menuLabelDestructive]}>로그아웃</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.red} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Text style={styles.version}>TripMeet v1.0.0</Text>
@@ -152,7 +236,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingTop: 56,
-    paddingBottom: 44,
+    paddingBottom: 48,
     paddingHorizontal: 24,
     overflow: 'hidden',
     position: 'relative',
@@ -162,7 +246,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(255,107,53,0.10)',
+    backgroundColor: 'rgba(59,130,246,0.10)',
     top: -60,
     right: -40,
   },
@@ -200,13 +284,38 @@ const styles = StyleSheet.create({
   onlineBadgeText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
   nickname: { fontSize: 24, fontWeight: '800' as const, color: '#fff', marginBottom: 6 },
   bio: { fontSize: 14, color: 'rgba(255,255,255,0.80)', textAlign: 'center', lineHeight: 20 },
-  bioEmpty: { fontSize: 13, color: 'rgba(255,255,255,0.50)', fontStyle: 'italic' },
+  bioEmpty: { fontSize: 13, color: 'rgba(255,255,255,0.50)', fontStyle: 'italic' as const },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 14,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  statsPill: {
+    backgroundColor: 'rgba(255,255,255,0.20)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+  },
+  statsPillText: { fontSize: 12, color: '#fff', fontWeight: '600' as const },
 
+  sectionWrap: {
+    marginHorizontal: Spacing.screenPad,
+    marginTop: 20,
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: Colors.textLight,
+    marginBottom: 8,
+    marginLeft: 4,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
   menuCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.xl,
-    marginHorizontal: Spacing.screenPad,
-    marginTop: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.border,

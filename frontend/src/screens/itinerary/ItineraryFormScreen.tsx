@@ -22,6 +22,7 @@ export default function ItineraryFormScreen() {
   const [travelersCount, setTravelersCount] = useState('1');
   const [budgetWon, setBudgetWon] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     if (!destination.trim() || !durationDays || !budgetWon) {
@@ -76,61 +77,93 @@ export default function ItineraryFormScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroBanner}
       >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          style={styles.backBtn}
+        >
+          <Ionicons name="chevron-back" size={24} color="#fff" />
+        </TouchableOpacity>
         <View style={styles.heroIconWrap}>
-          <Ionicons name="sparkles" size={28} color={Colors.coral} />
+          <Ionicons name="sparkles" size={28} color="#fff" />
         </View>
         <Text style={styles.heroTitle}>AI 여행 일정 만들기</Text>
+        <Text style={styles.heroSubtitle}>AI가 최적의 동선을 설계합니다</Text>
         <Text style={styles.heroDesc}>조건을 입력하면 AI가 완성된 일정을 만들어드려요.</Text>
       </LinearGradient>
 
       <View style={styles.formCard}>
+        {/* 여행지 */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>여행지 <Text style={styles.required}>*</Text></Text>
-          <TextInput
-            style={styles.input}
-            value={destination}
-            onChangeText={setDestination}
-            placeholder="예: 제주도, 오사카, 방콕"
-            placeholderTextColor={Colors.textLight}
-          />
+          <View style={[styles.inputWrap, focusedField === 'destination' && styles.inputWrapFocused]}>
+            <Ionicons name="globe-outline" size={18} color={focusedField === 'destination' ? Colors.primary : Colors.textLight} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={destination}
+              onChangeText={setDestination}
+              placeholder="예: 제주도, 오사카, 방콕"
+              placeholderTextColor={Colors.textLight}
+              onFocus={() => setFocusedField('destination')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
         </View>
 
+        {/* 여행 기간 */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>여행 기간 <Text style={styles.required}>*</Text></Text>
-          <TextInput
-            style={styles.input}
-            value={durationDays}
-            onChangeText={setDurationDays}
-            placeholder="예: 3 (일)"
-            placeholderTextColor={Colors.textLight}
-            keyboardType="numeric"
-            maxLength={2}
-          />
+          <View style={[styles.inputWrap, focusedField === 'duration' && styles.inputWrapFocused]}>
+            <Ionicons name="calendar-outline" size={18} color={focusedField === 'duration' ? Colors.primary : Colors.textLight} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={durationDays}
+              onChangeText={setDurationDays}
+              placeholder="예: 3 (일)"
+              placeholderTextColor={Colors.textLight}
+              keyboardType="numeric"
+              maxLength={2}
+              onFocus={() => setFocusedField('duration')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
         </View>
 
+        {/* 인원 수 */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>인원 수</Text>
-          <TextInput
-            style={styles.input}
-            value={travelersCount}
-            onChangeText={setTravelersCount}
-            placeholder="예: 1 (명)"
-            placeholderTextColor={Colors.textLight}
-            keyboardType="numeric"
-            maxLength={2}
-          />
+          <View style={[styles.inputWrap, focusedField === 'travelers' && styles.inputWrapFocused]}>
+            <Ionicons name="people-outline" size={18} color={focusedField === 'travelers' ? Colors.primary : Colors.textLight} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={travelersCount}
+              onChangeText={setTravelersCount}
+              placeholder="예: 1 (명)"
+              placeholderTextColor={Colors.textLight}
+              keyboardType="numeric"
+              maxLength={2}
+              onFocus={() => setFocusedField('travelers')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
         </View>
 
+        {/* 예산 */}
         <View style={[styles.fieldGroup, { borderBottomWidth: 0 }]}>
           <Text style={styles.label}>예산 <Text style={styles.required}>*</Text></Text>
-          <TextInput
-            style={styles.input}
-            value={budgetWon}
-            onChangeText={setBudgetWon}
-            placeholder="예: 300000 (원)"
-            placeholderTextColor={Colors.textLight}
-            keyboardType="numeric"
-          />
+          <View style={[styles.inputWrap, focusedField === 'budget' && styles.inputWrapFocused]}>
+            <Ionicons name="wallet-outline" size={18} color={focusedField === 'budget' ? Colors.primary : Colors.textLight} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={budgetWon}
+              onChangeText={setBudgetWon}
+              placeholder="예: 300000 (원)"
+              placeholderTextColor={Colors.textLight}
+              keyboardType="numeric"
+              onFocus={() => setFocusedField('budget')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
         </View>
       </View>
 
@@ -174,19 +207,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.screenPad,
     gap: 10,
   },
+  backBtn: { alignSelf: 'flex-start', marginBottom: 4 },
   heroIconWrap: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(201,169,110,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.20)',
     borderWidth: 1.5,
-    borderColor: 'rgba(201,169,110,0.40)',
+    borderColor: 'rgba(255,255,255,0.35)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
   },
   heroTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff', textAlign: 'center' },
-  heroDesc: { fontSize: 14, color: 'rgba(255,255,255,0.70)', textAlign: 'center', lineHeight: 20 },
+  heroSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.80)', textAlign: 'center', fontWeight: '500' as const },
+  heroDesc: { fontSize: 13, color: 'rgba(255,255,255,0.60)', textAlign: 'center', lineHeight: 20 },
 
   formCard: {
     backgroundColor: Colors.card,
@@ -202,15 +237,32 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  label: { fontSize: 12, fontWeight: '600' as const, color: Colors.textMedium, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.8 },
+  label: { fontSize: 12, fontWeight: '700' as const, color: Colors.textMedium, marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: 0.8 },
   required: { color: Colors.red },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    borderRadius: Radius.md,
+    paddingLeft: 14,
+    paddingRight: 12,
+    minHeight: 48,
+  },
+  inputWrapFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    backgroundColor: Colors.primaryLight,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
   input: {
+    flex: 1,
     fontSize: 15,
     color: Colors.text,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    paddingBottom: 10,
+    paddingVertical: 10,
   },
 
   btnWrap: {
@@ -225,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    paddingVertical: 16,
+    height: 56,
   },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
 });

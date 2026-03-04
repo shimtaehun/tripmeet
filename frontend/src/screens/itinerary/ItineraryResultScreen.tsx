@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface Activity {
@@ -36,8 +36,24 @@ interface Itinerary {
   is_cached: boolean;
 }
 
+// 시간대별 borderLeft 색상 반환
+function getTimeColor(time: string): string {
+  const match = time.match(/^(\d{1,2}):/);
+  if (!match) return Colors.green;
+  const hour = parseInt(match[1], 10);
+  if (hour >= 6 && hour < 12) return Colors.amber;
+  if (hour >= 12 && hour < 18) return Colors.primary;
+  if (hour >= 18 && hour < 24) return Colors.purple;
+  return Colors.green;
+}
+
+function getTimeDotColor(time: string): string {
+  return getTimeColor(time);
+}
+
 export default function ItineraryResultScreen() {
   const route = useRoute<any>();
+  const navigation = useNavigation();
   const itinerary: Itinerary = route.params.itinerary;
   const days: Day[] = itinerary.content?.days ?? [];
 
@@ -69,6 +85,13 @@ export default function ItineraryResultScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          style={styles.backBtn}
+        >
+          <Ionicons name="chevron-back" size={22} color="#fff" />
+        </TouchableOpacity>
         <View style={styles.headerRow}>
           <Ionicons name="sparkles" size={18} color={Colors.coral} />
           <Text style={styles.headerBadge}>AI 생성 일정</Text>
@@ -79,39 +102,63 @@ export default function ItineraryResultScreen() {
           )}
         </View>
         <Text style={styles.destination}>{itinerary.destination}</Text>
-        <Text style={styles.meta}>
-          {itinerary.duration_days}일 · {itinerary.travelers_count}명 · {itinerary.budget_range}
-        </Text>
+        <View style={styles.metaRow}>
+          <View style={styles.metaPill}>
+            <Ionicons name="calendar-outline" size={12} color="rgba(255,255,255,0.85)" />
+            <Text style={styles.metaPillText}>{itinerary.duration_days}일</Text>
+          </View>
+          <View style={styles.metaPill}>
+            <Ionicons name="people-outline" size={12} color="rgba(255,255,255,0.85)" />
+            <Text style={styles.metaPillText}>{itinerary.travelers_count}명</Text>
+          </View>
+          <View style={styles.metaPill}>
+            <Ionicons name="wallet-outline" size={12} color="rgba(255,255,255,0.85)" />
+            <Text style={styles.metaPillText}>{itinerary.budget_range}</Text>
+          </View>
+        </View>
       </LinearGradient>
 
       <View style={styles.dayList}>
         {days.map((day) => (
           <View key={day.day} style={styles.dayBlock}>
-            <View style={styles.dayLabelRow}>
-              <View style={styles.dayNumBadge}>
-                <Text style={styles.dayNumText}>Day {day.day}</Text>
-              </View>
+            {/* Day 헤더 — LinearGradient 전체 너비 */}
+            <LinearGradient
+              colors={Gradients.coral}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.dayLabelRow}
+            >
+              <Text style={styles.dayNumText}>Day {day.day}</Text>
               <Text style={styles.dayLabel}>{day.date_label}</Text>
-            </View>
+            </LinearGradient>
 
-            {day.activities.map((activity, idx) => (
-              <View key={idx} style={styles.activityItem}>
-                <View style={styles.timelineCol}>
-                  <Text style={styles.activityTime}>{activity.time}</Text>
-                  {idx < day.activities.length - 1 && <View style={styles.timelineLine} />}
-                </View>
-                <View style={styles.activityContent}>
-                  <Text style={styles.activityTitle}>{activity.title}</Text>
-                  <Text style={styles.activityDesc}>{activity.description}</Text>
-                  {activity.estimated_cost > 0 && (
-                    <View style={styles.costRow}>
-                      <Ionicons name="wallet-outline" size={11} color={Colors.textLight} />
-                      <Text style={styles.activityCost}>약 {activity.estimated_cost.toLocaleString()}원</Text>
+            {/* 활동 카드 목록 */}
+            <View style={styles.activitiesWrap}>
+              {day.activities.map((activity, idx) => {
+                const timeColor = getTimeColor(activity.time);
+                const dotColor  = getTimeDotColor(activity.time);
+                return (
+                  <View key={idx} style={[styles.activityCard, { borderLeftColor: timeColor }]}>
+                    {/* 타임라인 dot */}
+                    <View style={[styles.timelineDot, { backgroundColor: dotColor }]} />
+                    <View style={styles.activityCardInner}>
+                      <View style={styles.activityHeader}>
+                        <Text style={styles.activityTime}>{activity.time}</Text>
+                        {activity.estimated_cost > 0 && (
+                          <View style={styles.costBadge}>
+                            <Text style={styles.costBadgeText}>
+                              {activity.estimated_cost.toLocaleString()}원
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.activityTitle}>{activity.title}</Text>
+                      <Text style={styles.activityDesc}>{activity.description}</Text>
                     </View>
-                  )}
-                </View>
-              </View>
-            ))}
+                  </View>
+                );
+              })}
+            </View>
           </View>
         ))}
       </View>
@@ -144,6 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.screenPad,
     gap: 6,
   },
+  backBtn: { marginBottom: 8, alignSelf: 'flex-start' },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   headerBadge: { fontSize: 12, fontWeight: '600' as const, color: Colors.coral },
   cacheBadge: {
@@ -154,7 +202,22 @@ const styles = StyleSheet.create({
   },
   cacheBadgeText: { fontSize: 10, color: 'rgba(255,255,255,0.70)' },
   destination: { fontSize: 28, fontWeight: '800' as const, color: '#fff', letterSpacing: -0.5 },
-  meta: { fontSize: 14, color: 'rgba(255,255,255,0.70)' },
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  metaPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  metaPillText: { fontSize: 12, color: 'rgba(255,255,255,0.90)', fontWeight: '600' as const },
 
   dayList: { padding: Spacing.screenPad, gap: 14, paddingBottom: 0 },
 
@@ -167,39 +230,58 @@ const styles = StyleSheet.create({
   dayLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderRadius: 0,
+    marginBottom: 0,
   },
-  dayNumBadge: {
-    backgroundColor: Colors.primary,
-    borderRadius: Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-  },
-  dayNumText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
-  dayLabel: { fontSize: 14, fontWeight: '600' as const, color: Colors.text },
+  dayNumText: { fontSize: 20, fontWeight: '900' as const, color: '#fff' },
+  dayLabel: { fontSize: 13, fontWeight: '600' as const, color: 'rgba(255,255,255,0.85)' },
 
-  activityItem: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 10,
-    borderTopWidth: 1,
-    borderTopColor: Colors.divider,
-    gap: 14,
+  activitiesWrap: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 10,
   },
-  timelineCol: { width: 38, alignItems: 'center', paddingTop: 2 },
-  activityTime: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const, textAlign: 'center' },
-  timelineLine: { width: 1, flex: 1, backgroundColor: Colors.border, marginTop: 4 },
-  activityContent: { flex: 1 },
-  activityTitle: { fontSize: 14, fontWeight: '700' as const, color: Colors.text, marginBottom: 3 },
-  activityDesc: { fontSize: 13, color: Colors.textMedium, lineHeight: 19, marginBottom: 4 },
-  costRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  activityCost: { fontSize: 12, color: Colors.textLight },
+  activityCard: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    borderLeftWidth: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 14,
+    position: 'relative',
+    paddingLeft: 24,
+    ...Shadow.xs,
+  },
+  timelineDot: {
+    position: 'absolute',
+    left: -5,
+    top: 18,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  activityCardInner: { gap: 4 },
+  activityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  activityTime: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const },
+  costBadge: {
+    backgroundColor: Colors.amberLight,
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  costBadgeText: { fontSize: 11, color: Colors.amber, fontWeight: '600' as const },
+  activityTitle: { fontSize: 15, fontWeight: '700' as const, color: Colors.text, marginBottom: 2 },
+  activityDesc: { fontSize: 13, color: Colors.textMedium, lineHeight: 19 },
 
   shareWrap: {
     borderRadius: Radius.full,

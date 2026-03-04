@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+
+interface Props {
+  onStart: () => void;
+}
+
+// landing/index.html 내용을 기반으로 "시작하기" 링크를 postMessage 방식으로 변환
+const LANDING_HTML = `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -872,7 +880,7 @@
     <li><a href="#how">이용방법</a></li>
     <li><a href="#destinations">여행지</a></li>
   </ul>
-  <a href="https://tripmeet-app.onrender.com" class="nav-cta">지금 시작하기</a>
+  <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="nav-cta">지금 시작하기</a>
 </nav>
 
 <!-- HERO -->
@@ -892,7 +900,7 @@
       AI가 맞춤 일정을 짜드려요.
     </p>
     <div class="hero-actions">
-      <a href="https://tripmeet-app.onrender.com" class="btn-primary">무료로 시작하기</a>
+      <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="btn-primary">무료로 시작하기</a>
       <a href="#how" class="btn-ghost">어떻게 작동하나요? →</a>
     </div>
     <div class="hero-stats">
@@ -1169,7 +1177,7 @@
           <div class="btn-store-name">Google Play</div>
         </div>
       </a>
-      <a href="https://tripmeet-app.onrender.com" class="btn-primary" style="padding: 16px 36px;">웹으로 시작하기</a>
+      <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="btn-primary" style="padding: 16px 36px;">웹으로 시작하기</a>
     </div>
   </div>
 </section>
@@ -1182,4 +1190,43 @@
 </footer>
 
 </body>
-</html>
+</html>`;
+
+export default function LandingScreen({ onStart }: Props) {
+  const containerRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = LANDING_HTML;
+    iframe.setAttribute('style', 'width:100%;height:100%;border:none;display:block;');
+
+    const container = containerRef.current;
+    if (container) {
+      container.appendChild(iframe);
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'navigate:login') {
+        onStart();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      if (container && iframe.parentNode === container) {
+        container.removeChild(iframe);
+      }
+    };
+  }, [onStart]);
+
+  return <View ref={containerRef} style={styles.container} />;
+}
+
+const styles = {
+  container: {
+    flex: 1,
+  },
+};

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,74 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
+import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 type StatusFilter = 'all' | 'open' | 'closed';
+
+function CompanionCard({ item, index }: { item: CompanionSummary; index: number }) {
+  const navigation = useNavigation<any>();
+  const scale   = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideY  = useRef(new Animated.Value(18)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 320, delay: index * 55, useNativeDriver: true }),
+      Animated.spring(slideY, { toValue: 0, delay: index * 55, tension: 80, friction: 9, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const onPressIn  = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, tension: 200 }).start();
+  const onPressOut = () => Animated.spring(scale, { toValue: 1,    useNativeDriver: true, tension: 200 }).start();
+
+  const isOpen = item.status === 'open';
+  const createdDate = new Date(item.created_at).toLocaleDateString('ko-KR');
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ scale }, { translateY: slideY }] }}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('CompanionDetail', { companionId: item.id })}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        activeOpacity={1}
+      >
+        <View style={styles.cardTop}>
+          <View style={styles.destinationRow}>
+            <Ionicons name="airplane" size={14} color={Colors.amber} />
+            <Text style={styles.destination}>{item.destination}</Text>
+          </View>
+          <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
+            <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
+              {isOpen ? '모집중' : '마감'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.dateRow}>
+          <Ionicons name="calendar-outline" size={12} color={Colors.textMedium} />
+          <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
+        </View>
+
+        <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
+
+        <View style={styles.cardBottom}>
+          <Ionicons name="people-outline" size={13} color={Colors.textLight} />
+          <Text style={styles.participants}>최대 {item.max_participants}명</Text>
+          <Text style={styles.cardBottomDot}>·</Text>
+          <Text style={styles.createdAt}>{createdDate}</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 const STATUS_TABS: { label: string; value: StatusFilter }[] = [
   { label: '전체',  value: 'all'    },
@@ -23,7 +83,8 @@ const STATUS_TABS: { label: string; value: StatusFilter }[] = [
 ];
 
 export default function CompanionScreen() {
-  const navigation = useNavigation<any>();
+  const { isDesktop } = useResponsive();
+  const numCols = isDesktop ? 2 : 1;
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [companions, setCompanions] = useState<CompanionSummary[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -64,92 +125,74 @@ export default function CompanionScreen() {
     setLoadingMore(false);
   };
 
-  const renderItem = ({ item }: { item: CompanionSummary }) => {
-    const isOpen = item.status === 'open';
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate('CompanionDetail', { companionId: item.id })}
-        activeOpacity={0.75}
-      >
-        <View style={styles.cardTop}>
-          <View style={styles.destinationRow}>
-            <Ionicons name="airplane" size={14} color={Colors.amber} />
-            <Text style={styles.destination}>{item.destination}</Text>
-          </View>
-          <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
-            <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
-              {isOpen ? '모집중' : '마감'}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.dateRow}>
-          <Ionicons name="calendar-outline" size={12} color={Colors.textMedium} />
-          <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
-        </View>
-
-        <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
-
-        <View style={styles.cardBottom}>
-          <Ionicons name="people-outline" size={13} color={Colors.textLight} />
-          <Text style={styles.participants}>최대 {item.max_participants}명</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={styles.root}>
+      {/* 그라디언트 헤더 */}
       <LinearGradient
         colors={Gradients.companion}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.header}
+        style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
       >
-        <Text style={styles.headerTitle}>동행 구인</Text>
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={() => navigation.navigate('CompanionCreate')}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="add" size={14} color="#fff" />
-          <Text style={styles.addBtnText}>등록</Text>
-        </TouchableOpacity>
+        <View style={[styles.headerInner, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
+          <Text style={[styles.headerTitle, isDesktop && { fontSize: 28 }]}>동행 구인</Text>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => navigation.navigate('CompanionCreate')}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="add" size={14} color="#fff" />
+            <Text style={styles.addBtnText}>등록</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
-      <View style={styles.tabBar}>
-        {STATUS_TABS.map(tab => {
-          const active = statusFilter === tab.value;
-          return (
-            <TouchableOpacity
-              key={tab.value}
-              style={[styles.tab, active && styles.tabActive]}
-              onPress={() => setStatusFilter(tab.value)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.tabText, active && styles.tabTextActive]}>
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+      {/* 상태 필터 탭 */}
+      <View style={[styles.tabBarWrap, isDesktop && styles.tabBarWrapDesktop]}>
+        <View style={[styles.tabBar, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
+          {STATUS_TABS.map(tab => {
+            const active = statusFilter === tab.value;
+            return (
+              <TouchableOpacity
+                key={tab.value}
+                style={[styles.tab, active && styles.tabActive]}
+                onPress={() => setStatusFilter(tab.value)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.tabText, active && styles.tabTextActive]}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
       {loading ? (
         <ActivityIndicator style={styles.loader} size="large" color={Colors.primary} />
       ) : (
         <FlatList
+          key={numCols}
           data={companions}
           keyExtractor={item => item.id}
-          renderItem={renderItem}
+          numColumns={numCols}
+          columnWrapperStyle={numCols > 1 ? styles.columnWrapper : undefined}
+          renderItem={({ item, index }) => (
+            <View style={numCols > 1 ? styles.gridItem : undefined}>
+              <CompanionCard item={item} index={index} />
+            </View>
+          )}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
           }
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={[
+            styles.listContent,
+            isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' },
+          ]}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={numCols === 1 ? () => <View style={styles.separator} /> : undefined}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Ionicons name="people-outline" size={48} color={Colors.border} />
@@ -170,12 +213,14 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
 
   header: {
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 20,
+  },
+  headerInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.screenPad,
-    paddingTop: 52,
-    paddingBottom: 16,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   addBtn: {
@@ -191,14 +236,17 @@ const styles = StyleSheet.create({
   },
   addBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
 
+  tabBarWrap: {
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  tabBarWrapDesktop: { paddingHorizontal: Spacing.screenPad },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: Colors.card,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   tab: {
     paddingHorizontal: 16,
@@ -210,13 +258,17 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
   tabTextActive: { color: '#fff', fontWeight: '700' as const },
 
-  listContent: { padding: 14, paddingBottom: 32 },
+  listContent: { padding: 14, paddingBottom: 48 },
   separator: { height: 10 },
+  columnWrapper: { gap: 10, marginBottom: 10 },
+  gridItem: { flex: 1 },
 
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.xl,
     padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
     ...Shadow.card,
   },
   cardTop: {
@@ -232,7 +284,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   destination: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700' as const,
     color: Colors.text,
     flex: 1,
@@ -244,10 +296,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   badgeOpen: { backgroundColor: Colors.greenLight },
-  badgeClosed: { backgroundColor: Colors.surface },
+  badgeClosed: { backgroundColor: Colors.redLight },
   statusBadgeText: { fontSize: 11, fontWeight: '700' as const },
   badgeOpenText: { color: Colors.green },
-  badgeClosedText: { color: Colors.textMedium },
+  badgeClosedText: { color: Colors.red },
 
   dateRow: {
     flexDirection: 'row',
@@ -264,6 +316,8 @@ const styles = StyleSheet.create({
   },
   cardBottom: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   participants: { fontSize: 12, color: Colors.textLight, fontWeight: '500' as const },
+  cardBottomDot: { fontSize: 12, color: Colors.textLight },
+  createdAt: { fontSize: 11, color: Colors.textLight, flex: 1, textAlign: 'right' },
 
   loader: { marginTop: 60 },
   footerLoader: { paddingVertical: 16 },

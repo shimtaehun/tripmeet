@@ -6,6 +6,7 @@ import * as Linking from 'expo-linking';
 import { supabase } from '../services/supabaseClient';
 import MainTabs from './MainTabs';
 import LoginScreen from '../screens/auth/LoginScreen';
+import LandingScreen from '../screens/landing/LandingScreen';
 import PostCreateScreen from '../screens/community/PostCreateScreen';
 import PostDetailScreen from '../screens/community/PostDetailScreen';
 import RestaurantCreateScreen from '../screens/restaurant/RestaurantCreateScreen';
@@ -34,6 +35,7 @@ async function handleAuthCallback(url: string) {
 export default function RootNavigator() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     // onAuthStateChange는 구독 즉시 INITIAL_SESSION 이벤트를 발생시키므로
@@ -62,6 +64,11 @@ export default function RootNavigator() {
 
   if (loading) {
     return null;
+  }
+
+  // 세션 없고 랜딩을 아직 안 지나친 경우: 랜딩 페이지 표시
+  if (!session && showLanding) {
+    return <LandingScreen onStart={() => setShowLanding(false)} />;
   }
 
   return (

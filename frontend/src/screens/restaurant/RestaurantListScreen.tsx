@@ -16,12 +16,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getRestaurants, RestaurantSummary } from '../../services/restaurantService';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
+import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 function StarRating({ rating }: { rating: number }) {
   return (
     <View style={styles.starRow}>
       {[1, 2, 3, 4, 5].map(i => (
-        <Ionicons key={i} name={i <= rating ? 'star' : 'star-outline'} size={12} color={i <= rating ? Colors.amber : Colors.border} />
+        <Ionicons key={i} name={i <= rating ? 'star' : 'star-outline'} size={13} color={i <= rating ? Colors.amber : Colors.border} />
       ))}
       <Text style={styles.ratingNum}>{rating.toFixed(1)}</Text>
     </View>
@@ -33,6 +34,7 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
   const scale   = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const slideY  = useRef(new Animated.Value(24)).current;
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -53,8 +55,12 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
         activeOpacity={1}
       >
         <View style={styles.card}>
-          {item.image_urls.length > 0 ? (
-            <Image source={{ uri: item.image_urls[0] }} style={styles.thumbnail} />
+          {item.image_urls.length > 0 && !imageError ? (
+            <Image
+              source={{ uri: item.image_urls[0] }}
+              style={styles.thumbnail}
+              onError={() => setImageError(true)}
+            />
           ) : (
             <View style={[styles.thumbnail, styles.thumbnailEmpty]}>
               <Ionicons name="restaurant" size={28} color={Colors.textLight} />
@@ -77,6 +83,8 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
 
 export default function RestaurantListScreen() {
   const navigation = useNavigation<any>();
+  const { isDesktop } = useResponsive();
+  const numCols = isDesktop ? 2 : 1;
   const [locationFilter, setLocationFilter] = useState('');
   const [submittedFilter, setSubmittedFilter] = useState('');
   const [restaurants, setRestaurants] = useState<RestaurantSummary[]>([]);
@@ -116,24 +124,28 @@ export default function RestaurantListScreen() {
 
   return (
     <View style={styles.root}>
+      {/* 그라디언트 헤더 */}
       <LinearGradient
         colors={Gradients.food}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.header}
+        style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
       >
-        <Text style={styles.headerTitle}>맛집</Text>
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={() => navigation.navigate('RestaurantCreate')}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="add" size={14} color="#fff" />
-          <Text style={styles.addBtnText}>등록</Text>
-        </TouchableOpacity>
+        <View style={[styles.headerInner, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
+          <Text style={[styles.headerTitle, isDesktop && { fontSize: 28 }]}>맛집</Text>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => navigation.navigate('RestaurantCreate')}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="add" size={14} color="#fff" />
+            <Text style={styles.addBtnText}>등록</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
-      <View style={styles.searchRow}>
+      {/* 검색 영역 */}
+      <View style={[styles.searchRow, isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' }]}>
         <TextInput
           style={styles.searchInput}
           placeholder="지역 검색 (홍대, 도쿄...)"
@@ -159,16 +171,27 @@ export default function RestaurantListScreen() {
         <ActivityIndicator style={{ marginTop: 60 }} size="large" color={Colors.primary} />
       ) : (
         <FlatList
+          key={numCols}
           data={restaurants}
           keyExtractor={item => item.id}
-          renderItem={({ item, index }) => <RestaurantCard item={item} index={index} />}
+          numColumns={numCols}
+          columnWrapperStyle={numCols > 1 ? styles.columnWrapper : undefined}
+          renderItem={({ item, index }) => (
+            <View style={numCols > 1 ? styles.gridItem : undefined}>
+              <RestaurantCard item={item} index={index} />
+            </View>
+          )}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} />
           }
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+          contentContainerStyle={[
+            styles.listContent,
+            isDesktop && { maxWidth: MAX_WIDTH, alignSelf: 'center', width: '100%' },
+          ]}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={numCols === 1 ? () => <View style={{ height: 10 }} /> : undefined}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Ionicons name="restaurant-outline" size={48} color={Colors.border} />
@@ -189,12 +212,14 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
 
   header: {
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 52,
+    paddingBottom: 20,
+  },
+  headerInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.screenPad,
-    paddingTop: 52,
-    paddingBottom: 16,
   },
   headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
   addBtn: {
@@ -232,22 +257,24 @@ const styles = StyleSheet.create({
   },
   searchBtn: { borderRadius: Radius.sm, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center', height: 42 },
 
-  listContent: { padding: 14, paddingBottom: 32 },
+  listContent: { padding: 14, paddingBottom: 48 },
+  columnWrapper: { gap: 10, marginBottom: 10 },
+  gridItem: { flex: 1 },
 
   card: {
     flexDirection: 'row',
     borderRadius: Radius.xl,
-    padding: 12,
+    padding: 14,
     alignItems: 'center',
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
     ...Shadow.card,
   },
-  thumbnail: { width: 84, height: 84, borderRadius: Radius.md, marginRight: 14 },
+  thumbnail: { width: 90, height: 90, borderRadius: Radius.md, marginRight: 14 },
   thumbnailEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.surface },
   cardInfo: { flex: 1, gap: 5 },
-  restaurantName: { fontSize: 15, fontWeight: '700' as const, color: Colors.text },
+  restaurantName: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
   locationRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   locationName: { fontSize: 12, color: Colors.textMedium },
   starRow: { flexDirection: 'row', alignItems: 'center', gap: 1 },

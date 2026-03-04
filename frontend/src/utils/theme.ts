@@ -32,8 +32,8 @@ export const Colors = {
   purpleLight: '#EDE9FE',
   purpleBorder: '#DDD6FE',
 
-  // 서피스
-  background: '#FFFFFF',
+  // 서피스 — 배경은 오프화이트, 카드는 순백으로 대비 생성
+  background: '#F8FAFC',
   card: '#FFFFFF',
   surface: '#F8FAFC',
   surfaceHover: '#F1F5F9',
@@ -132,6 +132,14 @@ export const Shadow = {
     elevation: 6,
   },
   primary: {
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  // Shadow.blue: Shadow.primary 와 동일 — 브랜드 컬러 글로우
+  blue: {
     shadowColor: '#3B82F6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
