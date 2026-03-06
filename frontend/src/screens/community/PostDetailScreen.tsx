@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -51,22 +52,26 @@ export default function PostDetailScreen() {
   }, [postId]);
 
   const handleDelete = () => {
-    Alert.alert('삭제', '게시글을 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deletePost(postId);
-            navigation.goBack();
-          } catch (e) {
-            console.error('게시글 삭제 오류:', e);
-            Alert.alert('오류', '게시글 삭제에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+    const execute = async () => {
+      try {
+        await deletePost(postId);
+        navigation.goBack();
+      } catch (e: any) {
+        console.error('게시글 삭제 오류:', e);
+        Alert.alert('삭제 실패', e?.message ?? '게시글 삭제에 실패했습니다.');
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('게시글을 삭제하시겠습니까?')) {
+        execute();
+      }
+    } else {
+      Alert.alert('삭제', '게시글을 삭제하시겠습니까?', [
+        { text: '취소', style: 'cancel' },
+        { text: '삭제', style: 'destructive', onPress: execute },
+      ]);
+    }
   };
 
   if (loading) {

@@ -167,10 +167,10 @@ def delete_post(
     """게시글 삭제 (작성자 본인만 가능)"""
     supabase = get_supabase()
 
-    existing = supabase.table("posts").select("user_id").eq("id", post_id).single().execute()
-    if not existing.data:
+    existing_result = supabase.table("posts").select("user_id").eq("id", post_id).execute()
+    if not existing_result.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="게시글을 찾을 수 없습니다.")
-    if existing.data["user_id"] != current_user["id"]:
+    if existing_result.data[0]["user_id"] != current_user["id"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다.")
 
     supabase.table("posts").delete().eq("id", post_id).execute()

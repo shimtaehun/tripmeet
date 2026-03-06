@@ -6,6 +6,7 @@ import CommunityScreen from '../screens/community/CommunityScreen';
 import CompanionScreen from '../screens/companion/CompanionScreen';
 import RestaurantListScreen from '../screens/restaurant/RestaurantListScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import ChatListScreen from '../screens/chat/ChatListScreen';
 import CustomTabBar from './CustomTabBar';
 
 const Tab = createBottomTabNavigator();
@@ -26,6 +27,7 @@ export default function MainTabs() {
       <Tab.Screen name="Community"  component={CommunityScreen}   options={{ tabBarLabel: '커뮤니티' }} />
       <Tab.Screen name="Restaurant" component={RestaurantListScreen} options={{ tabBarLabel: '맛집'  }} />
       <Tab.Screen name="Companion"  component={CompanionScreen}   options={{ tabBarLabel: '동행'    }} />
+      <Tab.Screen name="ChatList"   component={ChatListScreen}    options={{ tabBarLabel: '채팅'    }} />
       <Tab.Screen name="Profile"    component={ProfileScreen}     options={{ tabBarLabel: '내 정보' }} />
     </Tab.Navigator>
   );

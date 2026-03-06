@@ -91,5 +91,12 @@ export async function deletePost(id: string): Promise<void> {
     method: 'DELETE',
     headers: { Authorization: auth },
   });
-  if (!res.ok) throw new Error('게시글 삭제 실패');
+  if (!res.ok) {
+    let detail = '게시글 삭제 실패';
+    try {
+      const body = await res.json();
+      if (body?.detail) detail = body.detail;
+    } catch {}
+    throw new Error(detail);
+  }
 }

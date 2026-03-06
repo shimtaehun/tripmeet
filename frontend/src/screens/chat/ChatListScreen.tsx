@@ -33,6 +33,8 @@ export default function ChatListScreen() {
   const [myUserId, setMyUserId] = useState<string | null>(null);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
+  // userId -> nickname 캐시
+  const [nicknameMap, setNicknameMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,7 +51,7 @@ export default function ChatListScreen() {
       orderBy('lastMessageAt', 'desc'),
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
       const data: ChatRoom[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         participants: doc.data().participants,
@@ -58,6 +60,29 @@ export default function ChatListScreen() {
       }));
       setRooms(data);
       setLoading(false);
+
+      // 아직 캐시에 없는 상대방 userId 목록 수집
+      const unknownIds = data
+        .map((room) => room.participants.find((id) => id !== myUserId) ?? '')
+        .filter((id) => id && !nicknameMap[id]);
+
+      if (unknownIds.length === 0) return;
+
+      // Supabase users 테이블에서 닉네임 일괄 조회
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, nickname')
+        .in('id', unknownIds);
+
+      if (users && users.length > 0) {
+        setNicknameMap((prev) => {
+          const next = { ...prev };
+          users.forEach((u: { id: string; nickname: string }) => {
+            next[u.id] = u.nickname;
+          });
+          return next;
+        });
+      }
     });
 
     return () => unsubscribe();
@@ -65,6 +90,11 @@ export default function ChatListScreen() {
 
   const getTargetUserId = (room: ChatRoom) =>
     room.participants.find((id) => id !== myUserId) ?? '';
+
+  const getTargetNickname = (room: ChatRoom) => {
+    const targetId = getTargetUserId(room);
+    return nicknameMap[targetId] ?? targetId;
+  };
 
   if (loading) {
     return (
@@ -99,13 +129,14 @@ export default function ChatListScreen() {
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.divider, marginLeft: 72 }} />}
           renderItem={({ item }) => {
             const targetId = getTargetUserId(item);
+            const targetNickname = getTargetNickname(item);
             return (
               <TouchableOpacity
                 style={styles.roomItem}
                 onPress={() =>
                   navigation.navigate('Chat', {
                     targetUserId: targetId,
-                    targetNickname: targetId,
+                    targetNickname: targetNickname,
                   })
                 }
                 activeOpacity={0.7}
@@ -114,7 +145,7 @@ export default function ChatListScreen() {
                   <Ionicons name="person" size={22} color={Colors.primary} />
                 </View>
                 <View style={styles.roomInfo}>
-                  <Text style={styles.roomName}>{targetId}</Text>
+                  <Text style={styles.roomName}>{targetNickname}</Text>
                   <Text style={styles.lastMessage} numberOfLines={1}>
                     {item.lastMessage || '대화를 시작해보세요.'}
                   </Text>
