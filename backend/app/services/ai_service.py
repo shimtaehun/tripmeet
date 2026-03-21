@@ -1,7 +1,8 @@
 import os
 import json
 from upstash_redis import Redis
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # Redis 클라이언트 (Upstash REST 방식)
 _redis = Redis(
@@ -10,14 +11,7 @@ _redis = Redis(
 )
 
 # Gemini 클라이언트
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-_model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=genai.GenerationConfig(
-        temperature=0.7,
-        response_mime_type="application/json",
-    ),
-)
+_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 CACHE_TTL_SECONDS = 7 * 24 * 60 * 60  # 7일
 
@@ -65,7 +59,14 @@ def _call_gemini(destination: str, duration_days: int, travelers_count: int, bud
         ']}]}'
     )
 
-    response = _model.generate_content(prompt)
+    response = _client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.7,
+            response_mime_type="application/json",
+        ),
+    )
     return json.loads(response.text)
 
 
