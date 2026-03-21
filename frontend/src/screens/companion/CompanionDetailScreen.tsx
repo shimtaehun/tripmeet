@@ -8,8 +8,8 @@ import {
   ScrollView,
   Alert,
   TextInput,
-  Platform,
 } from 'react-native';
+import ConfirmModal from '../../components/ConfirmModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
@@ -35,6 +35,11 @@ export default function CompanionDetailScreen() {
   const [applyMessage, setApplyMessage] = useState('');
   const [applying, setApplying] = useState(false);
   const [showApplyInput, setShowApplyInput] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [closeModalVisible, setCloseModalVisible] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string; message: string; confirmText: string; confirmColor?: string; onConfirm: () => void;
+  } | null>(null);
 
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -57,16 +62,8 @@ export default function CompanionDetailScreen() {
     loadData();
   }, [companionId]);
 
-  const handleDelete = async () => {
-    const confirmed = Platform.OS === 'web'
-      ? window.confirm('동행 구인을 삭제하시겠습니까?')
-      : await new Promise<boolean>(resolve =>
-          Alert.alert('삭제', '동행 구인을 삭제하시겠습니까?', [
-            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
-            { text: '삭제', style: 'destructive', onPress: () => resolve(true) },
-          ])
-        );
-    if (!confirmed) return;
+  const handleDeleteConfirm = async () => {
+    setDeleteModalVisible(false);
     try {
       await deleteCompanion(companionId);
       navigation.goBack();
@@ -76,16 +73,8 @@ export default function CompanionDetailScreen() {
     }
   };
 
-  const handleClose = async () => {
-    const confirmed = Platform.OS === 'web'
-      ? window.confirm('동행 구인을 마감하시겠습니까?')
-      : await new Promise<boolean>(resolve =>
-          Alert.alert('마감', '동행 구인을 마감하시겠습니까?', [
-            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
-            { text: '마감', style: 'destructive', onPress: () => resolve(true) },
-          ])
-        );
-    if (!confirmed) return;
+  const handleCloseConfirm = async () => {
+    setCloseModalVisible(false);
     try {
       await closeCompanion(companionId);
       await loadData();
@@ -110,24 +99,24 @@ export default function CompanionDetailScreen() {
     }
   };
 
-  const handleUpdateStatus = async (app: ApplicationInfo, newStatus: 'accepted' | 'rejected') => {
+  const handleUpdateStatus = (app: ApplicationInfo, newStatus: 'accepted' | 'rejected') => {
     const label = newStatus === 'accepted' ? '수락' : '거절';
-    const confirmed = Platform.OS === 'web'
-      ? window.confirm(`이 신청을 ${label}하시겠습니까?`)
-      : await new Promise<boolean>(resolve =>
-          Alert.alert(label, `이 신청을 ${label}하시겠습니까?`, [
-            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
-            { text: label, onPress: () => resolve(true) },
-          ])
-        );
-    if (!confirmed) return;
-    try {
-      await updateApplicationStatus(companionId, app.id, newStatus);
-      await loadData();
-    } catch (e) {
-      console.error('신청 상태 변경 오류:', e);
-      Alert.alert('오류', '상태 변경에 실패했습니다.');
-    }
+    setConfirmModal({
+      title: `신청 ${label}`,
+      message: `이 신청을 ${label}하시겠습니까?`,
+      confirmText: label,
+      confirmColor: newStatus === 'accepted' ? '#10B981' : '#EF4444',
+      onConfirm: async () => {
+        setConfirmModal(null);
+        try {
+          await updateApplicationStatus(companionId, app.id, newStatus);
+          await loadData();
+        } catch (e) {
+          console.error('신청 상태 변경 오류:', e);
+          Alert.alert('오류', '상태 변경에 실패했습니다.');
+        }
+      },
+    });
   };
 
   if (loading) {
@@ -164,11 +153,11 @@ export default function CompanionDetailScreen() {
               </TouchableOpacity>
             )}
             {isOpen && (
-              <TouchableOpacity onPress={handleClose} style={styles.actionBtn}>
+              <TouchableOpacity onPress={() => setCloseModalVisible(true)} style={styles.actionBtn}>
                 <Text style={styles.closeText}>마감</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={handleDelete} style={styles.actionBtn}>
+            <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={styles.actionBtn}>
               <Text style={styles.deleteText}>삭제</Text>
             </TouchableOpacity>
           </View>
@@ -295,6 +284,34 @@ export default function CompanionDetailScreen() {
             </View>
           ))}
         </View>
+      )}
+      <ConfirmModal
+        visible={deleteModalVisible}
+        title="동행 구인 삭제"
+        message="이 게시글을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다."
+        confirmText="삭제"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteModalVisible(false)}
+      />
+      <ConfirmModal
+        visible={closeModalVisible}
+        title="동행 구인 마감"
+        message="모집을 마감하시겠습니까? 마감 후에는 신청을 받을 수 없습니다."
+        confirmText="마감"
+        confirmColor="#F59E0B"
+        onConfirm={handleCloseConfirm}
+        onCancel={() => setCloseModalVisible(false)}
+      />
+      {confirmModal && (
+        <ConfirmModal
+          visible={true}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.confirmText}
+          confirmColor={confirmModal.confirmColor}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal(null)}
+        />
       )}
     </ScrollView>
   );

@@ -9,8 +9,8 @@ import {
   Alert,
   Image,
   Dimensions,
-  Platform,
 } from 'react-native';
+import ConfirmModal from '../../components/ConfirmModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
@@ -38,6 +38,7 @@ export default function RestaurantDetailScreen() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -60,16 +61,8 @@ export default function RestaurantDetailScreen() {
     loadData();
   }, [restaurantId]);
 
-  const handleDelete = async () => {
-    const confirmed = Platform.OS === 'web'
-      ? window.confirm('맛집을 삭제하시겠습니까?')
-      : await new Promise<boolean>(resolve =>
-          Alert.alert('삭제', '맛집을 삭제하시겠습니까?', [
-            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
-            { text: '삭제', style: 'destructive', onPress: () => resolve(true) },
-          ])
-        );
-    if (!confirmed) return;
+  const handleDeleteConfirm = async () => {
+    setDeleteModalVisible(false);
     try {
       await deleteRestaurant(restaurantId);
       navigation.goBack();
@@ -108,7 +101,7 @@ export default function RestaurantDetailScreen() {
             >
               <Text style={styles.editText}>수정</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDelete} style={styles.actionBtn}>
+            <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={styles.actionBtn}>
               <Text style={styles.deleteText}>삭제</Text>
             </TouchableOpacity>
           </View>
@@ -157,6 +150,14 @@ export default function RestaurantDetailScreen() {
           <Text style={styles.date}>{new Date(restaurant.created_at).toLocaleDateString('ko-KR')}</Text>
         </View>
       </View>
+      <ConfirmModal
+        visible={deleteModalVisible}
+        title="맛집 삭제"
+        message="이 맛집을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다."
+        confirmText="삭제"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteModalVisible(false)}
+      />
     </ScrollView>
   );
 }
