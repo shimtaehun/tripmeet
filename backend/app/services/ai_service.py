@@ -60,7 +60,7 @@ def _call_gemini(destination: str, duration_days: int, travelers_count: int, bud
     )
 
     response = _client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.7,
