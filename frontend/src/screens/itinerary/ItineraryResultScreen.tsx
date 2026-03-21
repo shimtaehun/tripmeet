@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Share,
   Alert,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -87,6 +86,8 @@ export default function ItineraryResultScreen() {
       style={styles.root}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
+      scrollEnabled
+      nestedScrollEnabled
     >
       <LinearGradient
         colors={Gradients.ai}
@@ -205,9 +206,8 @@ export default function ItineraryResultScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.background,
-    ...(Platform.OS === 'web' ? { height: '100%' as any, overflow: 'hidden' as any } : {}),
   },
   root: { flex: 1 },
   scrollContent: { paddingBottom: 60 },
