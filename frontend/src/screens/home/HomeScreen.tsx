@@ -26,7 +26,7 @@ const QUICK_MENUS = [
     label: 'AI 일정',
     color: '#8B5CF6',
     bg: '#F5F3FF',
-    navigate: () => ({ type: 'screen' as const, name: 'ItineraryForm' }),
+    navigate: () => ({ type: 'screen' as const, name: 'Itinerary' }),
   },
   {
     icon: 'location'    as const,
@@ -431,7 +431,7 @@ export default function HomeScreen() {
           {/* ── AI 일정 배너 ── */}
           <View style={[styles.aiBannerWrap, isDesktop && styles.aiBannerWrapDesktop]}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ItineraryForm')}
+              onPress={() => navigation.navigate('Itinerary')}
               activeOpacity={0.88}
               accessibilityLabel="AI 여행 일정 만들기"
             >

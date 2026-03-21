@@ -14,7 +14,6 @@ import RestaurantDetailScreen from '../screens/restaurant/RestaurantDetailScreen
 import CompanionCreateScreen from '../screens/companion/CompanionCreateScreen';
 import CompanionDetailScreen from '../screens/companion/CompanionDetailScreen';
 import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
-import ItineraryFormScreen from '../screens/itinerary/ItineraryFormScreen';
 import ItineraryResultScreen from '../screens/itinerary/ItineraryResultScreen';
 import MyItinerariesScreen from '../screens/itinerary/MyItinerariesScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
@@ -35,6 +34,7 @@ const linking = {
           Community: 'community',
           Restaurant: 'restaurant',
           Companion: 'companion',
+          Itinerary: 'itinerary',
           Profile: 'profile',
         },
       },
@@ -47,7 +47,6 @@ const linking = {
       CompanionEdit: 'companion/:companionId/edit',
       CompanionDetail: 'companion/:companionId',
       ProfileEdit: 'profile/edit',
-      ItineraryForm: 'itinerary/form',
       ItineraryResult: 'itinerary/result',
       MyItineraries: 'itinerary/my',
       Chat: 'chat',
@@ -121,7 +120,6 @@ export default function RootNavigator() {
             <Stack.Screen name="CompanionEdit" component={CompanionCreateScreen} />
             <Stack.Screen name="CompanionDetail" component={CompanionDetailScreen} />
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
-            <Stack.Screen name="ItineraryForm" component={ItineraryFormScreen} />
             <Stack.Screen name="ItineraryResult" component={ItineraryResultScreen} />
             <Stack.Screen name="MyItineraries" component={MyItinerariesScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />

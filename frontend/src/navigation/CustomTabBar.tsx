@@ -23,6 +23,7 @@ const TAB_META: Record<string, {
   Community:  { label: '커뮤니티', icon: 'chatbubbles-outline', iconActive: 'chatbubbles', activeColor: Colors.primary },
   Restaurant: { label: '맛집',    icon: 'restaurant-outline',  iconActive: 'restaurant',  activeColor: Colors.red     },
   Companion:  { label: '동행',    icon: 'people-outline',      iconActive: 'people',      activeColor: Colors.amber   },
+  Itinerary:  { label: 'AI 일정', icon: 'sparkles-outline',    iconActive: 'sparkles',    activeColor: '#7C3AED'      },
   Profile:    { label: '내 정보', icon: 'person-outline',      iconActive: 'person',      activeColor: Colors.primary },
 };
 
