@@ -36,15 +36,18 @@ interface Itinerary {
   is_cached: boolean;
 }
 
-// 시간대별 borderLeft 색상 반환
+// 시간대별 borderLeft 색상 반환 (한국어 오전/오후/저녁 및 HH:MM 형식 모두 지원)
 function getTimeColor(time: string): string {
+  if (time.includes('오전')) return Colors.amber;
+  if (time.includes('오후')) return Colors.primary;
+  if (time.includes('저녁') || time.includes('밤')) return Colors.purple;
   const match = time.match(/^(\d{1,2}):/);
-  if (!match) return Colors.green;
+  if (!match) return Colors.amber;
   const hour = parseInt(match[1], 10);
   if (hour >= 6 && hour < 12) return Colors.amber;
   if (hour >= 12 && hour < 18) return Colors.primary;
   if (hour >= 18 && hour < 24) return Colors.purple;
-  return Colors.green;
+  return Colors.amber;
 }
 
 function getTimeDotColor(time: string): string {
