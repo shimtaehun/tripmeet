@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -59,23 +60,22 @@ export default function RestaurantDetailScreen() {
     loadData();
   }, [restaurantId]);
 
-  const handleDelete = () => {
-    Alert.alert('삭제', '맛집을 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteRestaurant(restaurantId);
-            navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Restaurant' } }] });
-          } catch (e: any) {
-            console.error('맛집 삭제 오류:', e);
-            Alert.alert('오류', e?.message ?? '맛집 삭제에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+  const handleDelete = async () => {
+    const confirmed = Platform.OS === 'web'
+      ? window.confirm('맛집을 삭제하시겠습니까?')
+      : await new Promise<boolean>(resolve =>
+          Alert.alert('삭제', '맛집을 삭제하시겠습니까?', [
+            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+            { text: '삭제', style: 'destructive', onPress: () => resolve(true) },
+          ])
+        );
+    if (!confirmed) return;
+    try {
+      await deleteRestaurant(restaurantId);
+      navigation.goBack();
+    } catch (e: any) {
+      Alert.alert('오류', e?.message ?? '맛집 삭제에 실패했습니다.');
+    }
   };
 
   if (loading) {

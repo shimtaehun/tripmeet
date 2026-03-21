@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getRestaurants, RestaurantSummary } from '../../services/restaurantService';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
@@ -106,6 +106,10 @@ export default function RestaurantListScreen() {
     setLoading(true);
     fetchRestaurants(submittedFilter).finally(() => setLoading(false));
   }, [submittedFilter, fetchRestaurants]);
+
+  useFocusEffect(useCallback(() => {
+    fetchRestaurants(submittedFilter);
+  }, [submittedFilter, fetchRestaurants]));
 
   const handleSearch = () => setSubmittedFilter(locationFilter.trim());
 

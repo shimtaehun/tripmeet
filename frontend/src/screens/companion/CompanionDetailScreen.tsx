@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   TextInput,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -56,42 +57,42 @@ export default function CompanionDetailScreen() {
     loadData();
   }, [companionId]);
 
-  const handleDelete = () => {
-    Alert.alert('삭제', '동행 구인을 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteCompanion(companionId);
-            navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Companion' } }] });
-          } catch (e) {
-            console.error('동행 구인 삭제 오류:', e);
-            Alert.alert('오류', '삭제에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+  const handleDelete = async () => {
+    const confirmed = Platform.OS === 'web'
+      ? window.confirm('동행 구인을 삭제하시겠습니까?')
+      : await new Promise<boolean>(resolve =>
+          Alert.alert('삭제', '동행 구인을 삭제하시겠습니까?', [
+            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+            { text: '삭제', style: 'destructive', onPress: () => resolve(true) },
+          ])
+        );
+    if (!confirmed) return;
+    try {
+      await deleteCompanion(companionId);
+      navigation.goBack();
+    } catch (e) {
+      console.error('동행 구인 삭제 오류:', e);
+      Alert.alert('오류', '삭제에 실패했습니다.');
+    }
   };
 
-  const handleClose = () => {
-    Alert.alert('마감', '동행 구인을 마감하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '마감',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await closeCompanion(companionId);
-            await loadData();
-          } catch (e) {
-            console.error('마감 오류:', e);
-            Alert.alert('오류', '마감 처리에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+  const handleClose = async () => {
+    const confirmed = Platform.OS === 'web'
+      ? window.confirm('동행 구인을 마감하시겠습니까?')
+      : await new Promise<boolean>(resolve =>
+          Alert.alert('마감', '동행 구인을 마감하시겠습니까?', [
+            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+            { text: '마감', style: 'destructive', onPress: () => resolve(true) },
+          ])
+        );
+    if (!confirmed) return;
+    try {
+      await closeCompanion(companionId);
+      await loadData();
+    } catch (e) {
+      console.error('마감 오류:', e);
+      Alert.alert('오류', '마감 처리에 실패했습니다.');
+    }
   };
 
   const handleApply = async () => {
@@ -111,21 +112,22 @@ export default function CompanionDetailScreen() {
 
   const handleUpdateStatus = async (app: ApplicationInfo, newStatus: 'accepted' | 'rejected') => {
     const label = newStatus === 'accepted' ? '수락' : '거절';
-    Alert.alert(label, `이 신청을 ${label}하시겠습니까?`, [
-      { text: '취소', style: 'cancel' },
-      {
-        text: label,
-        onPress: async () => {
-          try {
-            await updateApplicationStatus(companionId, app.id, newStatus);
-            await loadData();
-          } catch (e) {
-            console.error('신청 상태 변경 오류:', e);
-            Alert.alert('오류', '상태 변경에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+    const confirmed = Platform.OS === 'web'
+      ? window.confirm(`이 신청을 ${label}하시겠습니까?`)
+      : await new Promise<boolean>(resolve =>
+          Alert.alert(label, `이 신청을 ${label}하시겠습니까?`, [
+            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+            { text: label, onPress: () => resolve(true) },
+          ])
+        );
+    if (!confirmed) return;
+    try {
+      await updateApplicationStatus(companionId, app.id, newStatus);
+      await loadData();
+    } catch (e) {
+      console.error('신청 상태 변경 오류:', e);
+      Alert.alert('오류', '상태 변경에 실패했습니다.');
+    }
   };
 
   if (loading) {
