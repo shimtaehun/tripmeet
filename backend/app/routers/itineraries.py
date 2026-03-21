@@ -40,34 +40,46 @@ def create_itinerary(
 ):
     """
     AI 여행 일정 생성.
-    Redis 캐시 히트 시 GPT를 호출하지 않고 즉시 반환한다. (context.md 원칙 3)
+    Redis 캐시 히트 시 Gemini를 호출하지 않고 즉시 반환한다. (context.md 원칙 3)
     """
-    content, cache_key, is_cached = get_or_generate_itinerary(
-        destination=body.destination,
-        duration_days=body.duration_days,
-        travelers_count=body.travelers_count,
-        budget_won=body.budget_won,
-    )
+    try:
+        content, cache_key, is_cached = get_or_generate_itinerary(
+            destination=body.destination,
+            duration_days=body.duration_days,
+            travelers_count=body.travelers_count,
+            budget_won=body.budget_won,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"AI 일정 생성 실패: {str(e)}",
+        )
 
     supabase = get_supabase()
 
-    # 동일 cache_key 일정이 이미 DB에 있으면 재사용
-    existing = supabase.table("itineraries").select("*").eq("cache_key", cache_key).limit(1).execute()
-    if existing.data:
-        row = existing.data[0]
-        return ItineraryResponse(**row, is_cached=True)
+    try:
+        # 동일 cache_key 일정이 이미 DB에 있으면 재사용
+        existing = supabase.table("itineraries").select("*").eq("cache_key", cache_key).limit(1).execute()
+        if existing.data:
+            row = existing.data[0]
+            return ItineraryResponse(**row, is_cached=True)
 
-    # DB 저장
-    budget_range = cache_key.split(":")[-1]
-    result = supabase.table("itineraries").insert({
-        "user_id": current_user["id"],
-        "destination": body.destination,
-        "duration_days": body.duration_days,
-        "travelers_count": body.travelers_count,
-        "budget_range": budget_range,
-        "cache_key": cache_key,
-        "content": content,
-    }).execute()
+        # DB 저장
+        budget_range = cache_key.split(":")[-1]
+        result = supabase.table("itineraries").insert({
+            "user_id": current_user["id"],
+            "destination": body.destination,
+            "duration_days": body.duration_days,
+            "travelers_count": body.travelers_count,
+            "budget_range": budget_range,
+            "cache_key": cache_key,
+            "content": content,
+        }).execute()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"DB 저장 실패: {str(e)}",
+        )
 
     return ItineraryResponse(**result.data[0], is_cached=is_cached)
 

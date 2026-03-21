@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
+import { apiFetch } from '../../services/apiClient';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 export default function ItineraryFormScreen() {
@@ -58,7 +59,7 @@ export default function ItineraryFormScreen() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/itineraries/`, {
+      const res = await apiFetch(`${process.env.EXPO_PUBLIC_API_URL}/itineraries/`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -72,12 +73,19 @@ export default function ItineraryFormScreen() {
         }),
       });
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        let detail = '일정 생성에 실패했습니다.';
+        try {
+          const body = await res.json();
+          if (body.detail) detail = body.detail;
+        } catch {}
+        throw new Error(detail);
+      }
 
       const data = await res.json();
       navigation.navigate('ItineraryResult', { itinerary: data });
-    } catch {
-      Alert.alert('오류', '일정 생성에 실패했습니다. 다시 시도해주세요.');
+    } catch (e: any) {
+      Alert.alert('오류', e?.message ?? '일정 생성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
