@@ -13,7 +13,6 @@ _redis = Redis(
 # Gemini 클라이언트 (v1 API 사용 - gemini-1.5-flash 지원)
 _client = genai.Client(
     api_key=os.environ["GEMINI_API_KEY"],
-    http_options={"api_version": "v1"},
 )
 
 CACHE_TTL_SECONDS = 7 * 24 * 60 * 60  # 7일
@@ -63,14 +62,20 @@ def _call_gemini(destination: str, duration_days: int, travelers_count: int, bud
     )
 
     response = _client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.7,
-            response_mime_type="application/json",
         ),
     )
-    return json.loads(response.text)
+
+    # 마크다운 코드블록 제거 후 JSON 파싱
+    text = response.text.strip()
+    if text.startswith("```"):
+        text = text[text.index("\n") + 1:]
+        if "```" in text:
+            text = text[:text.rindex("```")]
+    return json.loads(text.strip())
 
 
 def get_or_generate_itinerary(

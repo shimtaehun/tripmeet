@@ -1,8 +1,11 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from app.db.supabase_client import get_supabase
 from app.middleware.auth import get_current_user
 from app.services.ai_service import get_or_generate_itinerary
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/itineraries", tags=["itineraries"])
 
@@ -50,6 +53,7 @@ def create_itinerary(
             budget_won=body.budget_won,
         )
     except Exception as e:
+        logger.error("AI 일정 생성 실패: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"AI 일정 생성 실패: {str(e)}",
