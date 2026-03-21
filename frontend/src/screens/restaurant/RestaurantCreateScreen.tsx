@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { createRestaurant, updateRestaurant, Restaurant } from '../../services/restaurantService';
+import { createRestaurant, updateRestaurant, getRestaurant } from '../../services/restaurantService';
 import { compressImage } from '../../utils/imageCompressor';
 import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
@@ -36,16 +36,29 @@ export default function RestaurantCreateScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
-  const editRestaurant: Restaurant | undefined = route.params?.restaurant;
-  const isEditMode = !!editRestaurant;
+  const editRestaurantId: string | undefined = route.params?.restaurantId;
+  const isEditMode = !!editRestaurantId;
 
-  const [name, setName] = useState(editRestaurant?.name ?? '');
-  const [locationName, setLocationName] = useState(editRestaurant?.location_name ?? '');
-  const [description, setDescription] = useState(editRestaurant?.description ?? '');
-  const [rating, setRating] = useState(editRestaurant?.rating ?? 0);
+  const [name, setName] = useState('');
+  const [locationName, setLocationName] = useState('');
+  const [description, setDescription] = useState('');
+  const [rating, setRating] = useState(0);
   const [images, setImages] = useState<{ uri: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!editRestaurantId) return;
+    getRestaurant(editRestaurantId).then(data => {
+      setName(data.name);
+      setLocationName(data.location_name);
+      setDescription(data.description ?? '');
+      setRating(data.rating);
+    }).catch(() => {
+      Alert.alert('오류', '맛집 정보를 불러올 수 없습니다.');
+      navigation.goBack();
+    });
+  }, [editRestaurantId]);
 
   const handlePickImages = async () => {
     if (images.length >= MAX_IMAGES) {
@@ -89,7 +102,7 @@ export default function RestaurantCreateScreen() {
     setLoading(true);
     try {
       if (isEditMode) {
-        await updateRestaurant(editRestaurant.id, {
+        await updateRestaurant(editRestaurantId!, {
           name: name.trim(),
           location_name: locationName.trim(),
           description: description.trim() || undefined,
@@ -115,10 +128,7 @@ export default function RestaurantCreateScreen() {
           images: compressedImages,
         });
       }
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main', state: { routes: [{ name: 'Restaurant' }] } }],
-      });
+      navigation.navigate('Main', { screen: 'Restaurant' });
     } catch (e: any) {
       console.error('맛집 저장 오류:', e);
       setErrorMsg(e?.message ?? (isEditMode ? '맛집 수정에 실패했습니다.' : '맛집 등록에 실패했습니다.'));

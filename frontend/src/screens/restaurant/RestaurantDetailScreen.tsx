@@ -68,10 +68,7 @@ export default function RestaurantDetailScreen() {
         onPress: async () => {
           try {
             await deleteRestaurant(restaurantId);
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Main', state: { routes: [{ name: 'Restaurant' }] } }],
-            });
+            navigation.navigate('Main', { screen: 'Restaurant' });
           } catch (e) {
             console.error('맛집 삭제 오류:', e);
             Alert.alert('오류', '맛집 삭제에 실패했습니다.');
@@ -106,7 +103,7 @@ export default function RestaurantDetailScreen() {
         {isAuthor && (
           <View style={styles.authorActions}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('RestaurantEdit', { restaurant })}
+              onPress={() => navigation.navigate('RestaurantEdit', { restaurantId: restaurant.id })}
               style={styles.actionBtn}
             >
               <Text style={styles.editText}>수정</Text>

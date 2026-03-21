@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,26 +7,41 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { createCompanion, updateCompanion, CompanionDetail } from '../../services/companionService';
+import { createCompanion, updateCompanion, getCompanion } from '../../services/companionService';
 import { Colors, Radius, Spacing } from '../../utils/theme';
 
 export default function CompanionCreateScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
-  const editCompanion: CompanionDetail | undefined = route.params?.companion;
-  const isEditMode = !!editCompanion;
+  const editCompanionId: string | undefined = route.params?.companionId;
+  const isEditMode = !!editCompanionId;
 
-  const [destination, setDestination] = useState(editCompanion?.destination ?? '');
-  const [startDate, setStartDate] = useState(editCompanion?.travel_start_date ?? '');
-  const [endDate, setEndDate] = useState(editCompanion?.travel_end_date ?? '');
-  const [description, setDescription] = useState(editCompanion?.description ?? '');
-  const [maxParticipants, setMaxParticipants] = useState(String(editCompanion?.max_participants ?? '2'));
+  const [destination, setDestination] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [maxParticipants, setMaxParticipants] = useState('2');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!editCompanionId) return;
+    getCompanion(editCompanionId).then(data => {
+      setDestination(data.destination);
+      setStartDate(data.travel_start_date);
+      setEndDate(data.travel_end_date);
+      setDescription(data.description);
+      setMaxParticipants(String(data.max_participants));
+    }).catch(() => {
+      Alert.alert('오류', '동행 정보를 불러올 수 없습니다.');
+      navigation.goBack();
+    });
+  }, [editCompanionId]);
 
   const handleSubmit = async () => {
     setErrorMsg(null);
@@ -56,7 +71,7 @@ export default function CompanionCreateScreen() {
     setLoading(true);
     try {
       if (isEditMode) {
-        await updateCompanion(editCompanion.id, {
+        await updateCompanion(editCompanionId!, {
           destination: destination.trim(),
           travel_start_date: startDate.trim(),
           travel_end_date: endDate.trim(),
@@ -72,10 +87,7 @@ export default function CompanionCreateScreen() {
           max_participants: max,
         });
       }
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main', state: { routes: [{ name: 'Companion' }] } }],
-      });
+      navigation.navigate('Main', { screen: 'Companion' });
     } catch (e: any) {
       console.error('동행 구인 저장 오류:', e);
       setErrorMsg(e?.message ?? (isEditMode ? '동행 구인 수정에 실패했습니다.' : '동행 구인 등록에 실패했습니다.'));
