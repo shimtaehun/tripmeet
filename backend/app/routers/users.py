@@ -3,8 +3,13 @@ from pydantic import BaseModel
 from app.db.supabase_client import get_supabase
 from app.middleware.auth import get_current_user
 from app.services.storage_service import upload_image
+from app.services.embedding_service import get_embedding
+import asyncio
+import logging
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+logger = logging.getLogger(__name__)
 
 
 class UserProfile(BaseModel):
@@ -32,14 +37,29 @@ def get_my_profile(current_user: dict = Depends(get_current_user)):
 
 
 @router.patch("/me", response_model=UserProfile)
-def update_my_profile(
+async def update_my_profile(
     body: UpdateProfileRequest,
     current_user: dict = Depends(get_current_user),
 ):
-    """내 프로필 수정 (nickname, bio)"""
+    """
+    내 프로필 수정 (nickname, bio).
+    bio가 변경되면 Gemini text-embedding-004로 성향 벡터를 자동 생성한다.
+    """
     updates = body.model_dump(exclude_none=True)
     if not updates:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="수정할 항목이 없습니다.")
+
+    # bio가 변경되면 임베딩 생성
+    if "bio" in updates and updates["bio"].strip():
+        try:
+            embedding = await get_embedding(updates["bio"])
+            updates["preference_embedding"] = embedding
+        except Exception as e:
+            # 임베딩 실패 시에도 프로필 수정은 진행 (임베딩만 건너뜀)
+            logger.warning(f"임베딩 생성 실패 (프로필 수정은 계속 진행): {e}")
+    elif "bio" in updates and not updates["bio"].strip():
+        # bio를 비우면 임베딩도 제거
+        updates["preference_embedding"] = None
 
     supabase = get_supabase()
     result = supabase.table("users").update(updates).eq("id", current_user["id"]).execute()
