@@ -1,7 +1,7 @@
 import os
 import json
 from upstash_redis import Redis
-from openai import OpenAI
+import google.generativeai as genai
 
 # Redis 클라이언트 (Upstash REST 방식)
 _redis = Redis(
@@ -9,8 +9,15 @@ _redis = Redis(
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"],
 )
 
-# OpenAI 클라이언트
-_openai = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+# Gemini 클라이언트
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+_model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=genai.GenerationConfig(
+        temperature=0.7,
+        response_mime_type="application/json",
+    ),
+)
 
 CACHE_TTL_SECONDS = 7 * 24 * 60 * 60  # 7일
 
@@ -43,8 +50,8 @@ def build_cache_key(destination: str, duration_days: int, travelers_count: int, 
     return f"{destination}:{duration_days}일:{travelers_count}명:{budget_range}"
 
 
-def _call_gpt(destination: str, duration_days: int, travelers_count: int, budget_range: str) -> dict:
-    """GPT-4o-mini를 호출해 여행 일정 JSON을 생성한다."""
+def _call_gemini(destination: str, duration_days: int, travelers_count: int, budget_range: str) -> dict:
+    """Gemini 1.5 Flash를 호출해 여행 일정 JSON을 생성한다."""
     prompt = (
         f"여행지: {destination}\n"
         f"여행 기간: {duration_days}일\n"
@@ -58,14 +65,8 @@ def _call_gpt(destination: str, duration_days: int, travelers_count: int, budget
         ']}]}'
     )
 
-    response = _openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
-        response_format={"type": "json_object"},
-    )
-
-    return json.loads(response.choices[0].message.content)
+    response = _model.generate_content(prompt)
+    return json.loads(response.text)
 
 
 def get_or_generate_itinerary(
@@ -75,7 +76,7 @@ def get_or_generate_itinerary(
     budget_won: int,
 ) -> tuple[dict, str, bool]:
     """
-    캐시 조회 후 없으면 GPT 호출 → 결과 캐싱. (context.md 원칙 3)
+    캐시 조회 후 없으면 Gemini 호출 → 결과 캐싱. (context.md 원칙 3)
 
     :return: (일정 content dict, cache_key, is_cached)
     """
@@ -87,8 +88,8 @@ def get_or_generate_itinerary(
     if cached:
         return json.loads(cached), cache_key, True
 
-    # 캐시 미스 → GPT 호출
-    content = _call_gpt(destination, duration_days, travelers_count, budget_range)
+    # 캐시 미스 → Gemini 호출
+    content = _call_gemini(destination, duration_days, travelers_count, budget_range)
 
     # 결과 캐싱 (TTL 7일)
     _redis.set(cache_key, json.dumps(content, ensure_ascii=False), ex=CACHE_TTL_SECONDS)

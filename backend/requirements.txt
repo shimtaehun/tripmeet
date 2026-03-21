@@ -5,9 +5,6 @@ uvicorn[standard]==0.32.1
 # Supabase (DB + Auth)
 supabase==2.10.0
 
-# OpenAI (AI 일정 생성)
-openai==1.57.0
-
 # Redis (AI 결과 캐싱 - Upstash REST 방식)
 upstash-redis==1.1.0
 
@@ -22,3 +19,6 @@ httpx>=0.26,<0.28
 
 # multipart/form-data 파싱 (파일 업로드)
 python-multipart==0.0.20
+
+# Google Gemini (text-embedding-004 임베딩)
+google-generativeai>=0.8.0
