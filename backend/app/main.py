@@ -39,10 +39,20 @@ app.include_router(matching.router)
 
 @app.get("/health")
 def health_check():
+    db_status = "ok"
+    redis_status = "ok"
+
     try:
         from app.db.supabase_client import get_supabase
         supabase = get_supabase()
         supabase.table("profiles").select("id").limit(1).execute()
-        return {"status": "ok", "db": "ok"}
     except Exception:
-        return {"status": "ok", "db": "error"}
+        db_status = "error"
+
+    try:
+        from app.services.ai_service import _redis
+        _redis.set("__keepalive__", "1", ex=86400)
+    except Exception:
+        redis_status = "error"
+
+    return {"status": "ok", "db": db_status, "redis": redis_status}
