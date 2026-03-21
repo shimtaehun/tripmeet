@@ -63,7 +63,6 @@ export default function CompanionCreateScreen() {
           description: description.trim(),
           max_participants: max,
         });
-        navigation.navigate('Main', { screen: 'Companion' });
       } else {
         await createCompanion({
           destination: destination.trim(),
@@ -72,8 +71,11 @@ export default function CompanionCreateScreen() {
           description: description.trim(),
           max_participants: max,
         });
-        navigation.navigate('Main', { screen: 'Companion' });
       }
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main', state: { routes: [{ name: 'Companion' }] } }],
+      });
     } catch (e: any) {
       console.error('동행 구인 저장 오류:', e);
       setErrorMsg(e?.message ?? (isEditMode ? '동행 구인 수정에 실패했습니다.' : '동행 구인 등록에 실패했습니다.'));

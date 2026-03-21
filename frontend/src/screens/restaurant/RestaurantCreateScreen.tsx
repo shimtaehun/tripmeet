@@ -95,7 +95,6 @@ export default function RestaurantCreateScreen() {
           description: description.trim() || undefined,
           rating,
         });
-        navigation.navigate('Main', { screen: 'Restaurant' });
       } else {
         const compressedImages = await Promise.all(
           images.map(async (img, index) => {
@@ -115,9 +114,11 @@ export default function RestaurantCreateScreen() {
           rating,
           images: compressedImages,
         });
-
-        navigation.navigate('Main', { screen: 'Restaurant' });
       }
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main', state: { routes: [{ name: 'Restaurant' }] } }],
+      });
     } catch (e: any) {
       console.error('맛집 저장 오류:', e);
       setErrorMsg(e?.message ?? (isEditMode ? '맛집 수정에 실패했습니다.' : '맛집 등록에 실패했습니다.'));

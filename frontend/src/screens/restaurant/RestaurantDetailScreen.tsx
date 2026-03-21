@@ -40,8 +40,8 @@ export default function RestaurantDetailScreen() {
 
   useEffect(() => {
     const loadData = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setCurrentUserId(session?.user.id ?? null);
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
 
       try {
         const data = await getRestaurant(restaurantId);
@@ -68,7 +68,10 @@ export default function RestaurantDetailScreen() {
         onPress: async () => {
           try {
             await deleteRestaurant(restaurantId);
-            navigation.navigate('Main', { screen: 'Restaurant' });
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Main', state: { routes: [{ name: 'Restaurant' }] } }],
+            });
           } catch (e) {
             console.error('맛집 삭제 오류:', e);
             Alert.alert('오류', '맛집 삭제에 실패했습니다.');

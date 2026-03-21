@@ -36,8 +36,8 @@ export default function CompanionDetailScreen() {
   const [showApplyInput, setShowApplyInput] = useState(false);
 
   const loadData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setCurrentUserId(session?.user.id ?? null);
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUserId(user?.id ?? null);
 
     try {
       const data = await getCompanion(companionId);
@@ -65,7 +65,10 @@ export default function CompanionDetailScreen() {
         onPress: async () => {
           try {
             await deleteCompanion(companionId);
-            navigation.navigate('Main', { screen: 'Companion' });
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Main', state: { routes: [{ name: 'Companion' }] } }],
+            });
           } catch (e) {
             console.error('동행 구인 삭제 오류:', e);
             Alert.alert('오류', '삭제에 실패했습니다.');
