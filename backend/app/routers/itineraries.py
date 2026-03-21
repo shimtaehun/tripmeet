@@ -74,6 +74,7 @@ def create_itinerary(
             duration_days=body.duration_days,
             travelers_count=body.travelers_count,
             budget_won=body.budget_won,
+            user_id=current_user["id"],
         )
     except Exception as e:
         logger.error("AI 일정 생성 실패: %s", e, exc_info=True)
@@ -92,7 +93,7 @@ def create_itinerary(
             return ItineraryResponse(**row, is_cached=True)
 
         # DB 저장
-        budget_range = cache_key.split(":")[-1]
+        budget_range = cache_key.split(":")[-2]
         result = supabase.table("itineraries").insert({
             "user_id": current_user["id"],
             "destination": body.destination,
