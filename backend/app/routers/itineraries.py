@@ -10,6 +10,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/itineraries", tags=["itineraries"])
 
 
+class ItineraryListItem(BaseModel):
+    id: str
+    destination: str
+    duration_days: int
+    travelers_count: int
+    budget_range: str
+    created_at: str
+
+
 class CreateItineraryRequest(BaseModel):
     destination: str
     duration_days: int
@@ -34,6 +43,20 @@ class ItineraryDetailResponse(BaseModel):
     travelers_count: int
     budget_range: str
     content: dict
+
+
+@router.get("/", response_model=list[ItineraryListItem])
+def list_my_itineraries(current_user: dict = Depends(get_current_user)):
+    """내 저장 일정 목록 조회 (최신순)"""
+    supabase = get_supabase()
+    result = (
+        supabase.table("itineraries")
+        .select("id, destination, duration_days, travelers_count, budget_range, created_at")
+        .eq("user_id", current_user["id"])
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return result.data or []
 
 
 @router.post("/", response_model=ItineraryResponse, status_code=status.HTTP_201_CREATED)

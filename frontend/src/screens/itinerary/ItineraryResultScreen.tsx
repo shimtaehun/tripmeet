@@ -81,7 +81,11 @@ export default function ItineraryResultScreen() {
   };
 
   return (
-    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <LinearGradient
         colors={Gradients.ai}
         start={{ x: 0, y: 0 }}
@@ -166,27 +170,39 @@ export default function ItineraryResultScreen() {
         ))}
       </View>
 
-      <TouchableOpacity
-        style={styles.shareWrap}
-        onPress={handleShare}
-        activeOpacity={0.85}
-      >
-        <LinearGradient
-          colors={Gradients.coral}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.shareBtn}
+      <View style={styles.bottomBtns}>
+        <TouchableOpacity
+          style={styles.savedBtn}
+          onPress={() => navigation.navigate('MyItineraries')}
+          activeOpacity={0.85}
         >
-          <Ionicons name="share-social-outline" size={18} color="#fff" />
-          <Text style={styles.shareBtnText}>SNS 공유하기</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <Ionicons name="bookmark" size={16} color={Colors.primary} />
+          <Text style={styles.savedBtnText}>저장된 일정 보기</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.shareWrap}
+          onPress={handleShare}
+          activeOpacity={0.85}
+        >
+          <LinearGradient
+            colors={Gradients.coral}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.shareBtn}
+          >
+            <Ionicons name="share-social-outline" size={18} color="#fff" />
+            <Text style={styles.shareBtnText}>SNS 공유하기</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
+  scrollContent: { paddingBottom: 60 },
 
   header: {
     paddingTop: 52,
@@ -286,12 +302,26 @@ const styles = StyleSheet.create({
   activityTitle: { fontSize: 15, fontWeight: '700' as const, color: Colors.text, marginBottom: 2 },
   activityDesc: { fontSize: 13, color: Colors.textMedium, lineHeight: 19 },
 
+  bottomBtns: {
+    margin: Spacing.screenPad,
+    marginTop: 20,
+    gap: 12,
+  },
+  savedBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1.5,
+    borderColor: Colors.primaryBorder,
+    borderRadius: Radius.full,
+    paddingVertical: 13,
+    backgroundColor: Colors.primaryLight,
+  },
+  savedBtnText: { fontSize: 15, fontWeight: '600' as const, color: Colors.primary },
   shareWrap: {
     borderRadius: Radius.full,
     overflow: 'hidden',
-    margin: Spacing.screenPad,
-    marginTop: 20,
-    marginBottom: 40,
     ...Shadow.coral,
   },
   shareBtn: {
