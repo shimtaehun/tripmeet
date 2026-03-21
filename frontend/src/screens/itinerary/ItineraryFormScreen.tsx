@@ -21,6 +21,20 @@ export default function ItineraryFormScreen() {
   const [durationDays, setDurationDays] = useState('');
   const [travelersCount, setTravelersCount] = useState('1');
   const [budgetWon, setBudgetWon] = useState('');
+
+  const handleDurationChange = (text: string) => {
+    setDurationDays(text.replace(/[^0-9]/g, ''));
+  };
+
+  const handleTravelersChange = (text: string) => {
+    setTravelersCount(text.replace(/[^0-9]/g, '') || '1');
+  };
+
+  const handleBudgetChange = (text: string) => {
+    const digits = text.replace(/[^0-9]/g, '');
+    if (digits === '') { setBudgetWon(''); return; }
+    setBudgetWon(Number(digits).toLocaleString('ko-KR'));
+  };
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -118,10 +132,10 @@ export default function ItineraryFormScreen() {
             <TextInput
               style={styles.input}
               value={durationDays}
-              onChangeText={setDurationDays}
+              onChangeText={handleDurationChange}
               placeholder="예: 3 (일)"
               placeholderTextColor={Colors.textLight}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               maxLength={2}
               onFocus={() => setFocusedField('duration')}
               onBlur={() => setFocusedField(null)}
@@ -137,10 +151,10 @@ export default function ItineraryFormScreen() {
             <TextInput
               style={styles.input}
               value={travelersCount}
-              onChangeText={setTravelersCount}
+              onChangeText={handleTravelersChange}
               placeholder="예: 1 (명)"
               placeholderTextColor={Colors.textLight}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               maxLength={2}
               onFocus={() => setFocusedField('travelers')}
               onBlur={() => setFocusedField(null)}
@@ -156,8 +170,8 @@ export default function ItineraryFormScreen() {
             <TextInput
               style={styles.input}
               value={budgetWon}
-              onChangeText={setBudgetWon}
-              placeholder="예: 300000 (원)"
+              onChangeText={handleBudgetChange}
+              placeholder="예: 300,000 (원)"
               placeholderTextColor={Colors.textLight}
               keyboardType="numeric"
               onFocus={() => setFocusedField('budget')}

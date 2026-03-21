@@ -83,6 +83,9 @@ export default function ChatListScreen() {
           return next;
         });
       }
+    }, (error) => {
+      console.error('채팅 목록 수신 오류:', error);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -93,7 +96,7 @@ export default function ChatListScreen() {
 
   const getTargetNickname = (room: ChatRoom) => {
     const targetId = getTargetUserId(room);
-    return nicknameMap[targetId] ?? targetId;
+    return nicknameMap[targetId] ?? '상대방';
   };
 
   if (loading) {

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -54,7 +55,13 @@ export default function ChatScreen() {
     if (!inputText.trim() || !roomId || !myUserId) return;
     const text = inputText.trim();
     setInputText('');
-    await sendMessage(roomId, myUserId, text);
+    try {
+      await sendMessage(roomId, myUserId, text);
+    } catch (e) {
+      console.error('메시지 전송 오류:', e);
+      setInputText(text);
+      Alert.alert('오류', '메시지 전송에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {

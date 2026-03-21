@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Animated,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,10 +22,11 @@ interface Traveler {
   nickname: string;
   profile_image_url: string | null;
   bio: string | null;
+  similarity_score: number;
 }
 
 function PulseRing() {
-  const scale   = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0.45)).current;
 
   useEffect(() => {
@@ -62,15 +64,22 @@ export default function MatchingScreen() {
   }, [locationName]);
 
   const fetchTravelers = async (name: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    const res = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/locations/?location_name=${encodeURIComponent(name)}`,
-      { headers: { Authorization: `Bearer ${session.access_token}` } },
-    );
-    const data = await res.json();
-    setTravelers(data);
-    setLoading(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/matching/similar?location_name=${encodeURIComponent(name)}`,
+        { headers: { Authorization: `Bearer ${session.access_token}` } },
+      );
+      if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+      const data = await res.json();
+      setTravelers(data);
+    } catch (e) {
+      console.error('여행자 조회 오류:', e);
+      Alert.alert('오류', '여행자 목록을 불러오는데 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChatPress = (userId: string, nickname: string) => {
@@ -182,6 +191,7 @@ export default function MatchingScreen() {
               nickname={item.nickname}
               profileImageUrl={item.profile_image_url}
               bio={item.bio}
+              similarityScore={item.similarity_score}
               onChatPress={handleChatPress}
               index={index}
             />

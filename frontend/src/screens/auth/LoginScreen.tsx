@@ -9,6 +9,7 @@ import {
   StatusBar,
   Animated,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -84,6 +85,7 @@ export default function LoginScreen() {
       }
     } catch (e) {
       console.error('구글 로그인 오류:', e);
+      Alert.alert('로그인 실패', '구글 로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
       loginInProgress.current = false;
       setLoading(false);

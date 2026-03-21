@@ -127,6 +127,7 @@ export default function PostCreateScreen() {
           onChangeText={setContent}
           multiline
           textAlignVertical="top"
+          maxLength={5000}
         />
       </View>
 

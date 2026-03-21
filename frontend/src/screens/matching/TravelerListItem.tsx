@@ -16,19 +16,27 @@ interface Props {
   nickname: string;
   profileImageUrl: string | null;
   bio: string | null;
+  similarityScore?: number;
   onChatPress: (userId: string, nickname: string) => void;
   index?: number;
 }
 
+function getSimilarityColor(score: number): string {
+  if (score >= 0.8) return '#22C55E';
+  if (score >= 0.6) return '#3B82F6';
+  if (score >= 0.4) return '#F59E0B';
+  return '#94A3B8';
+}
+
 export default function TravelerListItem({
-  userId, nickname, profileImageUrl, bio, onChatPress, index = 0,
+  userId, nickname, profileImageUrl, bio, similarityScore, onChatPress, index = 0,
 }: Props) {
   // 프레스 시 scale 0.97 스프링 애니메이션
-  const scale   = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
   // 입장 시 opacity 0→1
   const opacity = useRef(new Animated.Value(0)).current;
   // 입장 시 아래에서 위로 슬라이드 (모바일 피드 패턴)
-  const slideY  = useRef(new Animated.Value(18)).current;
+  const slideY = useRef(new Animated.Value(18)).current;
 
   useEffect(() => {
     // index 기반 stagger: 카드가 순차적으로 올라오는 효과
@@ -115,9 +123,18 @@ export default function TravelerListItem({
             )}
 
             {/* 여행 중 상태 배지 */}
-            <View style={styles.statusBadge}>
-              <View style={styles.statusDot} />
-              <Text style={styles.statusText}>여행 중</Text>
+            <View style={styles.statusRow}>
+              <View style={styles.statusBadge}>
+                <View style={styles.statusDot} />
+                <Text style={styles.statusText}>여행 중</Text>
+              </View>
+              {similarityScore != null && similarityScore > 0 && (
+                <View style={[styles.similarityBadge, { backgroundColor: getSimilarityColor(similarityScore) + '18' }]}>
+                  <Text style={[styles.similarityText, { color: getSimilarityColor(similarityScore) }]}>
+                    {Math.round(similarityScore * 100)}% 일치
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -222,12 +239,19 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
+  // 상태 + 유사도 배지 행
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 5,
+  },
+
   // 여행 중 배지 — 녹색 점 + 텍스트
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 5,
   },
 
   statusDot: {
@@ -241,6 +265,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600' as const,
     color: Colors.green,
+  },
+
+  // 유사도 배지
+  similarityBadge: {
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+
+  similarityText: {
+    fontSize: 11,
+    fontWeight: '700' as const,
   },
 
   // 채팅 버튼 — 그라디언트 + 블루 글로우 그림자
