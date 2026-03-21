@@ -121,5 +121,12 @@ export async function deleteRestaurant(id: string): Promise<void> {
     method: 'DELETE',
     headers: { Authorization: auth },
   });
-  if (!res.ok) throw new Error('맛집 삭제 실패');
+  if (!res.ok) {
+    let detail = '맛집 삭제 실패';
+    try {
+      const body = await res.json();
+      if (body.detail) detail = body.detail;
+    } catch {}
+    throw new Error(`[${res.status}] ${detail}`);
+  }
 }

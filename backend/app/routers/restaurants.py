@@ -185,7 +185,7 @@ def delete_restaurant(
     existing = supabase.table("restaurants").select("user_id").eq("id", restaurant_id).single().execute()
     if not existing.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="맛집을 찾을 수 없습니다.")
-    if existing.data["user_id"] != current_user["id"]:
+    if str(existing.data["user_id"]) != str(current_user["id"]):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다.")
 
     supabase.table("restaurants").delete().eq("id", restaurant_id).execute()

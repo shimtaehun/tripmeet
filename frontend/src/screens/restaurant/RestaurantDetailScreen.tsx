@@ -69,9 +69,9 @@ export default function RestaurantDetailScreen() {
           try {
             await deleteRestaurant(restaurantId);
             navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Restaurant' } }] });
-          } catch (e) {
+          } catch (e: any) {
             console.error('맛집 삭제 오류:', e);
-            Alert.alert('오류', '맛집 삭제에 실패했습니다.');
+            Alert.alert('오류', e?.message ?? '맛집 삭제에 실패했습니다.');
           }
         },
       },
