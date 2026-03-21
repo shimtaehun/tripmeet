@@ -15,7 +15,9 @@ import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface Activity {
   time: string;
+  type?: 'sightseeing' | 'meal';
   title: string;
+  restaurant_name?: string;
   description: string;
   estimated_cost: number;
 }
@@ -52,6 +54,12 @@ function getTimeColor(time: string): string {
 
 function getTimeDotColor(time: string): string {
   return getTimeColor(time);
+}
+
+function isMeal(activity: Activity): boolean {
+  if (activity.type === 'meal') return true;
+  const t = activity.time;
+  return t.includes('아침') || t.includes('점심') || t.includes('저녁') || t.includes('식사');
 }
 
 export default function ItineraryResultScreen() {
@@ -145,23 +153,36 @@ export default function ItineraryResultScreen() {
             {/* 활동 카드 목록 */}
             <View style={styles.activitiesWrap}>
               {day.activities.map((activity, idx) => {
-                const timeColor = getTimeColor(activity.time);
-                const dotColor  = getTimeDotColor(activity.time);
+                const meal = isMeal(activity);
+                const timeColor = meal ? Colors.green : getTimeColor(activity.time);
+                const dotColor  = timeColor;
                 return (
                   <View key={idx} style={[styles.activityCard, { borderLeftColor: timeColor }]}>
-                    {/* 타임라인 dot */}
                     <View style={[styles.timelineDot, { backgroundColor: dotColor }]} />
                     <View style={styles.activityCardInner}>
                       <View style={styles.activityHeader}>
-                        <Text style={styles.activityTime}>{activity.time}</Text>
+                        <View style={styles.timeRow}>
+                          <Ionicons
+                            name={meal ? 'restaurant-outline' : 'compass-outline'}
+                            size={12}
+                            color={timeColor}
+                          />
+                          <Text style={[styles.activityTime, { color: timeColor }]}>{activity.time}</Text>
+                        </View>
                         {activity.estimated_cost > 0 && (
-                          <View style={styles.costBadge}>
-                            <Text style={styles.costBadgeText}>
+                          <View style={[styles.costBadge, meal && styles.mealCostBadge]}>
+                            <Text style={[styles.costBadgeText, meal && styles.mealCostBadgeText]}>
                               {activity.estimated_cost.toLocaleString()}원
                             </Text>
                           </View>
                         )}
                       </View>
+                      {meal && activity.restaurant_name ? (
+                        <View style={styles.restaurantRow}>
+                          <Ionicons name="storefront-outline" size={13} color={Colors.green} />
+                          <Text style={styles.restaurantName}>{activity.restaurant_name}</Text>
+                        </View>
+                      ) : null}
                       <Text style={styles.activityTitle}>{activity.title}</Text>
                       <Text style={styles.activityDesc}>{activity.description}</Text>
                     </View>
@@ -299,7 +320,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-  activityTime: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  activityTime: { fontSize: 11, fontWeight: '700' as const },
+  restaurantRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2 },
+  restaurantName: { fontSize: 13, fontWeight: '700' as const, color: Colors.green },
+  mealCostBadge: { backgroundColor: Colors.greenLight },
+  mealCostBadgeText: { color: Colors.green },
   costBadge: {
     backgroundColor: Colors.amberLight,
     borderRadius: Radius.full,
