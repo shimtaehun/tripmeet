@@ -182,10 +182,20 @@ def delete_restaurant(
     """맛집 삭제 (작성자 본인만 가능)"""
     supabase = get_supabase()
 
-    existing = supabase.table("restaurants").select("user_id").eq("id", restaurant_id).single().execute()
+    try:
+        existing = supabase.table("restaurants").select("user_id").eq("id", restaurant_id).single().execute()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="맛집을 찾을 수 없습니다.")
+
     if not existing.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="맛집을 찾을 수 없습니다.")
     if str(existing.data["user_id"]) != str(current_user["id"]):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다.")
 
-    supabase.table("restaurants").delete().eq("id", restaurant_id).execute()
+    try:
+        supabase.table("restaurants").delete().eq("id", restaurant_id).execute()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"삭제 실패: {str(e)}",
+        )

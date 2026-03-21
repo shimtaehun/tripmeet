@@ -207,13 +207,20 @@ def delete_companion(
     """동행 구인 삭제 (작성자 본인만 가능)"""
     supabase = get_supabase()
 
-    existing = supabase.table("companions").select("user_id").eq("id", companion_id).single().execute()
+    try:
+        existing = supabase.table("companions").select("user_id").eq("id", companion_id).single().execute()
+    except Exception:
+        raise HTTPException(status_code=404, detail="동행 구인 게시글을 찾을 수 없습니다.")
+
     if not existing.data:
         raise HTTPException(status_code=404, detail="동행 구인 게시글을 찾을 수 없습니다.")
-    if existing.data["user_id"] != current_user["id"]:
+    if str(existing.data["user_id"]) != str(current_user["id"]):
         raise HTTPException(status_code=403, detail="삭제 권한이 없습니다.")
 
-    supabase.table("companions").delete().eq("id", companion_id).execute()
+    try:
+        supabase.table("companions").delete().eq("id", companion_id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"삭제 실패: {str(e)}")
 
 
 @router.patch("/{companion_id}/close", status_code=status.HTTP_200_OK)
