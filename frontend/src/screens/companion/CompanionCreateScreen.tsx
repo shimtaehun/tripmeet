@@ -9,17 +9,22 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { createCompanion } from '../../services/companionService';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { createCompanion, updateCompanion, CompanionDetail } from '../../services/companionService';
 import { Colors, Radius, Spacing } from '../../utils/theme';
 
 export default function CompanionCreateScreen() {
   const navigation = useNavigation<any>();
-  const [destination, setDestination] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [description, setDescription] = useState('');
-  const [maxParticipants, setMaxParticipants] = useState('2');
+  const route = useRoute<any>();
+
+  const editCompanion: CompanionDetail | undefined = route.params?.companion;
+  const isEditMode = !!editCompanion;
+
+  const [destination, setDestination] = useState(editCompanion?.destination ?? '');
+  const [startDate, setStartDate] = useState(editCompanion?.travel_start_date ?? '');
+  const [endDate, setEndDate] = useState(editCompanion?.travel_end_date ?? '');
+  const [description, setDescription] = useState(editCompanion?.description ?? '');
+  const [maxParticipants, setMaxParticipants] = useState(String(editCompanion?.max_participants ?? '2'));
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -50,17 +55,28 @@ export default function CompanionCreateScreen() {
 
     setLoading(true);
     try {
-      await createCompanion({
-        destination: destination.trim(),
-        travel_start_date: startDate.trim(),
-        travel_end_date: endDate.trim(),
-        description: description.trim(),
-        max_participants: max,
-      });
-      navigation.goBack();
+      if (isEditMode) {
+        await updateCompanion(editCompanion.id, {
+          destination: destination.trim(),
+          travel_start_date: startDate.trim(),
+          travel_end_date: endDate.trim(),
+          description: description.trim(),
+          max_participants: max,
+        });
+        navigation.goBack();
+      } else {
+        await createCompanion({
+          destination: destination.trim(),
+          travel_start_date: startDate.trim(),
+          travel_end_date: endDate.trim(),
+          description: description.trim(),
+          max_participants: max,
+        });
+        navigation.navigate('Main', { screen: 'Companion' });
+      }
     } catch (e: any) {
-      console.error('동행 구인 등록 오류:', e);
-      setErrorMsg(e?.message ?? '동행 구인 등록에 실패했습니다.');
+      console.error('동행 구인 저장 오류:', e);
+      setErrorMsg(e?.message ?? (isEditMode ? '동행 구인 수정에 실패했습니다.' : '동행 구인 등록에 실패했습니다.'));
     } finally {
       setLoading(false);
     }
@@ -76,12 +92,12 @@ export default function CompanionCreateScreen() {
         >
           <Ionicons name="close" size={22} color={Colors.textMedium} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>동행 구인 등록</Text>
+        <Text style={styles.headerTitle}>{isEditMode ? '동행 구인 수정' : '동행 구인 등록'}</Text>
         <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
             <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
-            <Text style={styles.submitText}>등록</Text>
+            <Text style={styles.submitText}>{isEditMode ? '수정' : '등록'}</Text>
           )}
         </TouchableOpacity>
       </View>

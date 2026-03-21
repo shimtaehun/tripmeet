@@ -105,6 +105,32 @@ export async function applyCompanion(id: string, message?: string): Promise<Appl
   return res.json();
 }
 
+export async function updateCompanion(id: string, params: {
+  destination?: string;
+  travel_start_date?: string;
+  travel_end_date?: string;
+  description?: string;
+  max_participants?: number;
+}): Promise<CompanionDetail> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/companions/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) throw new Error('동행 구인 수정 실패');
+  return res.json();
+}
+
+export async function deleteCompanion(id: string): Promise<void> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/companions/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: auth },
+  });
+  if (!res.ok) throw new Error('동행 구인 삭제 실패');
+}
+
 export async function updateApplicationStatus(
   companionId: string,
   applicationId: string,

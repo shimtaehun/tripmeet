@@ -43,6 +43,14 @@ class CompanionDetail(CompanionSummary):
     applications: list[ApplicationInfo] = []
 
 
+class CompanionUpdate(BaseModel):
+    destination: Optional[str] = None
+    travel_start_date: Optional[str] = None
+    travel_end_date: Optional[str] = None
+    description: Optional[str] = None
+    max_participants: Optional[int] = None
+
+
 class CompanionListResponse(BaseModel):
     items: list[CompanionSummary]
     next_cursor: Optional[str] = None
@@ -159,6 +167,53 @@ def get_companion(
         companion["applications"] = []
 
     return companion
+
+
+@router.patch("/{companion_id}", response_model=CompanionDetail)
+def update_companion(
+    companion_id: str,
+    body: CompanionUpdate,
+    current_user: dict = Depends(get_current_user),
+):
+    """동행 구인 수정 (작성자 본인만 가능)"""
+    supabase = get_supabase()
+
+    existing = supabase.table("companions").select("*").eq("id", companion_id).single().execute()
+    if not existing.data:
+        raise HTTPException(status_code=404, detail="동행 구인 게시글을 찾을 수 없습니다.")
+    if existing.data["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="수정 권한이 없습니다.")
+
+    updates = body.model_dump(exclude_none=True)
+    if not updates:
+        raise HTTPException(status_code=400, detail="수정할 항목이 없습니다.")
+    if "max_participants" in updates and not (2 <= updates["max_participants"] <= 10):
+        raise HTTPException(status_code=400, detail="max_participants는 2~10 사이여야 합니다.")
+
+    updates["updated_at"] = datetime.utcnow().isoformat()
+    result = supabase.table("companions").update(updates).eq("id", companion_id).execute()
+
+    companion = result.data[0]
+    companion["author"] = _get_author(supabase, current_user["id"])
+    companion["applications"] = []
+    return companion
+
+
+@router.delete("/{companion_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_companion(
+    companion_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """동행 구인 삭제 (작성자 본인만 가능)"""
+    supabase = get_supabase()
+
+    existing = supabase.table("companions").select("user_id").eq("id", companion_id).single().execute()
+    if not existing.data:
+        raise HTTPException(status_code=404, detail="동행 구인 게시글을 찾을 수 없습니다.")
+    if existing.data["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="삭제 권한이 없습니다.")
+
+    supabase.table("companions").delete().eq("id", companion_id).execute()
 
 
 @router.patch("/{companion_id}/close", status_code=status.HTTP_200_OK)

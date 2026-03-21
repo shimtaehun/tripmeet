@@ -15,6 +15,7 @@ import { supabase } from '../../services/supabaseClient';
 import {
   getCompanion,
   closeCompanion,
+  deleteCompanion,
   applyCompanion,
   updateApplicationStatus,
   CompanionDetail,
@@ -54,6 +55,25 @@ export default function CompanionDetailScreen() {
   useEffect(() => {
     loadData();
   }, [companionId]);
+
+  const handleDelete = () => {
+    Alert.alert('삭제', '동행 구인을 삭제하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteCompanion(companionId);
+            navigation.goBack();
+          } catch (e) {
+            console.error('동행 구인 삭제 오류:', e);
+            Alert.alert('오류', '삭제에 실패했습니다.');
+          }
+        },
+      },
+    ]);
+  };
 
   const handleClose = () => {
     Alert.alert('마감', '동행 구인을 마감하시겠습니까?', [
@@ -131,10 +151,25 @@ export default function CompanionDetailScreen() {
         >
           <Ionicons name="arrow-back" size={20} color={Colors.primary} />
         </TouchableOpacity>
-        {isAuthor && isOpen && (
-          <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-            <Text style={styles.closeText}>마감하기</Text>
-          </TouchableOpacity>
+        {isAuthor && (
+          <View style={styles.authorActions}>
+            {isOpen && (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CompanionCreate', { companion })}
+                style={styles.actionBtn}
+              >
+                <Text style={styles.editText}>수정</Text>
+              </TouchableOpacity>
+            )}
+            {isOpen && (
+              <TouchableOpacity onPress={handleClose} style={styles.actionBtn}>
+                <Text style={styles.closeText}>마감</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={handleDelete} style={styles.actionBtn}>
+              <Text style={styles.deleteText}>삭제</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
@@ -279,8 +314,11 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backBtn: { width: 36, alignItems: 'center' },
-  closeBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  closeText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+  authorActions: { flexDirection: 'row', gap: 4 },
+  actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
+  closeText: { fontSize: 14, color: Colors.amber, fontWeight: '600' as const },
+  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
 
   content: {
     backgroundColor: Colors.card,

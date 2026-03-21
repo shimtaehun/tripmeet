@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, users, locations, itineraries, posts, restaurants, companions
+from app.routers import auth, users, locations, itineraries, posts, restaurants, companions, matching
 
 app = FastAPI(title="TripMeet API")
 
@@ -34,8 +34,15 @@ app.include_router(itineraries.router)
 app.include_router(posts.router)
 app.include_router(restaurants.router)
 app.include_router(companions.router)
+app.include_router(matching.router)
 
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        from app.db.supabase_client import get_supabase
+        supabase = get_supabase()
+        supabase.table("profiles").select("id").limit(1).execute()
+        return {"status": "ok", "db": "ok"}
+    except Exception:
+        return {"status": "ok", "db": "error"}

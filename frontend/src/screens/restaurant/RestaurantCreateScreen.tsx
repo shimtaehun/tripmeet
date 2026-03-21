@@ -13,8 +13,8 @@ import {
 // Alert은 ImagePicker 권한 거부 안내용으로만 유지
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { createRestaurant } from '../../services/restaurantService';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { createRestaurant, updateRestaurant, Restaurant } from '../../services/restaurantService';
 import { compressImage } from '../../utils/imageCompressor';
 import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
 
@@ -34,10 +34,15 @@ function StarSelector({ rating, onSelect }: { rating: number; onSelect: (r: numb
 
 export default function RestaurantCreateScreen() {
   const navigation = useNavigation<any>();
-  const [name, setName] = useState('');
-  const [locationName, setLocationName] = useState('');
-  const [description, setDescription] = useState('');
-  const [rating, setRating] = useState(0);
+  const route = useRoute<any>();
+
+  const editRestaurant: Restaurant | undefined = route.params?.restaurant;
+  const isEditMode = !!editRestaurant;
+
+  const [name, setName] = useState(editRestaurant?.name ?? '');
+  const [locationName, setLocationName] = useState(editRestaurant?.location_name ?? '');
+  const [description, setDescription] = useState(editRestaurant?.description ?? '');
+  const [rating, setRating] = useState(editRestaurant?.rating ?? 0);
   const [images, setImages] = useState<{ uri: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -83,29 +88,39 @@ export default function RestaurantCreateScreen() {
 
     setLoading(true);
     try {
-      const compressedImages = await Promise.all(
-        images.map(async (img, index) => {
-          const compressed = await compressImage(img.uri);
-          return {
-            uri: compressed.uri,
-            type: compressed.mimeType,
-            name: `photo_${index}.jpg`,
-          };
-        }),
-      );
+      if (isEditMode) {
+        await updateRestaurant(editRestaurant.id, {
+          name: name.trim(),
+          location_name: locationName.trim(),
+          description: description.trim() || undefined,
+          rating,
+        });
+        navigation.goBack();
+      } else {
+        const compressedImages = await Promise.all(
+          images.map(async (img, index) => {
+            const compressed = await compressImage(img.uri);
+            return {
+              uri: compressed.uri,
+              type: compressed.mimeType,
+              name: `photo_${index}.jpg`,
+            };
+          }),
+        );
 
-      await createRestaurant({
-        name: name.trim(),
-        location_name: locationName.trim(),
-        description: description.trim() || undefined,
-        rating,
-        images: compressedImages,
-      });
+        await createRestaurant({
+          name: name.trim(),
+          location_name: locationName.trim(),
+          description: description.trim() || undefined,
+          rating,
+          images: compressedImages,
+        });
 
-      navigation.goBack();
+        navigation.goBack();
+      }
     } catch (e: any) {
-      console.error('맛집 등록 오류:', e);
-      setErrorMsg(e?.message ?? '맛집 등록에 실패했습니다.');
+      console.error('맛집 저장 오류:', e);
+      setErrorMsg(e?.message ?? (isEditMode ? '맛집 수정에 실패했습니다.' : '맛집 등록에 실패했습니다.'));
     } finally {
       setLoading(false);
     }
@@ -121,12 +136,12 @@ export default function RestaurantCreateScreen() {
         >
           <Ionicons name="close" size={22} color={Colors.textMedium} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>맛집 등록</Text>
+        <Text style={styles.headerTitle}>{isEditMode ? '맛집 수정' : '맛집 등록'}</Text>
         <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
             <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
-            <Text style={styles.submitText}>등록</Text>
+            <Text style={styles.submitText}>{isEditMode ? '수정' : '등록'}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -180,7 +195,7 @@ export default function RestaurantCreateScreen() {
         </View>
       )}
 
-      <View style={[styles.section, { borderBottomWidth: 0 }]}>
+      {!isEditMode && <View style={[styles.section, { borderBottomWidth: 0 }]}>
         <Text style={styles.label}>사진 ({images.length}/{MAX_IMAGES})</Text>
         <View style={styles.imageRow}>
           {images.map((img, index) => (
@@ -201,7 +216,7 @@ export default function RestaurantCreateScreen() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </View>}
     </ScrollView>
   );
 }

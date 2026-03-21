@@ -101,9 +101,17 @@ export default function RestaurantDetailScreen() {
           <Ionicons name="arrow-back" size={20} color={Colors.primary} />
         </TouchableOpacity>
         {isAuthor && (
-          <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
-            <Text style={styles.deleteText}>삭제</Text>
-          </TouchableOpacity>
+          <View style={styles.authorActions}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('RestaurantCreate', { restaurant })}
+              style={styles.actionBtn}
+            >
+              <Text style={styles.editText}>수정</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete} style={styles.actionBtn}>
+              <Text style={styles.deleteText}>삭제</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
@@ -169,7 +177,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backBtn: { width: 36, alignItems: 'center' },
-  deleteBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  authorActions: { flexDirection: 'row', gap: 4 },
+  actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
   deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
 
   image: { width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.65 },

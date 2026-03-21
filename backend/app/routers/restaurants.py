@@ -39,6 +39,13 @@ class RestaurantDetail(BaseModel):
     author: Optional[AuthorInfo] = None
 
 
+class RestaurantUpdate(BaseModel):
+    name: Optional[str] = None
+    location_name: Optional[str] = None
+    description: Optional[str] = None
+    rating: Optional[int] = None
+
+
 class RestaurantListResponse(BaseModel):
     items: list[RestaurantSummary]
     next_cursor: Optional[str] = None
@@ -137,6 +144,33 @@ def get_restaurant(
 
     restaurant = result.data
     restaurant["author"] = _get_author(supabase, restaurant["user_id"])
+    return restaurant
+
+
+@router.patch("/{restaurant_id}", response_model=RestaurantDetail)
+def update_restaurant(
+    restaurant_id: str,
+    body: RestaurantUpdate,
+    current_user: dict = Depends(get_current_user),
+):
+    """맛집 수정 (작성자 본인만 가능, 이미지 제외)"""
+    supabase = get_supabase()
+
+    existing = supabase.table("restaurants").select("user_id, image_urls").eq("id", restaurant_id).single().execute()
+    if not existing.data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="맛집을 찾을 수 없습니다.")
+    if existing.data["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="수정 권한이 없습니다.")
+
+    updates = body.model_dump(exclude_none=True)
+    if not updates:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="수정할 항목이 없습니다.")
+    if "rating" in updates and not (1 <= updates["rating"] <= 5):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="별점은 1~5 사이여야 합니다.")
+
+    result = supabase.table("restaurants").update(updates).eq("id", restaurant_id).execute()
+    restaurant = result.data[0]
+    restaurant["author"] = _get_author(supabase, current_user["id"])
     return restaurant
 
 

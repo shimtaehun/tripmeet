@@ -99,6 +99,22 @@ export async function getRestaurant(id: string): Promise<Restaurant> {
   return res.json();
 }
 
+export async function updateRestaurant(id: string, params: {
+  name?: string;
+  location_name?: string;
+  description?: string;
+  rating?: number;
+}): Promise<Restaurant> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/restaurants/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) throw new Error('맛집 수정 실패');
+  return res.json();
+}
+
 export async function deleteRestaurant(id: string): Promise<void> {
   const auth = await getAuthHeader();
   const res = await apiFetch(`${API_URL}/restaurants/${id}`, {
