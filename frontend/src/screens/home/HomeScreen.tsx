@@ -642,14 +642,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: Radius.full,
   },
 
-  heroBody: { gap: 6 },
+  heroBody: { gap: 6, alignItems: 'center' },
 
   // 통계 배지
   statsBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: Radius.full,
     paddingHorizontal: 12,
@@ -665,16 +665,17 @@ const styles = StyleSheet.create({
 
   heroGreeting: {
     fontSize: 30, fontWeight: '900' as const, color: '#fff',
-    letterSpacing: -0.8, lineHeight: 38,
+    letterSpacing: -0.8, lineHeight: 38, textAlign: 'center',
   },
   heroGreetingDesktop: { fontSize: 48, lineHeight: 58 },
-  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 14 },
+  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 14, textAlign: 'center' },
 
   // 검색바
   searchBar: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: '#fff', borderRadius: Radius.full,
     paddingLeft: 16, paddingRight: 6, paddingVertical: 6, gap: 10,
+    width: '100%',
     ...Shadow.md,
   },
   searchBarDesktop: { maxWidth: 560 },
