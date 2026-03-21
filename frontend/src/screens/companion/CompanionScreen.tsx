@@ -46,31 +46,35 @@ function CompanionCard({ item, index }: { item: CompanionSummary; index: number 
         onPressOut={onPressOut}
         activeOpacity={1}
       >
-        <View style={styles.cardTop}>
-          <View style={styles.destinationRow}>
-            <Ionicons name="airplane" size={14} color={Colors.amber} />
-            <Text style={styles.destination}>{item.destination}</Text>
+        <View style={[styles.accentBar, { backgroundColor: isOpen ? Colors.green : Colors.red }]} />
+        <View style={styles.cardInner}>
+          <View style={styles.cardTop}>
+            <View style={styles.destinationRow}>
+              <Ionicons name="airplane" size={13} color={Colors.amber} />
+              <Text style={styles.destination}>{item.destination}</Text>
+            </View>
+            <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
+              <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
+                {isOpen ? '모집중' : '마감'}
+              </Text>
+            </View>
           </View>
-          <View style={[styles.statusBadge, isOpen ? styles.badgeOpen : styles.badgeClosed]}>
-            <Text style={[styles.statusBadgeText, isOpen ? styles.badgeOpenText : styles.badgeClosedText]}>
-              {isOpen ? '모집중' : '마감'}
-            </Text>
+
+          <View style={styles.dateRow}>
+            <Ionicons name="calendar-outline" size={12} color={Colors.textLight} />
+            <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
+          </View>
+
+          <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
+
+          <View style={styles.cardBottom}>
+            <Ionicons name="people-outline" size={12} color={Colors.textLight} />
+            <Text style={styles.participants}>최대 {item.max_participants}명</Text>
+            <View style={styles.dot} />
+            <Text style={styles.createdAt}>{createdDate}</Text>
           </View>
         </View>
-
-        <View style={styles.dateRow}>
-          <Ionicons name="calendar-outline" size={12} color={Colors.textMedium} />
-          <Text style={styles.dateRange}>{item.travel_start_date} ~ {item.travel_end_date}</Text>
-        </View>
-
-        <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
-
-        <View style={styles.cardBottom}>
-          <Ionicons name="people-outline" size={13} color={Colors.textLight} />
-          <Text style={styles.participants}>최대 {item.max_participants}명</Text>
-          <Text style={styles.cardBottomDot}>·</Text>
-          <Text style={styles.createdAt}>{createdDate}</Text>
-        </View>
+        <Ionicons name="chevron-forward" size={15} color={Colors.border} style={styles.chevron} />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -83,6 +87,7 @@ const STATUS_TABS: { label: string; value: StatusFilter }[] = [
 ];
 
 export default function CompanionScreen() {
+  const navigation = useNavigation<any>();
   const { isDesktop } = useResponsive();
   const numCols = isDesktop ? 2 : 1;
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -266,16 +271,21 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.xl,
-    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'stretch',
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
     ...Shadow.card,
   },
+  accentBar: { width: 4 },
+  cardInner: { flex: 1, padding: 14 },
+  chevron: { alignSelf: 'center', marginRight: 12 },
   cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   destinationRow: {
     flexDirection: 'row',
@@ -284,14 +294,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   destination: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700' as const,
     color: Colors.text,
     flex: 1,
   },
   statusBadge: {
     borderRadius: Radius.full,
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 3,
     marginLeft: 8,
   },
@@ -305,18 +315,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    marginBottom: 8,
+    marginBottom: 7,
   },
-  dateRange: { fontSize: 13, color: Colors.textMedium },
+  dateRange: { fontSize: 12, color: Colors.textLight },
   description: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.textMedium,
     lineHeight: 20,
     marginBottom: 10,
   },
-  cardBottom: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  participants: { fontSize: 12, color: Colors.textLight, fontWeight: '500' as const },
-  cardBottomDot: { fontSize: 12, color: Colors.textLight },
+  cardBottom: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  participants: { fontSize: 12, color: Colors.textLight },
+  dot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: Colors.border },
   createdAt: { fontSize: 11, color: Colors.textLight, flex: 1, textAlign: 'right' },
 
   loader: { marginTop: 60 },

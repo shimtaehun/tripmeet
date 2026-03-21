@@ -65,7 +65,7 @@ export default function CompanionDetailScreen() {
         onPress: async () => {
           try {
             await deleteCompanion(companionId);
-            navigation.navigate('Main', { screen: 'Companion' });
+            navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Companion' } }] });
           } catch (e) {
             console.error('동행 구인 삭제 오류:', e);
             Alert.alert('오류', '삭제에 실패했습니다.');

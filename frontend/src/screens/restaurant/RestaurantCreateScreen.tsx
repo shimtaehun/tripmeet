@@ -128,7 +128,7 @@ export default function RestaurantCreateScreen() {
           images: compressedImages,
         });
       }
-      navigation.navigate('Main', { screen: 'Restaurant' });
+      navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Restaurant' } }] });
     } catch (e: any) {
       console.error('맛집 저장 오류:', e);
       setErrorMsg(e?.message ?? (isEditMode ? '맛집 수정에 실패했습니다.' : '맛집 등록에 실패했습니다.'));

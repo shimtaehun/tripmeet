@@ -200,7 +200,7 @@ export default function CommunityScreen() {
               {fetchError ? (
                 <>
                   <Text style={styles.emptyTitle}>목록을 불러올 수 없습니다</Text>
-                  <Text style={[styles.emptyHint, { color: 'red' }]}>{fetchError}</Text>
+                  <Text style={styles.emptyHint}>잠시 후 다시 시도해주세요.</Text>
                 </>
               ) : (
                 <>
