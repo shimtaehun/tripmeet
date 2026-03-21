@@ -45,7 +45,7 @@ def health_check():
     try:
         from app.db.supabase_client import get_supabase
         supabase = get_supabase()
-        supabase.table("profiles").select("id").limit(1).execute()
+        supabase.table("users").select("id").limit(1).execute()
     except Exception:
         db_status = "error"
 
