@@ -10,8 +10,11 @@ _redis = Redis(
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"],
 )
 
-# Gemini 클라이언트
-_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+# Gemini 클라이언트 (v1 API 사용 - gemini-1.5-flash 지원)
+_client = genai.Client(
+    api_key=os.environ["GEMINI_API_KEY"],
+    http_options={"api_version": "v1"},
+)
 
 CACHE_TTL_SECONDS = 7 * 24 * 60 * 60  # 7일
 
@@ -60,7 +63,7 @@ def _call_gemini(destination: str, duration_days: int, travelers_count: int, bud
     )
 
     response = _client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.7,
