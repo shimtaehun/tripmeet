@@ -63,7 +63,7 @@ export default function CompanionCreateScreen() {
           description: description.trim(),
           max_participants: max,
         });
-        navigation.goBack();
+        navigation.navigate('Main', { screen: 'Companion' });
       } else {
         await createCompanion({
           destination: destination.trim(),

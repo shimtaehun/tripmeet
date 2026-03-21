@@ -95,7 +95,7 @@ export default function RestaurantCreateScreen() {
           description: description.trim() || undefined,
           rating,
         });
-        navigation.goBack();
+        navigation.navigate('Main', { screen: 'Restaurant' });
       } else {
         const compressedImages = await Promise.all(
           images.map(async (img, index) => {
@@ -116,7 +116,7 @@ export default function RestaurantCreateScreen() {
           images: compressedImages,
         });
 
-        navigation.goBack();
+        navigation.navigate('Main', { screen: 'Restaurant' });
       }
     } catch (e: any) {
       console.error('맛집 저장 오류:', e);

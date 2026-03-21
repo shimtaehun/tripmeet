@@ -65,7 +65,7 @@ export default function CompanionDetailScreen() {
         onPress: async () => {
           try {
             await deleteCompanion(companionId);
-            navigation.goBack();
+            navigation.navigate('Main', { screen: 'Companion' });
           } catch (e) {
             console.error('동행 구인 삭제 오류:', e);
             Alert.alert('오류', '삭제에 실패했습니다.');
@@ -155,7 +155,7 @@ export default function CompanionDetailScreen() {
           <View style={styles.authorActions}>
             {isOpen && (
               <TouchableOpacity
-                onPress={() => navigation.navigate('CompanionCreate', { companion })}
+                onPress={() => navigation.navigate('CompanionEdit', { companion })}
                 style={styles.actionBtn}
               >
                 <Text style={styles.editText}>수정</Text>

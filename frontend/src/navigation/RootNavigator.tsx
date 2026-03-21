@@ -40,8 +40,10 @@ const linking = {
       PostCreate: 'post/create',
       PostDetail: 'post/:postId',
       RestaurantCreate: 'restaurant/create',
+      RestaurantEdit: 'restaurant/:restaurantId/edit',
       RestaurantDetail: 'restaurant/:restaurantId',
       CompanionCreate: 'companion/create',
+      CompanionEdit: 'companion/:companionId/edit',
       CompanionDetail: 'companion/:companionId',
       ProfileEdit: 'profile/edit',
       ItineraryForm: 'itinerary/form',
@@ -111,8 +113,10 @@ export default function RootNavigator() {
             <Stack.Screen name="PostCreate" component={PostCreateScreen} />
             <Stack.Screen name="PostDetail" component={PostDetailScreen} />
             <Stack.Screen name="RestaurantCreate" component={RestaurantCreateScreen} />
+            <Stack.Screen name="RestaurantEdit" component={RestaurantCreateScreen} />
             <Stack.Screen name="RestaurantDetail" component={RestaurantDetailScreen} />
             <Stack.Screen name="CompanionCreate" component={CompanionCreateScreen} />
+            <Stack.Screen name="CompanionEdit" component={CompanionCreateScreen} />
             <Stack.Screen name="CompanionDetail" component={CompanionDetailScreen} />
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
             <Stack.Screen name="ItineraryForm" component={ItineraryFormScreen} />
