@@ -214,6 +214,16 @@ export default function ItineraryFormScreen() {
           )}
         </LinearGradient>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.historyBtn}
+        onPress={() => navigation.navigate('MyItineraries')}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="bookmark-outline" size={16} color={Colors.purple} />
+        <Text style={styles.historyBtnText}>저장된 일정 보기</Text>
+        <Ionicons name="chevron-forward" size={14} color={Colors.purple} />
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -285,6 +295,25 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.text,
     paddingVertical: 10,
+  },
+
+  historyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginHorizontal: Spacing.screenPad,
+    marginTop: 14,
+    paddingVertical: 14,
+    borderRadius: Radius.full,
+    borderWidth: 1.5,
+    borderColor: Colors.purpleBorder,
+    backgroundColor: Colors.purpleLight,
+  },
+  historyBtnText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.purple,
   },
 
   btnWrap: {
