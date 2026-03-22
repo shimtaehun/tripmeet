@@ -318,6 +318,39 @@ def _call_gemini(
     return json.loads(text.strip())
 
 
+# ─── 일정 수정 ───────────────────────────────────────────────────────────────
+def revise_itinerary(existing_content: dict, revision_request: str) -> dict:
+    """
+    기존 일정 JSON과 수정 요청을 받아 Gemini로 일정을 부분 수정한다.
+    캐시를 사용하지 않고 항상 새로 생성한다.
+    """
+    existing_json = json.dumps(existing_content, ensure_ascii=False, indent=2)
+
+    prompt = (
+        "아래는 현재 여행 일정 JSON이야.\n\n"
+        f"{existing_json}\n\n"
+        f"[수정 요청]\n{revision_request}\n\n"
+        "위 수정 요청을 반영해서 일정을 수정해줘.\n"
+        "수정 요청과 관계없는 부분은 그대로 유지해.\n"
+        "type 필드: 관광/체험은 'sightseeing', 식사는 'meal'.\n"
+        "meal 타입은 restaurant_name 필드를 반드시 포함해.\n"
+        "응답은 JSON만 출력하고 다른 설명은 쓰지 마.\n"
+    )
+
+    response = _client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(temperature=0.6),
+    )
+
+    text = response.text.strip()
+    if text.startswith("```"):
+        text = text[text.index("\n") + 1:]
+        if "```" in text:
+            text = text[:text.rindex("```")]
+    return json.loads(text.strip())
+
+
 # ─── 메인 엔트리포인트 ───────────────────────────────────────────────────────
 def get_or_generate_itinerary(
     destination: str,

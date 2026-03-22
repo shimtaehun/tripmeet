@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,17 @@ import {
   StyleSheet,
   Share,
   Alert,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { supabase } from '../../services/supabaseClient';
+import { apiFetch } from '../../services/apiClient';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 interface Activity {
@@ -65,8 +72,52 @@ function isMeal(activity: Activity): boolean {
 export default function ItineraryResultScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
-  const itinerary: Itinerary = route.params.itinerary;
+  const [itinerary, setItinerary] = useState<Itinerary>(route.params.itinerary);
   const days: Day[] = itinerary.content?.days ?? [];
+
+  const [revisionModalVisible, setRevisionModalVisible] = useState(false);
+  const [revisionText, setRevisionText] = useState('');
+  const [revising, setRevising] = useState(false);
+
+  const handleRevise = async () => {
+    if (!revisionText.trim()) {
+      Alert.alert('수정 요청 내용을 입력해주세요.');
+      return;
+    }
+    setRevising(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const res = await apiFetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/itineraries/${itinerary.id}/revise`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ revision_request: revisionText.trim() }),
+        },
+      );
+
+      if (!res.ok) {
+        let detail = '일정 수정에 실패했습니다.';
+        try { const b = await res.json(); if (b.detail) detail = b.detail; } catch {}
+        throw new Error(detail);
+      }
+
+      const updated = await res.json();
+      setItinerary((prev) => ({ ...prev, content: updated.content }));
+      setRevisionModalVisible(false);
+      setRevisionText('');
+      Alert.alert('수정 완료', 'AI가 일정을 수정했습니다.');
+    } catch (e: any) {
+      Alert.alert('오류', e?.message ?? '수정에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setRevising(false);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -195,6 +246,23 @@ export default function ItineraryResultScreen() {
       </View>
 
       <View style={styles.bottomBtns}>
+        {/* AI 수정 요청 버튼 */}
+        <TouchableOpacity
+          style={styles.reviseWrap}
+          onPress={() => setRevisionModalVisible(true)}
+          activeOpacity={0.85}
+        >
+          <LinearGradient
+            colors={Gradients.ai}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.reviseBtn}
+          >
+            <Ionicons name="sparkles" size={18} color="#FCD34D" />
+            <Text style={styles.reviseBtnText}>AI에게 수정 요청</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.savedBtn}
           onPress={() => navigation.navigate('MyItineraries')}
@@ -221,6 +289,89 @@ export default function ItineraryResultScreen() {
         </TouchableOpacity>
       </View>
     </ScrollView>
+
+    {/* 수정 요청 모달 */}
+    <Modal
+      visible={revisionModalVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setRevisionModalVisible(false)}
+    >
+      <KeyboardAvoidingView
+        style={styles.modalOverlay}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={() => !revising && setRevisionModalVisible(false)}
+        />
+        <View style={styles.modalSheet}>
+          <LinearGradient
+            colors={Gradients.ai}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.modalHeader}
+          >
+            <Ionicons name="sparkles" size={20} color="#FCD34D" />
+            <Text style={styles.modalTitle}>AI에게 수정 요청</Text>
+          </LinearGradient>
+
+          <View style={styles.modalBody}>
+            <Text style={styles.modalDesc}>
+              마음에 안 드는 부분을 구체적으로 알려주세요.{'\n'}AI가 해당 내용을 반영해 일정을 다시 짜드립니다.
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={revisionText}
+              onChangeText={setRevisionText}
+              placeholder={'예: 2일차 저녁을 스시로 바꿔줘\n3일차 오후 활동을 쇼핑으로 변경해줘\n전체적으로 이동 거리를 줄여줘'}
+              placeholderTextColor={Colors.textLight}
+              multiline
+              numberOfLines={5}
+              textAlignVertical="top"
+              editable={!revising}
+            />
+
+            <TouchableOpacity
+              onPress={handleRevise}
+              disabled={revising || !revisionText.trim()}
+              activeOpacity={0.85}
+              style={styles.modalSubmitWrap}
+            >
+              <LinearGradient
+                colors={Gradients.ai}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[styles.modalSubmitBtn, (revising || !revisionText.trim()) && { opacity: 0.55 }]}
+              >
+                {revising ? (
+                  <>
+                    <ActivityIndicator color="#fff" size="small" />
+                    <Text style={styles.modalSubmitText}>AI가 수정 중...</Text>
+                  </>
+                ) : (
+                  <>
+                    <Ionicons name="sparkles" size={16} color="#FCD34D" />
+                    <Text style={styles.modalSubmitText}>수정 요청하기</Text>
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setRevisionModalVisible(false)}
+              disabled={revising}
+              style={styles.modalCancelBtn}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.modalCancelText}>취소</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+
     </View>
   );
 }
@@ -341,6 +492,76 @@ const styles = StyleSheet.create({
     marginTop: 20,
     gap: 12,
   },
+
+  // AI 수정 요청 버튼
+  reviseWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.primary,
+  },
+  reviseBtn: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 8,
+    paddingVertical: 15,
+  },
+  reviseBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' as const },
+
+  // 수정 모달
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end' as const,
+    backgroundColor: 'rgba(30,27,75,0.45)',
+  },
+  modalSheet: {
+    backgroundColor: Colors.card,
+    borderTopLeftRadius: Radius.xxl,
+    borderTopRightRadius: Radius.xxl,
+    overflow: 'hidden',
+    ...Shadow.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 10,
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: 20,
+    paddingBottom: 18,
+  },
+  modalTitle: { fontSize: 17, fontWeight: '800' as const, color: '#fff' },
+  modalBody: { padding: Spacing.screenPad, gap: 14 },
+  modalDesc: { fontSize: 13, color: Colors.textMedium, lineHeight: 20 },
+  modalInput: {
+    backgroundColor: Colors.background,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    borderRadius: Radius.lg,
+    padding: 14,
+    fontSize: 14,
+    color: Colors.text,
+    minHeight: 120,
+    lineHeight: 22,
+  },
+  modalSubmitWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.primary,
+  },
+  modalSubmitBtn: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 8,
+    paddingVertical: 14,
+  },
+  modalSubmitText: { color: '#fff', fontSize: 15, fontWeight: '700' as const },
+  modalCancelBtn: {
+    alignItems: 'center' as const,
+    paddingVertical: 10,
+    paddingBottom: 20,
+  },
+  modalCancelText: { fontSize: 14, color: Colors.textLight, fontWeight: '500' as const },
   savedBtn: {
     flexDirection: 'row',
     alignItems: 'center',
