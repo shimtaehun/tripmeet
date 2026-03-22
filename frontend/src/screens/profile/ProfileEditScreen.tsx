@@ -14,7 +14,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { compressImage } from '../../utils/imageCompressor';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Shadow } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow } from '../../utils/theme';
 
 export default function ProfileEditScreen() {
   const navigation = useNavigation<any>();
@@ -98,20 +99,27 @@ export default function ProfileEditScreen() {
 
   return (
     <View style={styles.root}>
-      {/* 헤더 */}
-      <View style={styles.header}>
+      {/* 헤더 — Gradients.profile 그라디언트 */}
+      <LinearGradient
+        colors={Gradients.profile}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={styles.cancelText}>취소</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>프로필 수정</Text>
         <TouchableOpacity onPress={handleSave} disabled={loading} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           {loading ? (
-            <ActivityIndicator size="small" color={Colors.primary} />
+            <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.saveText}>저장</Text>
+            <View style={styles.saveBtn}>
+              <Text style={styles.saveText}>저장</Text>
+            </View>
           )}
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         {/* 사진 변경 버튼 */}
@@ -165,25 +173,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.card,
     paddingHorizontal: 16,
     paddingTop: 52,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '700' as const,
-    color: Colors.text,
+    color: '#fff',
   },
   cancelText: {
     fontSize: 15,
-    color: Colors.textMedium,
+    color: 'rgba(255,255,255,0.80)',
+  },
+  saveBtn: {
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.38)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
   },
   saveText: {
-    fontSize: 15,
-    color: Colors.primary,
+    fontSize: 14,
+    color: '#fff',
     fontWeight: '700' as const,
   },
 

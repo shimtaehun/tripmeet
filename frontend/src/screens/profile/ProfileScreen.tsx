@@ -154,9 +154,9 @@ export default function ProfileScreen() {
             onPress={() => navigation.navigate('ProfileEdit', { profile })}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
-              <Ionicons name="create-outline" size={18} color={Colors.primary} />
-            </View>
+            <LinearGradient colors={Gradients.profile} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+              <Ionicons name="create-outline" size={18} color="#fff" />
+            </LinearGradient>
             <Text style={styles.menuLabel}>프로필 수정</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
           </TouchableOpacity>
@@ -168,9 +168,9 @@ export default function ProfileScreen() {
             onPress={() => navigation.navigate('Community')}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: Colors.primaryLight }]}>
-              <Ionicons name="document-text-outline" size={18} color={Colors.primary} />
-            </View>
+            <LinearGradient colors={Gradients.community} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+              <Ionicons name="document-text-outline" size={18} color="#fff" />
+            </LinearGradient>
             <Text style={styles.menuLabel}>내가 쓴 글</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
           </TouchableOpacity>
@@ -186,9 +186,9 @@ export default function ProfileScreen() {
             onPress={() => Alert.alert('공지사항', '준비 중입니다.')}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: Colors.amberLight }]}>
-              <Ionicons name="megaphone-outline" size={18} color={Colors.amber} />
-            </View>
+            <LinearGradient colors={Gradients.companion} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+              <Ionicons name="megaphone-outline" size={18} color="#fff" />
+            </LinearGradient>
             <Text style={styles.menuLabel}>공지사항</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
           </TouchableOpacity>
@@ -200,9 +200,9 @@ export default function ProfileScreen() {
             onPress={() => Alert.alert('이용약관', '준비 중입니다.')}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: Colors.amberLight }]}>
-              <Ionicons name="document-outline" size={18} color={Colors.amber} />
-            </View>
+            <LinearGradient colors={Gradients.indigo} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+              <Ionicons name="document-outline" size={18} color="#fff" />
+            </LinearGradient>
             <Text style={styles.menuLabel}>이용약관</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
           </TouchableOpacity>
@@ -214,9 +214,9 @@ export default function ProfileScreen() {
             onPress={handleLogout}
             activeOpacity={0.7}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: Colors.redLight }]}>
-              <Ionicons name="log-out-outline" size={18} color={Colors.red} />
-            </View>
+            <LinearGradient colors={['#DC2626', '#EF4444']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+              <Ionicons name="log-out-outline" size={18} color="#fff" />
+            </LinearGradient>
             <Text style={[styles.menuLabel, styles.menuLabelDestructive]}>로그아웃</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.red} />
           </TouchableOpacity>
@@ -334,6 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '600' as const, color: Colors.text },
   menuLabelDestructive: { color: Colors.red },

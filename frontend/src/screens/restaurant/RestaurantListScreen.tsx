@@ -22,7 +22,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <View style={styles.starRow}>
       {[1, 2, 3, 4, 5].map(i => (
-        <Ionicons key={i} name={i <= rating ? 'star' : 'star-outline'} size={13} color={i <= rating ? Colors.amber : Colors.border} />
+        <Ionicons key={i} name={i <= rating ? 'star' : 'star-outline'} size={13} color={i <= rating ? Colors.pink : Colors.border} />
       ))}
       <Text style={styles.ratingNum}>{rating.toFixed(1)}</Text>
     </View>
@@ -55,6 +55,7 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
         activeOpacity={1}
       >
         <View style={styles.card}>
+          <View style={styles.pinkAccentBar} />
           {item.image_urls.length > 0 && !imageError ? (
             <Image
               source={{ uri: item.image_urls[0] }}
@@ -62,9 +63,14 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
               onError={() => setImageError(true)}
             />
           ) : (
-            <View style={[styles.thumbnail, styles.thumbnailEmpty]}>
-              <Ionicons name="restaurant" size={28} color={Colors.textLight} />
-            </View>
+            <LinearGradient
+              colors={Gradients.food}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.thumbnail, styles.thumbnailEmpty]}
+            >
+              <Ionicons name="restaurant" size={28} color="#fff" />
+            </LinearGradient>
           )}
           <View style={styles.cardInfo}>
             <Text style={styles.restaurantName} numberOfLines={1}>{item.name}</Text>
@@ -273,16 +279,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
     ...Shadow.card,
   },
+  pinkAccentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: Colors.pink,
+    borderTopLeftRadius: Radius.xl,
+    borderBottomLeftRadius: Radius.xl,
+  },
   thumbnail: { width: 90, height: 90, borderRadius: Radius.md, marginRight: 14 },
-  thumbnailEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.surface },
+  thumbnailEmpty: { alignItems: 'center', justifyContent: 'center' },
   cardInfo: { flex: 1, gap: 5 },
   restaurantName: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
   locationRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   locationName: { fontSize: 12, color: Colors.textMedium },
   starRow: { flexDirection: 'row', alignItems: 'center', gap: 1 },
-  ratingNum: { fontSize: 12, color: Colors.textMedium, fontWeight: '600' as const, marginLeft: 4 },
+  ratingNum: { fontSize: 12, color: Colors.pink, fontWeight: '700' as const, marginLeft: 4 },
   empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
   emptyTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textMedium, marginBottom: 6 },
   emptyHint: { fontSize: 13, color: Colors.textLight },

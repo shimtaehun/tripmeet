@@ -22,7 +22,8 @@ import {
   CompanionDetail,
   ApplicationInfo,
 } from '../../services/companionService';
-import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 export default function CompanionDetailScreen() {
   const navigation = useNavigation<any>();
@@ -134,13 +135,20 @@ export default function CompanionDetailScreen() {
 
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.companion}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <View style={styles.backBtnCircle}>
+            <Ionicons name="arrow-back" size={18} color="#fff" />
+          </View>
         </TouchableOpacity>
         {isAuthor && (
           <View style={styles.authorActions}>
@@ -162,7 +170,7 @@ export default function CompanionDetailScreen() {
             </TouchableOpacity>
           </View>
         )}
-      </View>
+      </LinearGradient>
 
       <View style={styles.content}>
         <View style={styles.titleRow}>
@@ -236,12 +244,19 @@ export default function CompanionDetailScreen() {
             </>
           ) : (
             <TouchableOpacity
-              style={styles.applyButton}
               onPress={() => setShowApplyInput(true)}
               activeOpacity={0.85}
+              style={styles.applyButtonWrap}
             >
-              <Ionicons name="people-outline" size={18} color="#fff" />
-              <Text style={styles.applyButtonText}>동행 신청</Text>
+              <LinearGradient
+                colors={Gradients.companion}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.applyButton}
+              >
+                <Ionicons name="people-outline" size={18} color="#fff" />
+                <Text style={styles.applyButtonText}>동행 신청</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
@@ -327,17 +342,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   backBtn: { width: 36, alignItems: 'center' },
+  backBtnCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   authorActions: { flexDirection: 'row', gap: 4 },
   actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
-  closeText: { fontSize: 14, color: Colors.amber, fontWeight: '600' as const },
-  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+  editText: { fontSize: 14, color: 'rgba(255,255,255,0.90)', fontWeight: '600' as const },
+  closeText: { fontSize: 14, color: '#FDE68A', fontWeight: '600' as const },
+  deleteText: { fontSize: 14, color: '#FCA5A5', fontWeight: '600' as const },
 
   content: {
     backgroundColor: Colors.card,
@@ -377,15 +399,18 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.screenPad,
     marginBottom: Spacing.screenPad,
   },
+  applyButtonWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.coral,
+  },
   applyButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: Colors.primary,
     borderRadius: Radius.full,
     paddingVertical: 15,
-    ...Shadow.primary,
   },
   applyButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
   applyInput: {

@@ -15,7 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { getRestaurant, deleteRestaurant, Restaurant } from '../../services/restaurantService';
-import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -85,13 +86,20 @@ export default function RestaurantDetailScreen() {
 
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.food}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <View style={styles.backBtnCircle}>
+            <Ionicons name="arrow-back" size={18} color="#fff" />
+          </View>
         </TouchableOpacity>
         {isAuthor && (
           <View style={styles.authorActions}>
@@ -106,7 +114,7 @@ export default function RestaurantDetailScreen() {
             </TouchableOpacity>
           </View>
         )}
-      </View>
+      </LinearGradient>
 
       {restaurant.image_urls.length > 0 && (
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
@@ -172,16 +180,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   backBtn: { width: 36, alignItems: 'center' },
+  backBtnCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   authorActions: { flexDirection: 'row', gap: 4 },
   actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
-  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+  editText: { fontSize: 14, color: 'rgba(255,255,255,0.90)', fontWeight: '600' as const },
+  deleteText: { fontSize: 14, color: '#FCA5A5', fontWeight: '600' as const },
 
   image: { width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.65 },
 
@@ -197,7 +212,7 @@ const styles = StyleSheet.create({
   locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 12 },
   locationName: { fontSize: 13, color: Colors.textMedium },
   starRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 14 },
-  ratingNum: { fontSize: 13, color: Colors.textMedium, fontWeight: '600' as const, marginLeft: 6 },
+  ratingNum: { fontSize: 13, color: Colors.pink, fontWeight: '700' as const, marginLeft: 6 },
   description: { fontSize: 15, color: Colors.text, lineHeight: 26 },
   divider: { height: 1, backgroundColor: Colors.divider, marginVertical: 16 },
   authorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

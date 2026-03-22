@@ -99,10 +99,16 @@ export default function MyItinerariesScreen() {
               onPress={() => handlePress(item)}
               activeOpacity={0.85}
             >
+              <View style={styles.cardAccentBar} />
               <View style={styles.cardLeft}>
-                <View style={styles.iconWrap}>
-                  <Ionicons name="sparkles" size={18} color={Colors.purple} />
-                </View>
+                <LinearGradient
+                  colors={Gradients.ai}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.iconWrap}
+                >
+                  <Ionicons name="sparkles" size={18} color="#fff" />
+                </LinearGradient>
                 <View style={styles.cardInfo}>
                   <Text style={styles.destination}>{item.destination}</Text>
                   <Text style={styles.meta}>
@@ -153,14 +159,24 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
     ...Shadow.card,
   },
-  cardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
+  cardAccentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: Colors.purple,
+    borderTopLeftRadius: Radius.xl,
+    borderBottomLeftRadius: Radius.xl,
+  },
+  cardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginLeft: 8 },
   iconWrap: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#F5F3FF',
     alignItems: 'center',
     justifyContent: 'center',
   },

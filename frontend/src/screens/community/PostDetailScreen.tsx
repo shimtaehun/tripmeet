@@ -13,7 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { getPost, deletePost, Post } from '../../services/postService';
-import { Colors, Radius, Shadow, Spacing } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
 const CAT_META: Record<string, { label: string; bg: string; text: string }> = {
   question: { label: '질문', bg: Colors.primaryLight, text: Colors.primary },
@@ -97,13 +98,20 @@ export default function PostDetailScreen() {
 
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.community}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => goBackOrCommunity(navigation)}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <View style={styles.backBtnCircle}>
+            <Ionicons name="arrow-back" size={18} color="#fff" />
+          </View>
         </TouchableOpacity>
 
         {isAuthor && (
@@ -119,13 +127,22 @@ export default function PostDetailScreen() {
             </TouchableOpacity>
           </View>
         )}
-      </View>
+      </LinearGradient>
 
       <View style={styles.content}>
         <View style={styles.meta}>
-          <View style={[styles.categoryBadge, { backgroundColor: meta.bg }]}>
-            <Text style={[styles.categoryBadgeText, { color: meta.text }]}>{meta.label}</Text>
-          </View>
+          <LinearGradient
+            colors={
+              post.category === 'review' ? [Colors.green, '#34D399'] :
+              post.category === 'info'   ? [Colors.amber, '#FCD34D'] :
+              Gradients.indigo
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.categoryBadge}
+          >
+            <Text style={styles.categoryBadgeTextWhite}>{meta.label}</Text>
+          </LinearGradient>
           <View style={styles.viewRow}>
             <Ionicons name="eye-outline" size={12} color={Colors.textLight} />
             <Text style={styles.viewCount}>{post.view_count}</Text>
@@ -160,16 +177,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   backBtn: { width: 36, alignItems: 'center' },
+  backBtnCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   authorActions: { flexDirection: 'row', gap: 4 },
   actionBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  editText: { fontSize: 14, color: Colors.textMedium, fontWeight: '600' as const },
-  deleteText: { fontSize: 14, color: Colors.red, fontWeight: '600' as const },
+  editText: { fontSize: 14, color: 'rgba(255,255,255,0.90)', fontWeight: '600' as const },
+  deleteText: { fontSize: 14, color: '#FCA5A5', fontWeight: '600' as const },
 
   content: {
     backgroundColor: Colors.card,
@@ -190,6 +214,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   categoryBadgeText: { fontSize: 12, fontWeight: '700' as const },
+  categoryBadgeTextWhite: { fontSize: 12, fontWeight: '700' as const, color: '#fff' },
   viewRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   viewCount: { fontSize: 12, color: Colors.textLight },
 

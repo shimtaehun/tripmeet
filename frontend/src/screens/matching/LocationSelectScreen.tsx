@@ -60,21 +60,31 @@ export default function LocationSelectScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.indigo}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <Ionicons name="arrow-back" size={20} color="#fff" />
           <Text style={styles.backText}>뒤로</Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <View style={styles.titleSection}>
-        <View style={styles.iconWrap}>
-          <Ionicons name="location" size={28} color={Colors.primary} />
-        </View>
+        <LinearGradient
+          colors={Gradients.indigo}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.iconWrap}
+        >
+          <Ionicons name="location" size={28} color="#fff" />
+        </LinearGradient>
         <Text style={styles.title}>현재 여행 중인 곳은?</Text>
         <Text style={styles.description}>
           GPS를 사용하지 않습니다.{'\n'}직접 입력해 같은 지역 여행자와 만나보세요.
@@ -117,7 +127,7 @@ export default function LocationSelectScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.coral}
+          colors={Gradients.indigo}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.submitBtn, loading && { opacity: 0.65 }]}
@@ -141,12 +151,9 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 48 },
 
   header: {
-    backgroundColor: Colors.card,
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   backBtn: {
     flexDirection: 'row',
@@ -154,7 +161,7 @@ const styles = StyleSheet.create({
     gap: 6,
     alignSelf: 'flex-start',
   },
-  backText: { fontSize: 15, color: Colors.primary, fontWeight: '600' as const },
+  backText: { fontSize: 15, color: '#fff', fontWeight: '600' as const },
 
   titleSection: {
     alignItems: 'center',
@@ -167,9 +174,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: Colors.primaryLight,
-    borderWidth: 1.5,
-    borderColor: Colors.primaryBorder,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,

@@ -23,9 +23,9 @@ WebBrowser.maybeCompleteAuthSession();
 const { height: H } = Dimensions.get('window');
 
 const FEATURES = [
-  { icon: 'sparkles' as const,   label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성' },
-  { icon: 'location' as const,   label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결' },
-  { icon: 'restaurant' as const, label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유' },
+  { icon: 'sparkles' as const,   label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성',  gradient: ['#4C1D95', '#8B5CF6'] as string[] },
+  { icon: 'location' as const,   label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결',   gradient: ['#065F46', '#10B981'] as string[] },
+  { icon: 'restaurant' as const, label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유',      gradient: ['#9D174D', '#EC4899'] as string[] },
 ];
 
 export default function LoginScreen() {
@@ -134,9 +134,14 @@ export default function LoginScreen() {
               key={i}
               style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureDivider]}
             >
-              <View style={styles.featureIconWrap}>
-                <Ionicons name={f.icon} size={20} color={Colors.primary} />
-              </View>
+              <LinearGradient
+                colors={f.gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.featureIconWrap}
+              >
+                <Ionicons name={f.icon} size={20} color="#fff" />
+              </LinearGradient>
               <View style={styles.featureText}>
                 <Text style={styles.featureLabel}>{f.label}</Text>
                 <Text style={styles.featureDesc}>{f.desc}</Text>
@@ -271,9 +276,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: Colors.primaryBorder,
-    backgroundColor: Colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,

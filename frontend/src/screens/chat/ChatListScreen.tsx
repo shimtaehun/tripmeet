@@ -144,9 +144,15 @@ export default function ChatListScreen() {
                 }
                 activeOpacity={0.7}
               >
-                <View style={styles.avatarWrap}>
-                  <Ionicons name="person" size={22} color={Colors.primary} />
-                </View>
+                <View style={styles.cyanAccentBar} />
+                <LinearGradient
+                  colors={Gradients.chat}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.avatarWrap}
+                >
+                  <Ionicons name="person" size={22} color="#fff" />
+                </LinearGradient>
                 <View style={styles.roomInfo}>
                   <Text style={styles.roomName}>{targetNickname}</Text>
                   <Text style={styles.lastMessage} numberOfLines={1}>
@@ -182,14 +188,19 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     backgroundColor: Colors.card,
     gap: 14,
+    overflow: 'hidden',
+  },
+  cyanAccentBar: {
+    width: 3,
+    height: 44,
+    borderRadius: 2,
+    backgroundColor: Colors.cyan,
+    marginRight: -8,
   },
   avatarWrap: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.primaryLight,
-    borderWidth: 1,
-    borderColor: Colors.primaryBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },

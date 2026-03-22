@@ -19,7 +19,8 @@ import {
   subscribeToMessages,
   ChatMessage,
 } from '../../services/chatService';
-import { Colors, Radius, Spacing } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Spacing } from '../../utils/theme';
 
 export default function ChatScreen() {
   const navigation = useNavigation<any>();
@@ -68,9 +69,20 @@ export default function ChatScreen() {
     const isMine = item.senderId === myUserId;
     return (
       <View style={[styles.messageRow, isMine ? styles.myRow : styles.theirRow]}>
-        <View style={[styles.bubble, isMine ? styles.myBubble : styles.theirBubble]}>
-          <Text style={isMine ? styles.myText : styles.theirText}>{item.text}</Text>
-        </View>
+        {isMine ? (
+          <LinearGradient
+            colors={Gradients.indigo}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.bubble, styles.myBubble]}
+          >
+            <Text style={styles.myText}>{item.text}</Text>
+          </LinearGradient>
+        ) : (
+          <View style={[styles.bubble, styles.theirBubble]}>
+            <Text style={styles.theirText}>{item.text}</Text>
+          </View>
+        )}
       </View>
     );
   };
@@ -81,17 +93,24 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.chat}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.primary} />
+          <View style={styles.backBtnCircle}>
+            <Ionicons name="arrow-back" size={18} color="#fff" />
+          </View>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{targetNickname}</Text>
         <View style={{ width: 36 }} />
-      </View>
+      </LinearGradient>
 
       <FlatList
         ref={flatListRef}
@@ -111,12 +130,19 @@ export default function ChatScreen() {
           multiline
         />
         <TouchableOpacity
-          style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
           onPress={handleSend}
           disabled={!inputText.trim()}
           activeOpacity={0.8}
+          style={styles.sendButtonWrap}
         >
-          <Ionicons name="send" size={16} color="#fff" />
+          <LinearGradient
+            colors={inputText.trim() ? Gradients.indigo : [Colors.primaryBorder, Colors.primaryBorder]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.sendButton}
+          >
+            <Ionicons name="send" size={16} color="#fff" />
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -133,12 +159,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
     paddingBottom: 14,
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   backBtn: { width: 36, alignItems: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
+  backBtnCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: '#fff' },
 
   messageList: { padding: 16, gap: 8 },
   messageRow: { flexDirection: 'row', marginBottom: 8 },
@@ -184,13 +217,15 @@ const styles = StyleSheet.create({
     color: Colors.text,
     backgroundColor: Colors.surface,
   },
+  sendButtonWrap: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
   sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sendButtonDisabled: { backgroundColor: Colors.primaryBorder },
 });

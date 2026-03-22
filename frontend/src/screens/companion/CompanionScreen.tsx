@@ -160,13 +160,22 @@ export default function CompanionScreen() {
             return (
               <TouchableOpacity
                 key={tab.value}
-                style={[styles.tab, active && styles.tabActive]}
+                style={styles.tab}
                 onPress={() => setStatusFilter(tab.value)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.tabText, active && styles.tabTextActive]}>
-                  {tab.label}
-                </Text>
+                {active ? (
+                  <LinearGradient
+                    colors={Gradients.companion}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.tabGradient}
+                  >
+                    <Text style={styles.tabTextActive}>{tab.label}</Text>
+                  </LinearGradient>
+                ) : (
+                  <Text style={styles.tabText}>{tab.label}</Text>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -254,13 +263,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tab: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    backgroundColor: Colors.surface,
+  },
+  tabGradient: {
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface,
   },
-  tabActive: { backgroundColor: Colors.primary },
-  tabText: { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
+  tabText: { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium, paddingHorizontal: 16, paddingVertical: 6 },
   tabTextActive: { color: '#fff', fontWeight: '700' as const },
 
   listContent: { padding: 14, paddingBottom: 48 },

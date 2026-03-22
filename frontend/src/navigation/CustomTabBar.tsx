@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Shadow } from '../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Shadow } from '../utils/theme';
 import { useResponsive, TOP_NAV_H } from '../utils/responsive';
 
 // 탭별 아이콘/레이블 메타데이터
@@ -129,12 +130,20 @@ function MobileBottomBar({ state, navigation, descriptors }: BottomTabBarProps) 
             accessibilityState={{ selected: isFocused }}
             accessibilityLabel={label}
           >
-            <View style={[
-              mobileStyles.iconWrap,
-              isFocused && { backgroundColor: Colors.primaryLight, borderRadius: Radius.md, paddingHorizontal: 10, paddingVertical: 4 },
-            ]}>
-              <Ionicons name={iconName} size={22} color={color} />
-            </View>
+            {isFocused ? (
+              <LinearGradient
+                colors={Gradients.indigo}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={mobileStyles.iconWrapActive}
+              >
+                <Ionicons name={iconName} size={20} color="#fff" />
+              </LinearGradient>
+            ) : (
+              <View style={mobileStyles.iconWrap}>
+                <Ionicons name={iconName} size={22} color={color} />
+              </View>
+            )}
             <Text style={[mobileStyles.label, { color }]}>{label}</Text>
           </TouchableOpacity>
         );
@@ -223,8 +232,9 @@ const mobileStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: Colors.card,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    // 상단 인디고 그라디언트 라인 효과 — borderTop 대신 box-shadow 활용
+    borderTopWidth: 2,
+    borderTopColor: Colors.primary,
     height: 64,
     paddingBottom: 10,
     paddingTop: 6,
@@ -236,6 +246,16 @@ const mobileStyles = StyleSheet.create({
     gap: 2,
   },
   iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  // 활성 탭 아이콘 — 인디고 그라디언트 배경
+  iconWrapActive: {
+    borderRadius: Radius.md,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },

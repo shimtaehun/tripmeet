@@ -12,7 +12,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createCompanion, updateCompanion, getCompanion } from '../../services/companionService';
-import { Colors, Radius, Spacing } from '../../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Gradients, Radius, Spacing } from '../../utils/theme';
 
 export default function CompanionCreateScreen() {
   const navigation = useNavigation<any>();
@@ -98,23 +99,30 @@ export default function CompanionCreateScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <View style={styles.header}>
+      <LinearGradient
+        colors={Gradients.companion}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.headerSideBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="close" size={22} color={Colors.textMedium} />
+          <Ionicons name="close" size={22} color="rgba(255,255,255,0.90)" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{isEditMode ? '동행 구인 수정' : '동행 구인 등록'}</Text>
         <TouchableOpacity onPress={handleSubmit} disabled={loading} style={styles.headerSideBtn}>
           {loading ? (
-            <ActivityIndicator size="small" color={Colors.primary} />
+            <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.submitText}>{isEditMode ? '수정' : '등록'}</Text>
+            <View style={styles.submitBtn}>
+              <Text style={styles.submitText}>{isEditMode ? '수정' : '등록'}</Text>
+            </View>
           )}
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <View style={styles.section}>
         <Text style={styles.label}>여행지 <Text style={styles.required}>*</Text></Text>
@@ -200,14 +208,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
-    paddingBottom: 14,
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingBottom: 16,
   },
   headerSideBtn: { width: 44, alignItems: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: Colors.text },
-  submitText: { fontSize: 15, color: Colors.primary, fontWeight: '700' as const },
+  headerTitle: { fontSize: 16, fontWeight: '700' as const, color: '#fff' },
+  submitBtn: {
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.38)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  submitText: { fontSize: 14, color: '#fff', fontWeight: '700' as const },
 
   section: {
     backgroundColor: Colors.card,

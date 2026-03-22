@@ -104,7 +104,7 @@ export default function MatchingScreen() {
           <View style={styles.radarWrap}>
             <PulseRing />
             <View style={styles.radarDot}>
-              <Ionicons name="location" size={30} color={Colors.primary} />
+              <Ionicons name="location" size={30} color={Colors.green} />
             </View>
           </View>
 
@@ -252,18 +252,18 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 1.5,
-    borderColor: Colors.primary,
+    borderColor: Colors.green,
   },
   radarDot: {
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.greenLight,
     borderWidth: 2,
-    borderColor: Colors.primaryBorder,
+    borderColor: Colors.greenBorder,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadow.primary,
+    ...Shadow.green,
   },
 
   emptyRoot: {

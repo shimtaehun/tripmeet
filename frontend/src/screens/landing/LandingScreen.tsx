@@ -15,16 +15,16 @@ const LANDING_HTML = `<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #3B82F6;
-    --primaryDark: #1E40AF;
-    --primaryLight: #EFF6FF;
-    --secondary: #60A5FA;
-    --accent: #0EA5E9;
-    --dark: #0F172A;
-    --dark2: #1E293B;
+    --primary: #6366F1;
+    --primaryDark: #4338CA;
+    --primaryLight: #EEF2FF;
+    --secondary: #818CF8;
+    --accent: #F97316;
+    --dark: #1E1B4B;
+    --dark2: #312E81;
     --white: #FFFFFF;
-    --gray: #F8FAFC;
-    --text-gray: #64748B;
+    --gray: #F5F7FF;
+    --text-gray: #4B5563;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }

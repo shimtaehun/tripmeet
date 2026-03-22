@@ -158,9 +158,20 @@ export default function CommunityScreen() {
                 key={String(cat.value)}
                 onPress={() => { if (cat.value !== selectedCategory) setSelectedCategory(cat.value); }}
                 activeOpacity={0.75}
-                style={[styles.tab, active && { backgroundColor: cat.color }]}
+                style={styles.tab}
               >
-                <Text style={[styles.tabText, active && styles.tabTextActive]}>{cat.label}</Text>
+                {active ? (
+                  <LinearGradient
+                    colors={Gradients.community}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.tabGradient}
+                  >
+                    <Text style={styles.tabTextActive}>{cat.label}</Text>
+                  </LinearGradient>
+                ) : (
+                  <Text style={styles.tabText}>{cat.label}</Text>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -260,12 +271,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tab: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    backgroundColor: Colors.surface,
+  },
+  tabGradient: {
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface,
   },
-  tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const },
+  tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const, paddingHorizontal: 16, paddingVertical: 6 },
   tabTextActive: { fontSize: 13, color: '#fff', fontWeight: '700' as const },
 
   listContent: { padding: 14, paddingBottom: 48 },
