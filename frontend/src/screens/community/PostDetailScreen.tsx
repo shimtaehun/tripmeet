@@ -21,6 +21,14 @@ const CAT_META: Record<string, { label: string; bg: string; text: string }> = {
   info:     { label: '정보', bg: Colors.amberLight,   text: Colors.amber   },
 };
 
+function goBackOrCommunity(navigation: any) {
+  if (navigation.canGoBack()) {
+    navigation.goBack();
+  } else {
+    navigation.navigate('Main', { screen: 'Community' });
+  }
+}
+
 export default function PostDetailScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
@@ -41,7 +49,7 @@ export default function PostDetailScreen() {
       } catch (e) {
         console.error('게시글 조회 오류:', e);
         Alert.alert('오류', '게시글을 불러올 수 없습니다.', [
-          { text: '확인', onPress: () => navigation.goBack() },
+          { text: '확인', onPress: () => goBackOrCommunity(navigation) },
         ]);
       } finally {
         setLoading(false);
@@ -55,7 +63,7 @@ export default function PostDetailScreen() {
     const execute = async () => {
       try {
         await deletePost(postId);
-        navigation.goBack();
+        goBackOrCommunity(navigation);
       } catch (e: any) {
         console.error('게시글 삭제 오류:', e);
         Alert.alert('삭제 실패', e?.message ?? '게시글 삭제에 실패했습니다.');
@@ -91,7 +99,7 @@ export default function PostDetailScreen() {
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => goBackOrCommunity(navigation)}
           style={styles.backBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
