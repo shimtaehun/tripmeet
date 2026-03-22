@@ -1,22 +1,22 @@
 // ─────────────────────────────────────────────────────────────
-// Blue Premium Design System v2.0
-// Primary: Bright Blue (#3B82F6) / Base: Deep Navy (#0F172A)
+// Vibrant Light Design System v3.0
+// Primary: Indigo Violet (#6366F1) / Accent: Coral (#F97316)
 // ─────────────────────────────────────────────────────────────
 
 // ─── 색상 ─────────────────────────────────────────────────────
 export const Colors = {
-  // Primary — 밝은 블루
-  primary: '#3B82F6',
-  primaryDark: '#1E40AF',
-  primaryDeep: '#0F172A',
-  primaryLight: '#EFF6FF',
-  primaryBorder: '#BFDBFE',
+  // Primary — 인디고 바이올렛
+  primary: '#6366F1',
+  primaryDark: '#4338CA',
+  primaryDeep: '#1E1B4B',
+  primaryLight: '#EEF2FF',
+  primaryBorder: '#C7D2FE',
 
-  // CTA — 블루 그라디언트용 (기존 coral 키 유지, 값 변경)
-  coral: '#3B82F6',
-  coralDark: '#1E40AF',
-  coralLight: '#EFF6FF',
-  coralBorder: '#BFDBFE',
+  // Accent — 코랄 오렌지 (따뜻한 포인트)
+  coral: '#F97316',
+  coralDark: '#EA580C',
+  coralLight: '#FFF7ED',
+  coralBorder: '#FED7AA',
 
   // 시맨틱
   green: '#10B981',
@@ -28,52 +28,66 @@ export const Colors = {
   amber: '#F59E0B',
   amberLight: '#FEF3C7',
   amberBorder: '#FDE68A',
-  purple: '#7C3AED',
+  purple: '#8B5CF6',
   purpleLight: '#EDE9FE',
   purpleBorder: '#DDD6FE',
+  pink: '#EC4899',
+  pinkLight: '#FCE7F3',
+  pinkBorder: '#FBCFE8',
+  cyan: '#06B6D4',
+  cyanLight: '#CFFAFE',
+  cyanBorder: '#A5F3FC',
 
-  // 서피스 — 배경은 오프화이트, 카드는 순백으로 대비 생성
-  background: '#F8FAFC',
+  // 서피스 — 인디고 틴트 배경
+  background: '#F5F7FF',
   card: '#FFFFFF',
-  surface: '#F8FAFC',
-  surfaceHover: '#F1F5F9',
+  surface: '#EEF2FF',
+  surfaceHover: '#E0E7FF',
 
   // 텍스트
-  text: '#0F172A',
-  textMedium: '#475569',
-  textLight: '#94A3B8',
+  text: '#1E1B4B',
+  textMedium: '#4B5563',
+  textLight: '#9CA3AF',
   textOnDark: '#FFFFFF',
-  textOnDarkSub: 'rgba(255,255,255,0.75)',
+  textOnDarkSub: 'rgba(255,255,255,0.80)',
 
   // 선
-  border: '#E2E8F0',
-  borderStrong: '#CBD5E1',
-  divider: '#F1F5F9',
+  border: '#E5E7EB',
+  borderStrong: '#C7D2FE',
+  divider: '#F3F4F6',
 
   // 탭
-  tabActive: '#3B82F6',
-  tabInactive: '#94A3B8',
+  tabActive: '#6366F1',
+  tabInactive: '#9CA3AF',
 };
 
 // ─── 그라디언트 ─────────────────────────────────────────────────
 export const Gradients = {
-  // 블루 CTA
-  coral: ['#1E40AF', '#3B82F6'] as string[],
+  // 메인 CTA — 인디고→바이올렛
+  coral: ['#4338CA', '#6366F1', '#818CF8'] as string[],
 
-  // 히어로 배너
-  hero: ['#0F172A', '#1E293B', '#1E40AF'] as string[],
+  // 히어로
+  hero: ['#1E1B4B', '#312E81', '#4338CA'] as string[],
 
-  // 기능별 섹션 헤더
+  // 기능별 그라디언트
   ai:        ['#4C1D95', '#6D28D9', '#8B5CF6'] as string[],
   matching:  ['#065F46', '#059669', '#10B981'] as string[],
-  food:      ['#991B1B', '#DC2626', '#EF4444'] as string[],
+  food:      ['#9D174D', '#DB2777', '#EC4899'] as string[],
   companion: ['#92400E', '#D97706', '#F59E0B'] as string[],
-  community: ['#1E40AF', '#2563EB', '#3B82F6'] as string[],
-  chat:      ['#0369A1', '#0284C7', '#0EA5E9'] as string[],
-  profile:   ['#0F172A', '#1E293B', '#1E40AF'] as string[],
+  community: ['#1E40AF', '#2563EB', '#60A5FA'] as string[],
+  chat:      ['#0E7490', '#0891B2', '#06B6D4'] as string[],
+  profile:   ['#1E1B4B', '#312E81', '#6366F1'] as string[],
+
+  // 배너 · 카드 포인트
+  indigo:    ['#4338CA', '#6366F1'] as string[],
+  coral:     ['#EA580C', '#F97316', '#FB923C'] as string[],
+  rose:      ['#BE123C', '#E11D48', '#F43F5E'] as string[],
+  teal:      ['#0F766E', '#0D9488', '#14B8A6'] as string[],
+  sky:       ['#0369A1', '#0284C7', '#0EA5E9'] as string[],
+  sunset:    ['#F97316', '#F43F5E', '#EC4899'] as string[],
 
   // 오버레이
-  overlay: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)'] as string[],
+  overlay: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.60)'] as string[],
 };
 
 // ─── 반경 ────────────────────────────────────────────────────
@@ -90,57 +104,70 @@ export const Radius = {
 // ─── 그림자 ──────────────────────────────────────────────────
 export const Shadow = {
   xs: {
-    shadowColor: '#0F172A',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 1,
   },
   sm: {
-    shadowColor: '#0F172A',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
   },
   card: {
-    shadowColor: '#0F172A',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.10,
     shadowRadius: 16,
     elevation: 4,
   },
   md: {
-    shadowColor: '#0F172A',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.12,
     shadowRadius: 24,
     elevation: 6,
   },
   lg: {
-    shadowColor: '#0F172A',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.14,
+    shadowOpacity: 0.16,
     shadowRadius: 32,
     elevation: 10,
   },
   coral: {
-    shadowColor: '#3B82F6',
+    shadowColor: '#F97316',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.32,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  primary: {
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.30,
     shadowRadius: 12,
     elevation: 6,
   },
-  primary: {
-    shadowColor: '#3B82F6',
+  blue: {
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.30,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  pink: {
+    shadowColor: '#EC4899',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
     shadowRadius: 12,
     elevation: 6,
   },
-  // Shadow.blue: Shadow.primary 와 동일 — 브랜드 컬러 글로우
-  blue: {
-    shadowColor: '#3B82F6',
+  green: {
+    shadowColor: '#10B981',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
     shadowRadius: 12,
