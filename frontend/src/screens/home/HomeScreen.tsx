@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 const HERO_IMG =
@@ -24,66 +24,58 @@ const QUICK_MENUS = [
   {
     icon: 'sparkles'    as const,
     label: 'AI 일정',
-    color: '#8B5CF6',
-    bg: '#F5F3FF',
+    gradient: ['#4C1D95', '#8B5CF6'] as string[],
     navigate: () => ({ type: 'screen' as const, name: 'Itinerary' }),
   },
   {
     icon: 'location'    as const,
     label: '여행자 매칭',
-    color: '#10B981',
-    bg: '#ECFDF5',
+    gradient: ['#065F46', '#10B981'] as string[],
     navigate: () => ({ type: 'tab' as const, name: 'Matching' }),
   },
   {
     icon: 'chatbubbles' as const,
     label: '커뮤니티',
-    color: '#3B82F6',
-    bg: '#EFF6FF',
+    gradient: ['#1E40AF', '#60A5FA'] as string[],
     navigate: () => ({ type: 'tab' as const, name: 'Community' }),
   },
   {
     icon: 'restaurant'  as const,
     label: '맛집',
-    color: '#EF4444',
-    bg: '#FEF2F2',
+    gradient: ['#9D174D', '#EC4899'] as string[],
     navigate: () => ({ type: 'tab' as const, name: 'Restaurant' }),
   },
   {
     icon: 'people'      as const,
     label: '동행 구인',
-    color: '#F59E0B',
-    bg: '#FFFBEB',
+    gradient: ['#92400E', '#F59E0B'] as string[],
     navigate: () => ({ type: 'tab' as const, name: 'Companion' }),
   },
 ] as const;
 
 const DESTINATIONS = [
-  { city: '도쿄',    country: '일본',     count: '247명', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80' },
-  { city: '발리',    country: '인도네시아', count: '156명', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80' },
-  { city: '파리',    country: '프랑스',   count: '134명', img: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80' },
-  { city: '뉴욕',    country: '미국',     count: '98명',  img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80' },
-  { city: '교토',    country: '일본',     count: '89명',  img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80' },
-  { city: '바르셀로나', country: '스페인', count: '76명',  img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80' },
+  { city: '도쿄',       country: '일본',      count: '247명', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80' },
+  { city: '발리',       country: '인도네시아', count: '156명', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80' },
+  { city: '파리',       country: '프랑스',    count: '134명', img: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80' },
+  { city: '뉴욕',       country: '미국',      count: '98명',  img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80' },
+  { city: '교토',       country: '일본',      count: '89명',  img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80' },
+  { city: '바르셀로나',  country: '스페인',    count: '76명',  img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80' },
 ] as const;
 
-// 근처 여행자 모의 데이터 (추후 API 교체)
 const NEARBY_TRAVELERS = [
-  { name: '지민', age: 25, from: '서울', location: '도쿄', emoji: '😊', color: ['#FF6B6B', '#FF8E53'] as string[] },
-  { name: '준혁', age: 28, from: '부산', location: '발리', emoji: '🧳', color: ['#4FACFE', '#00F2FE'] as string[] },
-  { name: '수아',  age: 23, from: '인천', location: '파리', emoji: '✈️', color: ['#43E97B', '#38F9D7'] as string[] },
+  { name: '지민', age: 25, from: '서울', location: '도쿄', emoji: '😊', color: ['#F97316', '#FB923C'] as string[] },
+  { name: '준혁', age: 28, from: '부산', location: '발리', emoji: '🧳', color: ['#6366F1', '#818CF8'] as string[] },
+  { name: '수아',  age: 23, from: '인천', location: '파리', emoji: '✈️', color: ['#10B981', '#34D399'] as string[] },
 ];
 
-// 커뮤니티 최신 글 모의 데이터
 const COMMUNITY_POSTS = [
-  { category: '여행 꿀팁', title: '도쿄 1주일 혼자 다녀온 후기 — 진짜 절약법', likes: 142, comments: 38, time: '1시간 전' },
-  { category: '질문', title: '발리 우붓 vs 쿠타 — 첫 방문이면 어디가 좋을까요?', likes: 67, comments: 24, time: '3시간 전' },
+  { category: '여행 꿀팁', title: '도쿄 1주일 혼자 다녀온 후기 — 진짜 절약법', likes: 142, comments: 38, time: '1시간 전', accent: '#6366F1' },
+  { category: '질문',     title: '발리 우붓 vs 쿠타 — 첫 방문이면 어디가 좋을까요?', likes: 67, comments: 24, time: '3시간 전', accent: '#EC4899' },
 ];
 
-// 동행 구인 HOT 모의 데이터
 const COMPANION_POSTS = [
-  { dest: '도쿄', period: '3월 15~20일', desc: '시부야·아키하바라 위주 탐방, 20대 누구든 환영', emoji: '🗼', count: 2 },
-  { dest: '발리', period: '4월 1~7일',   desc: '우붓 힐링 여행, 조용한 분위기 선호하는 분',   emoji: '🌴', count: 1 },
+  { dest: '도쿄', period: '3월 15~20일', desc: '시부야·아키하바라 위주 탐방, 20대 누구든 환영', emoji: '🗼', count: 2, gradient: ['#4338CA', '#6366F1'] as string[] },
+  { dest: '발리', period: '4월 1~7일',   desc: '우붓 힐링 여행, 조용한 분위기 선호하는 분',   emoji: '🌴', count: 1, gradient: ['#065F46', '#10B981'] as string[] },
 ];
 
 // ─── 빠른 메뉴 아이템 ─────────────────────────────────────────────────
@@ -96,66 +88,55 @@ function QuickMenuItem({
   onPress: () => void;
 }) {
   const opacity    = useRef(new Animated.Value(0)).current;
-  const slideY     = useRef(new Animated.Value(16)).current;
+  const slideY     = useRef(new Animated.Value(20)).current;
   const hoverScale = useRef(new Animated.Value(1)).current;
   const hoverY     = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(opacity, { toValue: 1, duration: Animation.entrance, delay: 200 + index * 60, useNativeDriver: true }),
-      Animated.spring(slideY, { toValue: 0, delay: 200 + index * 60, tension: 80, friction: 9, useNativeDriver: true }),
+      Animated.spring(slideY,  { toValue: 0, delay: 200 + index * 60, tension: 80, friction: 9, useNativeDriver: true }),
     ]).start();
   }, []);
 
   const handleMouseEnter = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1.08, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: -4,   useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1.10, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: -5,   useNativeDriver: true, tension: 280 }),
     ]).start();
   };
   const handleMouseLeave = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 280 }),
     ]).start();
   };
 
   return (
-    <Animated.View
-      style={{ opacity, transform: [{ translateY: slideY }] }}
-    >
+    <Animated.View style={{ opacity, transform: [{ translateY: slideY }] }}>
       <Animated.View
         style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }] }}
         {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
       >
         <TouchableOpacity
           onPress={onPress}
-          activeOpacity={0.75}
+          activeOpacity={0.85}
           accessibilityLabel={item.label}
           style={[styles.quickItem, isDesktop && styles.quickItemDesktop]}
         >
           <LinearGradient
-            colors={['#FFFFFF', '#F8FAFC']}
+            colors={item.gradient}
             start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={[
-              styles.quickCard,
-              isDesktop && styles.quickCardDesktop,
-            ]}
+            end={{ x: 1, y: 1 }}
+            style={[styles.quickIconWrap, isDesktop && styles.quickIconWrapDesktop]}
           >
-            <View style={[
-              styles.quickIconWrap,
-              { backgroundColor: item.bg },
-              isDesktop && styles.quickIconWrapDesktop,
-            ]}>
-              <Ionicons name={item.icon} size={isDesktop ? 26 : 26} color={item.color} />
-            </View>
-            <Text style={[styles.quickLabel, isDesktop && styles.quickLabelDesktop]} numberOfLines={1}>
-              {item.label}
-            </Text>
+            <Ionicons name={item.icon} size={isDesktop ? 26 : 24} color="#fff" />
           </LinearGradient>
+          <Text style={[styles.quickLabel, isDesktop && styles.quickLabelDesktop]} numberOfLines={1}>
+            {item.label}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </Animated.View>
@@ -178,14 +159,14 @@ function DestCard({
 }) {
   const scale   = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const slideX  = useRef(new Animated.Value(20)).current;
+  const slideX  = useRef(new Animated.Value(24)).current;
   const hoverY  = useRef(new Animated.Value(0)).current;
   const rating  = DEST_RATINGS[dest.city] ?? 4.5;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(opacity, { toValue: 1, duration: Animation.entrance, delay: 300 + index * 70, useNativeDriver: true }),
-      Animated.spring(slideX, { toValue: 0, delay: 300 + index * 70, tension: 80, friction: 9, useNativeDriver: true }),
+      Animated.spring(slideX,  { toValue: 0, delay: 300 + index * 70, tension: 80, friction: 9, useNativeDriver: true }),
     ]).start();
   }, []);
 
@@ -193,11 +174,11 @@ function DestCard({
   const onPressOut = () => Animated.spring(scale, { toValue: 1,    useNativeDriver: true, tension: 300 }).start();
   const handleMouseEnter = () => {
     if (Platform.OS !== 'web') return;
-    Animated.spring(hoverY, { toValue: -6, useNativeDriver: true, tension: 300 }).start();
+    Animated.spring(hoverY, { toValue: -7, useNativeDriver: true, tension: 280 }).start();
   };
   const handleMouseLeave = () => {
     if (Platform.OS !== 'web') return;
-    Animated.spring(hoverY, { toValue: 0, useNativeDriver: true, tension: 300 }).start();
+    Animated.spring(hoverY, { toValue: 0, useNativeDriver: true, tension: 280 }).start();
   };
 
   return (
@@ -219,18 +200,18 @@ function DestCard({
           resizeMode="cover"
         >
           <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.72)']}
+            colors={['transparent', 'rgba(0,0,0,0.78)']}
             style={[styles.destOverlay, { height: cardH }]}
           >
+            <View style={styles.destRatingRow}>
+              <Ionicons name="star" size={11} color="#FBBF24" />
+              <Text style={styles.destRating}>{rating.toFixed(1)}</Text>
+            </View>
             <Text style={styles.destCity}>{dest.city}</Text>
             <Text style={styles.destCountry}>{dest.country}</Text>
             <View style={styles.destBadge}>
               <View style={styles.destDot} />
               <Text style={styles.destCount}>{dest.count} 여행 중</Text>
-            </View>
-            <View style={styles.destRatingRow}>
-              <Ionicons name="star" size={11} color="#FBBF24" />
-              <Text style={styles.destRating}>{rating.toFixed(1)}</Text>
             </View>
           </LinearGradient>
         </ImageBackground>
@@ -251,15 +232,15 @@ function TravelerCard({
   const handleMouseEnter = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 280 }),
     ]).start();
   };
   const handleMouseLeave = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 280 }),
     ]).start();
   };
 
@@ -268,35 +249,33 @@ function TravelerCard({
       style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }] }}
       {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
     >
-    <TouchableOpacity style={styles.travelerCard} onPress={onPress} activeOpacity={0.85}>
-      {/* 그라디언트 링 + 아바타 */}
-      <LinearGradient
-        colors={['#FF6B6B', '#FF8E53']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.travelerAvatarRing}
-      >
+      <TouchableOpacity style={styles.travelerCard} onPress={onPress} activeOpacity={0.88}>
         <LinearGradient
           colors={traveler.color}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={styles.travelerAvatar}
         >
           <Text style={{ fontSize: 22 }}>{traveler.emoji}</Text>
         </LinearGradient>
-      </LinearGradient>
-      <View style={styles.travelerInfo}>
-        <Text style={styles.travelerName}>{traveler.name} · {traveler.age}세</Text>
-        <Text style={styles.travelerFrom}>{traveler.from}에서</Text>
-        <View style={styles.travelerStatusRow}>
-          <View style={styles.travelerStatusDot} />
-          <Ionicons name="location" size={10} color={Colors.green} />
-          <Text style={styles.travelerStatusText}>{traveler.location} 여행 중</Text>
+        <View style={styles.travelerInfo}>
+          <Text style={styles.travelerName}>{traveler.name} · {traveler.age}세</Text>
+          <Text style={styles.travelerFrom}>{traveler.from}에서</Text>
+          <View style={styles.travelerStatusRow}>
+            <View style={styles.travelerStatusDot} />
+            <Text style={styles.travelerStatusText}>{traveler.location} 여행 중</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.chatChip}>
-        <Ionicons name="chatbubble-outline" size={13} color={Colors.primary} />
-        <Text style={styles.chatChipText}>채팅</Text>
-      </View>
-    </TouchableOpacity>
+        <LinearGradient
+          colors={traveler.color}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.chatChip}
+        >
+          <Ionicons name="chatbubble-outline" size={12} color="#fff" />
+          <Text style={styles.chatChipText}>채팅</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -313,15 +292,15 @@ function PostCard({
   const handleMouseEnter = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 280 }),
     ]).start();
   };
   const handleMouseLeave = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 280 }),
     ]).start();
   };
 
@@ -330,23 +309,28 @@ function PostCard({
       style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }], flex: 1 }}
       {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
     >
-    <TouchableOpacity style={[styles.postCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.85}>
-      <View style={styles.postCategoryWrap}>
-        <Text style={styles.postCategory}>{post.category}</Text>
-        <Text style={styles.postTime}>{post.time}</Text>
-      </View>
-      <Text style={styles.postTitle} numberOfLines={2}>{post.title}</Text>
-      <View style={styles.postMeta}>
-        <View style={styles.postMetaItem}>
-          <Ionicons name="heart-outline" size={13} color={Colors.textLight} />
-          <Text style={styles.postMetaText}>{post.likes}</Text>
+      <TouchableOpacity style={[styles.postCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.88}>
+        <View style={[styles.postAccentBar, { backgroundColor: post.accent }]} />
+        <View style={{ flex: 1, gap: 8 }}>
+          <View style={styles.postCategoryWrap}>
+            <View style={[styles.postCategoryBadge, { backgroundColor: post.accent + '18' }]}>
+              <Text style={[styles.postCategory, { color: post.accent }]}>{post.category}</Text>
+            </View>
+            <Text style={styles.postTime}>{post.time}</Text>
+          </View>
+          <Text style={styles.postTitle} numberOfLines={2}>{post.title}</Text>
+          <View style={styles.postMeta}>
+            <View style={styles.postMetaItem}>
+              <Ionicons name="heart" size={13} color={Colors.pink} />
+              <Text style={styles.postMetaText}>{post.likes}</Text>
+            </View>
+            <View style={styles.postMetaItem}>
+              <Ionicons name="chatbubble" size={13} color={Colors.primary} />
+              <Text style={styles.postMetaText}>{post.comments}</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.postMetaItem}>
-          <Ionicons name="chatbubble-outline" size={13} color={Colors.textLight} />
-          <Text style={styles.postMetaText}>{post.comments}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -363,15 +347,15 @@ function CompanionCard({
   const handleMouseEnter = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 280 }),
     ]).start();
   };
   const handleMouseLeave = () => {
     if (Platform.OS !== 'web') return;
     Animated.parallel([
-      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
-      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 280 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 280 }),
     ]).start();
   };
 
@@ -380,22 +364,29 @@ function CompanionCard({
       style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }], flex: 1 }}
       {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
     >
-    <TouchableOpacity style={[styles.companionCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.85}>
-      <View style={styles.companionEmoji}>
-        <Text style={{ fontSize: 22 }}>{post.emoji}</Text>
-      </View>
-      <View style={{ flex: 1, gap: 3 }}>
-        <View style={styles.companionHeader}>
-          <Text style={styles.companionDest}>{post.dest}</Text>
-          <Text style={styles.companionPeriod}>{post.period}</Text>
+      <TouchableOpacity style={[styles.companionCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.88}>
+        <LinearGradient
+          colors={post.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.companionEmojiWrap}
+        >
+          <Text style={{ fontSize: 24 }}>{post.emoji}</Text>
+        </LinearGradient>
+        <View style={{ flex: 1, gap: 4 }}>
+          <View style={styles.companionHeader}>
+            <Text style={styles.companionDest}>{post.dest}</Text>
+            <View style={styles.companionPeriodBadge}>
+              <Text style={styles.companionPeriod}>{post.period}</Text>
+            </View>
+          </View>
+          <Text style={styles.companionDesc} numberOfLines={1}>{post.desc}</Text>
         </View>
-        <Text style={styles.companionDesc} numberOfLines={1}>{post.desc}</Text>
-      </View>
-      <View style={styles.companionCountWrap}>
-        <Ionicons name="person-add-outline" size={12} color={Colors.amber} />
-        <Text style={styles.companionCount}>{post.count}명 모집</Text>
-      </View>
-    </TouchableOpacity>
+        <View style={styles.companionCountWrap}>
+          <Text style={styles.companionCount}>{post.count}명</Text>
+          <Text style={styles.companionCountSub}>모집 중</Text>
+        </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -406,14 +397,14 @@ export default function HomeScreen() {
   const { width, isDesktop } = useResponsive();
   const [displayName, setDisplayName] = useState('여행자');
 
-  const contentW = Math.min(width, MAX_WIDTH);
-  const heroH = isDesktop ? Math.min(width * 0.42, 620) : Math.round(width * 0.85);
-  const destCardW = isDesktop ? Math.floor((contentW - Spacing.screenPad * 2 - 12 * 5) / 6) : 170;
-  const destCardH = isDesktop ? Math.round(destCardW * 1.4) : 215;
+  const contentW   = Math.min(width, MAX_WIDTH);
+  const heroH      = isDesktop ? Math.min(width * 0.42, 620) : Math.round(width * 0.85);
+  const destCardW  = isDesktop ? Math.floor((contentW - Spacing.screenPad * 2 - 12 * 5) / 6) : 170;
+  const destCardH  = isDesktop ? Math.round(destCardW * 1.4) : 215;
 
   const heroOpacity = useRef(new Animated.Value(0)).current;
-  const dotPulse   = useRef(new Animated.Value(1)).current;
-  const aiFloat    = useRef(new Animated.Value(0)).current;
+  const dotPulse    = useRef(new Animated.Value(1)).current;
+  const aiFloat     = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(heroOpacity, { toValue: 1, duration: Animation.entrance, useNativeDriver: true }).start();
@@ -432,7 +423,6 @@ export default function HomeScreen() {
       ])
     ).start();
 
-    // 로그인 사용자 이름 가져오기
     supabase.auth.getUser().then(({ data }) => {
       const user = data.user;
       if (!user) return;
@@ -474,25 +464,27 @@ export default function HomeScreen() {
             accessibilityLabel="여행 배경 이미지"
           >
             <LinearGradient
-              colors={['rgba(0,0,0,0.15)', 'rgba(0,0,0,0.65)']}
+              colors={['rgba(30,27,75,0.2)', 'rgba(30,27,75,0.75)']}
               style={[styles.heroOverlay, { paddingTop: isDesktop ? TOP_NAV_H + 60 : (Platform.OS === 'ios' ? 54 : 42) }]}
             >
-              {/* 모바일 상단 로고/알림 */}
               {!isDesktop && (
                 <View style={styles.heroTop}>
-                  <View style={styles.logoBadge}>
+                  <LinearGradient
+                    colors={['#6366F1', '#8B5CF6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.logoBadge}
+                  >
                     <Ionicons name="airplane" size={14} color="#fff" />
                     <Text style={styles.logoText}>TripMeet</Text>
-                  </View>
+                  </LinearGradient>
                   <TouchableOpacity style={styles.notifBtn} activeOpacity={0.8} accessibilityLabel="알림">
                     <Ionicons name="notifications-outline" size={20} color="#fff" />
                   </TouchableOpacity>
                 </View>
               )}
 
-              {/* 히어로 본문 */}
               <View style={styles.heroBody}>
-                {/* 통계 배지 */}
                 <View style={styles.statsBadge}>
                   <Animated.View style={[styles.statsDot, { transform: [{ scale: dotPulse }] }]} />
                   <Text style={styles.statsText}>지금 1,247명 여행 중</Text>
@@ -503,17 +495,18 @@ export default function HomeScreen() {
                 </Text>
                 <Text style={styles.heroSub}>전 세계 여행자와 함께하는 여행</Text>
 
-                {/* 검색바 */}
                 <TouchableOpacity
                   style={[styles.searchBar, isDesktop && styles.searchBarDesktop]}
                   onPress={() => navigation.navigate('LocationSelect')}
-                  activeOpacity={0.9}
+                  activeOpacity={0.92}
                   accessibilityLabel="여행지 검색"
                 >
-                  <Ionicons name="search-outline" size={18} color={Colors.textLight} />
-                  <Text style={styles.searchPlaceholder}>도시를 검색하세요</Text>
+                  <View style={styles.searchIconWrap}>
+                    <Ionicons name="search" size={16} color="#fff" />
+                  </View>
+                  <Text style={styles.searchPlaceholder}>어디로 떠나고 싶으세요?</Text>
                   <View style={styles.searchFilterBtn}>
-                    <Ionicons name="options-outline" size={16} color={Colors.primary} />
+                    <Ionicons name="options" size={16} color={Colors.primary} />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -550,17 +543,20 @@ export default function HomeScreen() {
           <View style={[styles.aiBannerWrap, isDesktop && styles.aiBannerWrapDesktop]}>
             <TouchableOpacity
               onPress={() => navigation.navigate('Itinerary')}
-              activeOpacity={0.88}
+              activeOpacity={0.90}
               accessibilityLabel="AI 여행 일정 만들기"
             >
               <LinearGradient
-                colors={['#4C1D95', '#7C3AED', '#8B5CF6']}
+                colors={['#312E81', '#4338CA', '#6366F1', '#818CF8']}
                 start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={[styles.aiBanner, isDesktop && styles.aiBannerDesktop]}
               >
+                <View style={styles.aiBannerDecor1} />
+                <View style={styles.aiBannerDecor2} />
                 <View style={styles.aiLeft}>
                   <View style={styles.aiChip}>
+                    <Ionicons name="flash" size={10} color="#FCD34D" />
                     <Text style={styles.aiChipText}>AI POWERED</Text>
                   </View>
                   <Text style={[styles.aiBannerTitle, isDesktop && { fontSize: 22 }]}>
@@ -569,22 +565,24 @@ export default function HomeScreen() {
                   <Text style={styles.aiBannerSub}>
                     목적지 · 기간 · 예산만 입력하세요
                   </Text>
+                  <View style={styles.aiBannerCta}>
+                    <Text style={styles.aiBannerCtaText}>지금 만들기</Text>
+                    <Ionicons name="arrow-forward" size={13} color="#fff" />
+                  </View>
                 </View>
-                <View style={styles.aiRight}>
-                  <Animated.View style={[styles.aiIconCircle, isDesktop && { width: 72, height: 72, borderRadius: 36 }, { transform: [{ translateY: aiFloat }] }]}>
-                    <Ionicons name="sparkles" size={isDesktop ? 34 : 26} color="#fff" />
-                  </Animated.View>
-                </View>
+                <Animated.View style={[styles.aiIconCircle, isDesktop && { width: 80, height: 80, borderRadius: 40 }, { transform: [{ translateY: aiFloat }] }]}>
+                  <Ionicons name="sparkles" size={isDesktop ? 36 : 28} color="#FCD34D" />
+                </Animated.View>
               </LinearGradient>
             </TouchableOpacity>
           </View>
 
           {/* ── 근처 여행자 ── */}
-          <View style={styles.sectionBg}>
+          <View style={styles.sectionWrap}>
             <View style={styles.sectionRow}>
               <View style={{ gap: 2, flex: 1 }}>
                 <View style={styles.sectionTitleRow}>
-                  <View style={[styles.sectionAccentBar, { backgroundColor: Colors.green }]} />
+                  <LinearGradient colors={['#10B981', '#34D399']} style={styles.sectionAccentBar} />
                   <Text style={[styles.sectionTitle, isDesktop && { fontSize: 22 }]}>지금 만날 수 있는 여행자</Text>
                 </View>
                 <Text style={styles.sectionSub}>같은 여행지의 혼자 여행자</Text>
@@ -611,11 +609,11 @@ export default function HomeScreen() {
           </View>
 
           {/* ── 인기 여행지 ── */}
-          <View>
+          <View style={styles.sectionWrapAlt}>
             <View style={styles.sectionRow}>
               <View style={{ gap: 2, flex: 1 }}>
                 <View style={styles.sectionTitleRow}>
-                  <View style={[styles.sectionAccentBar, { backgroundColor: Colors.primary }]} />
+                  <LinearGradient colors={['#6366F1', '#818CF8']} style={styles.sectionAccentBar} />
                   <Text style={[styles.sectionTitle, isDesktop && { fontSize: 22 }]}>지금 핫한 여행지</Text>
                 </View>
               </View>
@@ -661,11 +659,11 @@ export default function HomeScreen() {
           </View>
 
           {/* ── 커뮤니티 최신 글 ── */}
-          <View style={styles.sectionBg}>
+          <View style={styles.sectionWrap}>
             <View style={styles.sectionRow}>
               <View style={{ gap: 2, flex: 1 }}>
                 <View style={styles.sectionTitleRow}>
-                  <View style={[styles.sectionAccentBar, { backgroundColor: Colors.primary }]} />
+                  <LinearGradient colors={['#EC4899', '#F9A8D4']} style={styles.sectionAccentBar} />
                   <Text style={[styles.sectionTitle, isDesktop && { fontSize: 22 }]}>커뮤니티 인기 글</Text>
                 </View>
                 <Text style={styles.sectionSub}>여행자들의 생생한 이야기</Text>
@@ -692,11 +690,11 @@ export default function HomeScreen() {
           </View>
 
           {/* ── 동행 구인 HOT ── */}
-          <View>
+          <View style={styles.sectionWrapAlt}>
             <View style={styles.sectionRow}>
               <View style={{ gap: 2, flex: 1 }}>
                 <View style={styles.sectionTitleRow}>
-                  <View style={[styles.sectionAccentBar, { backgroundColor: Colors.amber }]} />
+                  <LinearGradient colors={['#F59E0B', '#FCD34D']} style={styles.sectionAccentBar} />
                   <Text style={[styles.sectionTitle, isDesktop && { fontSize: 22 }]}>동행 구인 HOT</Text>
                 </View>
                 <Text style={styles.sectionSub}>같이 여행할 사람을 찾고 있어요</Text>
@@ -724,7 +722,9 @@ export default function HomeScreen() {
 
           {/* ── 안전 안내 ── */}
           <View style={styles.safetyRow}>
-            <Ionicons name="shield-checkmark" size={14} color={Colors.primary} />
+            <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.safetyIcon}>
+              <Ionicons name="shield-checkmark" size={12} color="#fff" />
+            </LinearGradient>
             <Text style={styles.safetyText}>
               위치 정보 직접 입력 방식 · GPS 미사용 · 개인정보 보호
             </Text>
@@ -739,13 +739,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
   scroll: { flex: 1 },
-  content: { paddingBottom: 48 },
+  content: { paddingBottom: 56 },
 
   // 히어로
   heroOverlay: {
     flex: 1,
     paddingHorizontal: Spacing.screenPad,
-    paddingBottom: 32,
+    paddingBottom: 36,
     justifyContent: 'space-between',
   },
   heroTop: {
@@ -753,50 +753,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  logoBadge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  logoText: { fontSize: 18, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.5 },
-  notifBtn: {
-    width: 40, height: 40, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: Radius.full,
-  },
-
-  heroBody: { gap: 6, alignItems: 'center' },
-
-  // 통계 배지
-  statsBadge: {
+  logoBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: Radius.full,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+  },
+  logoText: { fontSize: 16, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.3 },
+  notifBtn: {
+    width: 40, height: 40, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: Radius.full,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
+  },
+
+  heroBody: { gap: 8, alignItems: 'center' },
+
+  statsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  statsDot: {
-    width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ADE80',
-  },
-  statsText: { fontSize: 12, fontWeight: '600' as const, color: 'rgba(255,255,255,0.9)' },
+  statsDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#4ADE80' },
+  statsText: { fontSize: 12, fontWeight: '600' as const, color: 'rgba(255,255,255,0.92)' },
 
   heroGreeting: {
     fontSize: 30, fontWeight: '900' as const, color: '#fff',
     letterSpacing: -0.8, lineHeight: 38, textAlign: 'center',
   },
-  heroGreetingDesktop: { fontSize: 48, lineHeight: 58 },
-  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 14, textAlign: 'center' },
+  heroGreetingDesktop: { fontSize: 50, lineHeight: 60 },
+  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.78)', marginBottom: 16, textAlign: 'center' },
 
   // 검색바
   searchBar: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: '#fff', borderRadius: Radius.full,
-    paddingLeft: 16, paddingRight: 6, paddingVertical: 6, gap: 10,
+    paddingLeft: 6, paddingRight: 6, paddingVertical: 6, gap: 10,
     width: '100%',
     ...Shadow.md,
   },
   searchBarDesktop: { maxWidth: 560 },
+  searchIconWrap: {
+    width: 36, height: 36, borderRadius: Radius.full,
+    backgroundColor: Colors.primary,
+    alignItems: 'center', justifyContent: 'center',
+  },
   searchPlaceholder: { flex: 1, fontSize: 14, color: Colors.textLight, paddingVertical: 6 },
   searchFilterBtn: {
     width: 36, height: 36, borderRadius: Radius.full,
@@ -809,128 +819,114 @@ const styles = StyleSheet.create({
   // 빠른 메뉴
   quickSection: {
     backgroundColor: Colors.card,
-    paddingVertical: 20,
+    paddingVertical: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
     ...Shadow.sm,
   },
-  quickSectionDesktop: {
-    paddingVertical: 28,
-    paddingHorizontal: Spacing.screenPad,
-  },
-  quickList: { paddingHorizontal: Spacing.screenPad, gap: 8 },
-  quickGridDesktop: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  quickItem: { alignItems: 'center', width: 72 },
+  quickSectionDesktop: { paddingVertical: 32, paddingHorizontal: Spacing.screenPad },
+  quickList: { paddingHorizontal: Spacing.screenPad, gap: 10 },
+  quickGridDesktop: { flexDirection: 'row', justifyContent: 'space-around' },
+  quickItem: { alignItems: 'center', gap: 10, width: 72 },
   quickItemDesktop: { width: 110 },
-  quickCard: {
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 20,
-    paddingHorizontal: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    width: '100%',
-    ...Shadow.card,
-  },
-  quickCardDesktop: {
-    paddingVertical: 24,
-  },
   quickIconWrap: {
-    width: 52, height: 52, borderRadius: Radius.lg,
+    width: 58, height: 58, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
+    ...Shadow.primary,
   },
-  quickIconWrapDesktop: { width: 68, height: 68, borderRadius: 20 },
-  quickLabel: { fontSize: 13, fontWeight: '700' as const, color: Colors.text, textAlign: 'center' },
+  quickIconWrapDesktop: { width: 72, height: 72, borderRadius: 22 },
+  quickLabel: { fontSize: 12, fontWeight: '700' as const, color: Colors.text, textAlign: 'center' },
   quickLabelDesktop: { fontSize: 13 },
 
   // AI 배너
   aiBannerWrap: {
     marginHorizontal: Spacing.screenPad,
     marginTop: 24,
-    borderRadius: Radius.xl,
+    borderRadius: Radius.xxl,
     overflow: 'hidden',
-    ...Shadow.blue,
+    ...Shadow.primary,
   },
-  aiBannerWrapDesktop: { marginTop: 32 },
+  aiBannerWrapDesktop: { marginTop: 36 },
   aiBanner: {
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 22, paddingVertical: 20,
+    paddingHorizontal: 24, paddingVertical: 24,
+    overflow: 'hidden',
   },
-  aiBannerDesktop: { paddingVertical: 28, paddingHorizontal: 32 },
-  aiLeft: { flex: 1, gap: 4 },
+  aiBannerDesktop: { paddingVertical: 32, paddingHorizontal: 36 },
+  aiBannerDecor1: {
+    position: 'absolute', top: -30, right: 80,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  aiBannerDecor2: {
+    position: 'absolute', bottom: -20, right: 20,
+    width: 70, height: 70, borderRadius: 35,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  aiLeft: { flex: 1, gap: 5 },
   aiChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 2,
+    borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4, marginBottom: 2,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)',
   },
-  aiChipText: { fontSize: 10, fontWeight: '700' as const, color: 'rgba(255,255,255,0.85)', letterSpacing: 1 },
-  aiBannerTitle: { fontSize: 19, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.4 },
-  aiBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.70)' },
-  aiRight: { paddingLeft: 12 },
+  aiChipText: { fontSize: 10, fontWeight: '800' as const, color: '#FCD34D', letterSpacing: 1 },
+  aiBannerTitle: { fontSize: 20, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.4 },
+  aiBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.72)' },
+  aiBannerCta: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    marginTop: 4,
+  },
+  aiBannerCtaText: { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
   aiIconCircle: {
-    width: 52, height: 52, borderRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    width: 60, height: 60, borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.12)',
     alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)',
   },
 
   // 섹션 공통
-  sectionBg: {
-    backgroundColor: Colors.surface,
-    marginTop: 8,
-    paddingVertical: 4,
+  sectionWrap: {
+    backgroundColor: Colors.card,
+    marginTop: 12,
+    paddingBottom: 4,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: Colors.border,
+  },
+  sectionWrapAlt: {
+    backgroundColor: Colors.background,
+    marginTop: 12,
+    paddingBottom: 4,
   },
   sectionRow: {
     flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
     paddingHorizontal: Spacing.screenPad, paddingTop: 28, paddingBottom: 16,
   },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sectionAccentBar: {
-    width: 4,
-    height: 18,
-    borderRadius: 2,
-  },
-  sectionTitle: { fontSize: 17, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.3 },
-  sectionSub: { fontSize: 12, color: Colors.textLight, marginTop: 2 },
-  sectionMoreRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    marginTop: 4,
-  },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  sectionAccentBar: { width: 4, height: 20, borderRadius: 2 },
+  sectionTitle: { fontSize: 18, fontWeight: '800' as const, color: Colors.text, letterSpacing: -0.3 },
+  sectionSub: { fontSize: 12, color: Colors.textLight, marginTop: 2, marginLeft: 14 },
+  sectionMoreRow: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 4 },
   sectionMore: { fontSize: 13, fontWeight: '600' as const, color: Colors.primary },
 
   // 근처 여행자
   travelerList: { paddingHorizontal: Spacing.screenPad, gap: 10, paddingBottom: 24 },
-  travelerListDesktop: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
+  travelerListDesktop: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   travelerCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    paddingVertical: 18,
-    paddingHorizontal: 14,
+    borderRadius: Radius.xl,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Shadow.xs,
-  },
-  travelerAvatarRing: {
-    width: 60, height: 60, borderRadius: 30,
-    padding: 2,
-    alignItems: 'center', justifyContent: 'center',
+    ...Shadow.card,
   },
   travelerAvatar: {
     width: 54, height: 54, borderRadius: 27,
@@ -939,109 +935,95 @@ const styles = StyleSheet.create({
   travelerInfo: { flex: 1, gap: 2 },
   travelerName: { fontSize: 15, fontWeight: '700' as const, color: Colors.text },
   travelerFrom: { fontSize: 12, color: Colors.textLight },
-  travelerStatusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    marginTop: 3,
-  },
-  travelerStatusDot: {
-    width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.green,
-  },
+  travelerStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
+  travelerStatusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.green },
   travelerStatusText: { fontSize: 11, fontWeight: '600' as const, color: Colors.green },
   chatChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: Colors.primaryLight,
     borderRadius: Radius.full,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 6,
   },
-  chatChipText: { fontSize: 12, fontWeight: '600' as const, color: Colors.primary },
+  chatChipText: { fontSize: 12, fontWeight: '700' as const, color: '#fff' },
 
   // 인기 여행지
-  destList: { paddingHorizontal: Spacing.screenPad, gap: 12 },
-  destGridDesktop: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: Spacing.screenPad,
-    gap: 12,
-  },
+  destList: { paddingHorizontal: Spacing.screenPad, gap: 12, paddingBottom: 12 },
+  destGridDesktop: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: Spacing.screenPad, gap: 12 },
   destCardWrap: { borderRadius: Radius.xl, overflow: 'hidden', ...Shadow.card },
   destOverlay: { borderRadius: Radius.xl, padding: 14, justifyContent: 'flex-end' },
-  destCity: { fontSize: 18, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.4, lineHeight: 22 },
-  destCountry: { fontSize: 11, color: 'rgba(255,255,255,0.70)', marginBottom: 8, fontWeight: '500' as const },
+  destCity: { fontSize: 20, fontWeight: '900' as const, color: '#fff', letterSpacing: -0.4, lineHeight: 24 },
+  destCountry: { fontSize: 11, color: 'rgba(255,255,255,0.72)', marginBottom: 8, fontWeight: '500' as const },
   destBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start',
     backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 4,
   },
   destDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ADE80' },
   destCount: { fontSize: 10, color: '#fff', fontWeight: '600' as const },
-  destRatingRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4,
-  },
+  destRatingRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 4 },
   destRating: { fontSize: 11, color: '#fff', fontWeight: '700' as const },
 
   // 커뮤니티 글
-  postList: { paddingHorizontal: Spacing.screenPad, gap: 10, paddingBottom: 24 },
+  postList: { paddingHorizontal: Spacing.screenPad, gap: 12, paddingBottom: 24 },
   postListDesktop: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   postCard: {
+    flexDirection: 'row',
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    padding: 16,
-    gap: 8,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Shadow.xs,
+    ...Shadow.card,
   },
-  postCategoryWrap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  postCategory: {
-    fontSize: 11, fontWeight: '700' as const, color: Colors.primary,
-    backgroundColor: Colors.primaryLight, paddingHorizontal: 8, paddingVertical: 3,
-    borderRadius: Radius.full,
-  },
+  postAccentBar: { width: 4, borderRadius: 0 },
+  postCategoryWrap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingBottom: 0 },
+  postCategoryBadge: { borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4 },
+  postCategory: { fontSize: 11, fontWeight: '700' as const },
   postTime: { fontSize: 11, color: Colors.textLight },
-  postTitle: { fontSize: 14, fontWeight: '600' as const, color: Colors.text, lineHeight: 20 },
-  postMeta: { flexDirection: 'row', gap: 12 },
+  postTitle: { fontSize: 14, fontWeight: '600' as const, color: Colors.text, lineHeight: 20, paddingHorizontal: 16 },
+  postMeta: { flexDirection: 'row', gap: 14, paddingHorizontal: 16, paddingBottom: 16 },
   postMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  postMetaText: { fontSize: 12, color: Colors.textLight },
+  postMetaText: { fontSize: 12, fontWeight: '600' as const, color: Colors.textMedium },
 
   // 동행 구인
-  companionList: { paddingHorizontal: Spacing.screenPad, gap: 10, paddingBottom: 28 },
+  companionList: { paddingHorizontal: Spacing.screenPad, gap: 12, paddingBottom: 28 },
   companionListDesktop: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   companionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    padding: 14,
+    borderRadius: Radius.xl,
+    padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Shadow.xs,
+    ...Shadow.card,
   },
-  companionEmoji: {
-    width: 48, height: 48, borderRadius: Radius.md,
-    backgroundColor: Colors.amberLight,
+  companionEmojiWrap: {
+    width: 52, height: 52, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center',
   },
   companionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  companionDest: { fontSize: 14, fontWeight: '800' as const, color: Colors.text },
-  companionPeriod: { fontSize: 11, color: Colors.textLight },
-  companionDesc: { fontSize: 12, color: Colors.textMedium },
-  companionCountWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 3,
-    backgroundColor: Colors.amberLight,
-    borderRadius: Radius.full,
-    paddingHorizontal: 8, paddingVertical: 4,
+  companionDest: { fontSize: 16, fontWeight: '800' as const, color: Colors.text },
+  companionPeriodBadge: {
+    backgroundColor: Colors.primaryLight,
+    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  companionCount: { fontSize: 11, fontWeight: '600' as const, color: Colors.amber },
+  companionPeriod: { fontSize: 11, color: Colors.primary, fontWeight: '600' as const },
+  companionDesc: { fontSize: 12, color: Colors.textMedium },
+  companionCountWrap: { alignItems: 'center', gap: 1 },
+  companionCount: { fontSize: 20, fontWeight: '900' as const, color: Colors.amber },
+  companionCountSub: { fontSize: 10, color: Colors.textLight, fontWeight: '600' as const },
 
   // 안전 안내
   safetyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: Spacing.screenPad, paddingTop: 24, paddingBottom: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: Spacing.screenPad, paddingTop: 28, paddingBottom: 8,
+  },
+  safetyIcon: {
+    width: 22, height: 22, borderRadius: 11,
+    alignItems: 'center', justifyContent: 'center',
   },
   safetyText: { fontSize: 11, color: Colors.textLight },
 });
