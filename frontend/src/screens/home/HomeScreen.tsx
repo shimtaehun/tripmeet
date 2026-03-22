@@ -95,8 +95,10 @@ function QuickMenuItem({
   isDesktop: boolean;
   onPress: () => void;
 }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const slideY  = useRef(new Animated.Value(16)).current;
+  const opacity    = useRef(new Animated.Value(0)).current;
+  const slideY     = useRef(new Animated.Value(16)).current;
+  const hoverScale = useRef(new Animated.Value(1)).current;
+  const hoverY     = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -105,35 +107,57 @@ function QuickMenuItem({
     ]).start();
   }, []);
 
+  const handleMouseEnter = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1.08, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: -4,   useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+  const handleMouseLeave = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+
   return (
-    <Animated.View style={{ opacity, transform: [{ translateY: slideY }] }}>
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.75}
-        accessibilityLabel={item.label}
-        style={[styles.quickItem, isDesktop && styles.quickItemDesktop]}
+    <Animated.View
+      style={{ opacity, transform: [{ translateY: slideY }] }}
+    >
+      <Animated.View
+        style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }] }}
+        {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
       >
-        <LinearGradient
-          colors={['#FFFFFF', '#F8FAFC']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={[
-            styles.quickCard,
-            isDesktop && styles.quickCardDesktop,
-          ]}
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.75}
+          accessibilityLabel={item.label}
+          style={[styles.quickItem, isDesktop && styles.quickItemDesktop]}
         >
-          <View style={[
-            styles.quickIconWrap,
-            { backgroundColor: item.bg },
-            isDesktop && styles.quickIconWrapDesktop,
-          ]}>
-            <Ionicons name={item.icon} size={isDesktop ? 26 : 26} color={item.color} />
-          </View>
-          <Text style={[styles.quickLabel, isDesktop && styles.quickLabelDesktop]} numberOfLines={1}>
-            {item.label}
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={['#FFFFFF', '#F8FAFC']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={[
+              styles.quickCard,
+              isDesktop && styles.quickCardDesktop,
+            ]}
+          >
+            <View style={[
+              styles.quickIconWrap,
+              { backgroundColor: item.bg },
+              isDesktop && styles.quickIconWrapDesktop,
+            ]}>
+              <Ionicons name={item.icon} size={isDesktop ? 26 : 26} color={item.color} />
+            </View>
+            <Text style={[styles.quickLabel, isDesktop && styles.quickLabelDesktop]} numberOfLines={1}>
+              {item.label}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -155,6 +179,7 @@ function DestCard({
   const scale   = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const slideX  = useRef(new Animated.Value(20)).current;
+  const hoverY  = useRef(new Animated.Value(0)).current;
   const rating  = DEST_RATINGS[dest.city] ?? 4.5;
 
   useEffect(() => {
@@ -166,9 +191,20 @@ function DestCard({
 
   const onPressIn  = () => Animated.spring(scale, { toValue: 0.95, useNativeDriver: true, tension: 300 }).start();
   const onPressOut = () => Animated.spring(scale, { toValue: 1,    useNativeDriver: true, tension: 300 }).start();
+  const handleMouseEnter = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.spring(hoverY, { toValue: -6, useNativeDriver: true, tension: 300 }).start();
+  };
+  const handleMouseLeave = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.spring(hoverY, { toValue: 0, useNativeDriver: true, tension: 300 }).start();
+  };
 
   return (
-    <Animated.View style={[styles.destCardWrap, { width: cardW, opacity, transform: [{ scale }, { translateX: slideX }] }]}>
+    <Animated.View
+      style={[styles.destCardWrap, { width: cardW, opacity, transform: [{ scale }, { translateX: slideX }, { translateY: hoverY }] }]}
+      {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
+    >
       <TouchableOpacity
         onPress={onPress}
         onPressIn={onPressIn}
@@ -210,7 +246,28 @@ function TravelerCard({
   traveler: typeof NEARBY_TRAVELERS[number];
   onPress: () => void;
 }) {
+  const hoverScale = useRef(new Animated.Value(1)).current;
+  const hoverY     = useRef(new Animated.Value(0)).current;
+  const handleMouseEnter = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+  const handleMouseLeave = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+
   return (
+    <Animated.View
+      style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }] }}
+      {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
+    >
     <TouchableOpacity style={styles.travelerCard} onPress={onPress} activeOpacity={0.85}>
       {/* 그라디언트 링 + 아바타 */}
       <LinearGradient
@@ -240,6 +297,7 @@ function TravelerCard({
         <Text style={styles.chatChipText}>채팅</Text>
       </View>
     </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -250,8 +308,29 @@ function PostCard({
   post: typeof COMMUNITY_POSTS[number];
   onPress: () => void;
 }) {
+  const hoverScale = useRef(new Animated.Value(1)).current;
+  const hoverY     = useRef(new Animated.Value(0)).current;
+  const handleMouseEnter = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+  const handleMouseLeave = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+
   return (
-    <TouchableOpacity style={styles.postCard} onPress={onPress} activeOpacity={0.85}>
+    <Animated.View
+      style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }], flex: 1 }}
+      {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
+    >
+    <TouchableOpacity style={[styles.postCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.85}>
       <View style={styles.postCategoryWrap}>
         <Text style={styles.postCategory}>{post.category}</Text>
         <Text style={styles.postTime}>{post.time}</Text>
@@ -268,6 +347,7 @@ function PostCard({
         </View>
       </View>
     </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -278,8 +358,29 @@ function CompanionCard({
   post: typeof COMPANION_POSTS[number];
   onPress: () => void;
 }) {
+  const hoverScale = useRef(new Animated.Value(1)).current;
+  const hoverY     = useRef(new Animated.Value(0)).current;
+  const handleMouseEnter = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1.02, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: -3,   useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+  const handleMouseLeave = () => {
+    if (Platform.OS !== 'web') return;
+    Animated.parallel([
+      Animated.spring(hoverScale, { toValue: 1, useNativeDriver: true, tension: 300 }),
+      Animated.spring(hoverY,     { toValue: 0, useNativeDriver: true, tension: 300 }),
+    ]).start();
+  };
+
   return (
-    <TouchableOpacity style={styles.companionCard} onPress={onPress} activeOpacity={0.85}>
+    <Animated.View
+      style={{ transform: [{ scale: hoverScale }, { translateY: hoverY }], flex: 1 }}
+      {...(Platform.OS === 'web' ? { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave } : {})}
+    >
+    <TouchableOpacity style={[styles.companionCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.85}>
       <View style={styles.companionEmoji}>
         <Text style={{ fontSize: 22 }}>{post.emoji}</Text>
       </View>
@@ -295,6 +396,7 @@ function CompanionCard({
         <Text style={styles.companionCount}>{post.count}명 모집</Text>
       </View>
     </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -310,9 +412,25 @@ export default function HomeScreen() {
   const destCardH = isDesktop ? Math.round(destCardW * 1.4) : 215;
 
   const heroOpacity = useRef(new Animated.Value(0)).current;
+  const dotPulse   = useRef(new Animated.Value(1)).current;
+  const aiFloat    = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(heroOpacity, { toValue: 1, duration: Animation.entrance, useNativeDriver: true }).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(dotPulse, { toValue: 1.8, duration: 800, useNativeDriver: true }),
+        Animated.timing(dotPulse, { toValue: 1,   duration: 800, useNativeDriver: true }),
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(aiFloat, { toValue: -6, duration: 1400, useNativeDriver: true }),
+        Animated.timing(aiFloat, { toValue: 0,  duration: 1400, useNativeDriver: true }),
+      ])
+    ).start();
 
     // 로그인 사용자 이름 가져오기
     supabase.auth.getUser().then(({ data }) => {
@@ -376,7 +494,7 @@ export default function HomeScreen() {
               <View style={styles.heroBody}>
                 {/* 통계 배지 */}
                 <View style={styles.statsBadge}>
-                  <View style={styles.statsDot} />
+                  <Animated.View style={[styles.statsDot, { transform: [{ scale: dotPulse }] }]} />
                   <Text style={styles.statsText}>지금 1,247명 여행 중</Text>
                 </View>
 
@@ -453,9 +571,9 @@ export default function HomeScreen() {
                   </Text>
                 </View>
                 <View style={styles.aiRight}>
-                  <View style={[styles.aiIconCircle, isDesktop && { width: 72, height: 72, borderRadius: 36 }]}>
+                  <Animated.View style={[styles.aiIconCircle, isDesktop && { width: 72, height: 72, borderRadius: 36 }, { transform: [{ translateY: aiFloat }] }]}>
                     <Ionicons name="sparkles" size={isDesktop ? 34 : 26} color="#fff" />
-                  </View>
+                  </Animated.View>
                 </View>
               </LinearGradient>
             </TouchableOpacity>
