@@ -22,6 +22,7 @@ export default function ItineraryFormScreen() {
   const [durationDays, setDurationDays] = useState('');
   const [travelersCount, setTravelersCount] = useState('1');
   const [budgetWon, setBudgetWon] = useState('');
+  const [customRequests, setCustomRequests] = useState('');
 
   const handleDurationChange = (text: string) => {
     setDurationDays(text.replace(/[^0-9]/g, ''));
@@ -70,6 +71,7 @@ export default function ItineraryFormScreen() {
           duration_days: days,
           travelers_count: travelers,
           budget_won: budget,
+          custom_requests: customRequests.trim() || null,
         }),
       });
 
@@ -171,7 +173,7 @@ export default function ItineraryFormScreen() {
         </View>
 
         {/* 예산 */}
-        <View style={[styles.fieldGroup, { borderBottomWidth: 0 }]}>
+        <View style={styles.fieldGroup}>
           <Text style={styles.label}>예산 <Text style={styles.required}>*</Text></Text>
           <View style={[styles.inputWrap, focusedField === 'budget' && styles.inputWrapFocused]}>
             <Ionicons name="wallet-outline" size={18} color={focusedField === 'budget' ? Colors.primary : Colors.textLight} style={styles.inputIcon} />
@@ -186,6 +188,39 @@ export default function ItineraryFormScreen() {
               onBlur={() => setFocusedField(null)}
             />
           </View>
+        </View>
+
+        {/* 추가 요구사항 */}
+        <View style={[styles.fieldGroup, { borderBottomWidth: 0 }]}>
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>추가 요구사항</Text>
+            <View style={styles.optionalBadge}>
+              <Text style={styles.optionalText}>선택</Text>
+            </View>
+          </View>
+          <Text style={styles.fieldHint}>
+            식사, 활동, 스타일 등 원하는 사항을 자유롭게 입력하면 AI가 반영합니다
+          </Text>
+          <View style={[styles.inputWrap, styles.textareaWrap, focusedField === 'custom' && styles.inputWrapFocused]}>
+            <TextInput
+              style={[styles.input, styles.textarea]}
+              value={customRequests}
+              onChangeText={setCustomRequests}
+              placeholder={'예: 아침은 현지 라멘집, 저녁은 이자카야\n미술관보다는 시장 구경을 선호해요\n걸어다니기 좋은 코스로 짜주세요'}
+              placeholderTextColor={Colors.textLight}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              onFocus={() => setFocusedField('custom')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
+          {customRequests.trim().length > 0 && (
+            <View style={styles.customHintRow}>
+              <Ionicons name="information-circle" size={13} color={Colors.purple} />
+              <Text style={styles.customHintText}>추가 요구사항이 있으면 캐시를 사용하지 않고 새로 생성합니다</Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -295,6 +330,50 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.text,
     paddingVertical: 10,
+  },
+
+  labelRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  optionalBadge: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  optionalText: { fontSize: 10, fontWeight: '600' as const, color: Colors.textLight },
+  fieldHint: {
+    fontSize: 12,
+    color: Colors.textLight,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  textareaWrap: {
+    alignItems: 'flex-start',
+    paddingTop: 12,
+    paddingBottom: 12,
+    minHeight: 110,
+  },
+  textarea: {
+    paddingVertical: 0,
+    minHeight: 88,
+    lineHeight: 22,
+  },
+  customHintRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 8,
+  },
+  customHintText: {
+    fontSize: 11,
+    color: Colors.purple,
+    fontWeight: '500' as const,
   },
 
   historyBtn: {

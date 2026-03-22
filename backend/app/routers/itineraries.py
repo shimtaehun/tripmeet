@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from app.db.supabase_client import get_supabase
@@ -24,6 +25,7 @@ class CreateItineraryRequest(BaseModel):
     duration_days: int
     travelers_count: int
     budget_won: int
+    custom_requests: Optional[str] = None  # 사용자 추가 요구사항 (식사, 활동 등)
 
 
 class ItineraryResponse(BaseModel):
@@ -75,6 +77,7 @@ def create_itinerary(
             travelers_count=body.travelers_count,
             budget_won=body.budget_won,
             user_id=current_user["id"],
+            custom_requests=body.custom_requests,
         )
     except Exception as e:
         logger.error("AI 일정 생성 실패: %s", e, exc_info=True)

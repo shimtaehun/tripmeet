@@ -232,8 +232,9 @@ def _call_gemini(
     season_info: str,
     user_preference: str,
     past_insights: str,
+    custom_requests: str = "",
 ) -> dict:
-    """RAG 컨텍스트 5종을 주입해 Gemini로 여행 일정을 생성한다."""
+    """RAG 컨텍스트 5종과 사용자 추가 요구사항을 주입해 Gemini로 여행 일정을 생성한다."""
 
     sections: list[str] = []
 
@@ -272,6 +273,13 @@ def _call_gemini(
     if season_info:
         sections.append(f"[여행 시즌 정보]\n{season_info}")
 
+    # 6) 사용자 추가 요구사항 (캐시 우회된 개인 맞춤 요청)
+    if custom_requests:
+        sections.append(
+            f"[사용자 추가 요구사항 - 반드시 반영]\n{custom_requests}\n"
+            "→ 위 요구사항을 일정에 최우선으로 반영해. 특정 음식/식당/활동 언급이 있으면 해당 슬롯에 정확히 배치해."
+        )
+
     context_block = "\n\n".join(sections)
     if context_block:
         context_block = "\n\n" + context_block + "\n"
@@ -288,6 +296,7 @@ def _call_gemini(
         "meal 타입은 restaurant_name 필드(식당명)를 반드시 포함해.\n"
         "사용자 성향이 있으면 일정 스타일(여유/활동적 등)에 반영해.\n"
         "커뮤니티 팁은 description에 한 문장으로 자연스럽게 녹여.\n"
+        "사용자 추가 요구사항이 있으면 해당 내용을 일정에 최우선으로 반영해.\n"
         "응답은 JSON만 출력하고 다른 설명은 쓰지 마.\n\n"
         '{"days": [{"day": 1, "date_label": "1일차", "activities": ['
         '{"time": "아침", "type": "meal", "title": "", "restaurant_name": "", "description": "", "estimated_cost": 0},'
@@ -316,23 +325,28 @@ def get_or_generate_itinerary(
     travelers_count: int,
     budget_won: int,
     user_id: str,
+    custom_requests: str | None = None,
 ) -> tuple[dict, str, bool]:
     """
     RAG 5종(과거일정·맛집·커뮤니티·시즌·사용자 선호도)을 조합해 일정 생성.
     Redis 캐시 히트 시 Gemini 호출 생략.
+    custom_requests가 있으면 캐시를 우회하고 결과도 캐시하지 않는다.
 
     :return: (일정 content dict, cache_key, is_cached)
     """
     cache_key = build_cache_key(destination, duration_days, travelers_count, budget_won)
     budget_range = _normalize_budget(budget_won)
 
-    # Redis 캐시 조회
-    cached = _redis.get(cache_key)
-    if cached:
-        logger.info("캐시 히트: %s", cache_key)
-        return json.loads(cached), cache_key, True
+    # 추가 요구사항이 없을 때만 캐시 조회
+    if not custom_requests:
+        cached = _redis.get(cache_key)
+        if cached:
+            logger.info("캐시 히트: %s", cache_key)
+            return json.loads(cached), cache_key, True
+    else:
+        logger.info("추가 요구사항 있음 — 캐시 우회: %s", cache_key)
 
-    # 캐시 미스 → RAG 소스 조회
+    # RAG 소스 조회
     past_insights = _fetch_past_itinerary_insights(destination)
     restaurants = _fetch_restaurant_context(destination)
     community_tips = _fetch_community_tips(destination)
@@ -340,15 +354,19 @@ def get_or_generate_itinerary(
     user_preference = _fetch_user_preference(user_id)
 
     logger.info(
-        "RAG 조회 완료 | 과거일정: %s | 맛집: %d건 | 커뮤니티팁: %d건 | 시즌: %s | 선호도: %s",
+        "RAG 조회 완료 | 과거일정: %s | 맛집: %d건 | 커뮤니티팁: %d건 | 시즌: %s | 선호도: %s | 추가요구: %s",
         bool(past_insights), len(restaurants), len(community_tips),
-        bool(season_info), bool(user_preference),
+        bool(season_info), bool(user_preference), bool(custom_requests),
     )
 
     content = _call_gemini(
         destination, duration_days, travelers_count, budget_range,
         restaurants, community_tips, season_info, user_preference, past_insights,
+        custom_requests=custom_requests or "",
     )
 
-    _redis.set(cache_key, json.dumps(content, ensure_ascii=False), ex=CACHE_TTL_SECONDS)
+    # 추가 요구사항이 없을 때만 캐시 저장 (개인화 결과는 캐시하지 않음)
+    if not custom_requests:
+        _redis.set(cache_key, json.dumps(content, ensure_ascii=False), ex=CACHE_TTL_SECONDS)
+
     return content, cache_key, False
