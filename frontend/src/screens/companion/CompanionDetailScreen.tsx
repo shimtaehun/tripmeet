@@ -209,53 +209,95 @@ export default function CompanionDetailScreen() {
         </View>
       </View>
 
-      {!isAuthor && isOpen && (
+      {!isAuthor && (
         <View style={styles.applySection}>
-          {showApplyInput ? (
-            <>
-              <TextInput
-                style={styles.applyInput}
-                placeholder="신청 메시지를 입력하세요 (선택)"
-                placeholderTextColor={Colors.textLight}
-                value={applyMessage}
-                onChangeText={setApplyMessage}
-                multiline
-                textAlignVertical="top"
-              />
-              <View style={styles.applyButtonRow}>
+          {isOpen && (
+            showApplyInput ? (
+              <>
+                <TextInput
+                  style={styles.applyInput}
+                  placeholder="신청 메시지를 입력하세요 (선택)"
+                  placeholderTextColor={Colors.textLight}
+                  value={applyMessage}
+                  onChangeText={setApplyMessage}
+                  multiline
+                  textAlignVertical="top"
+                />
+                <View style={styles.applyButtonRow}>
+                  <TouchableOpacity
+                    style={styles.cancelApplyButton}
+                    onPress={() => { setShowApplyInput(false); setApplyMessage(''); }}
+                  >
+                    <Text style={styles.cancelApplyText}>취소</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.submitApplyButton}
+                    onPress={handleApply}
+                    disabled={applying}
+                  >
+                    {applying ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.submitApplyText}>신청하기</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <View style={styles.actionButtonRow}>
                 <TouchableOpacity
-                  style={styles.cancelApplyButton}
-                  onPress={() => { setShowApplyInput(false); setApplyMessage(''); }}
+                  onPress={() => setShowApplyInput(true)}
+                  activeOpacity={0.85}
+                  style={[styles.applyButtonWrap, { flex: 1 }]}
                 >
-                  <Text style={styles.cancelApplyText}>취소</Text>
+                  <LinearGradient
+                    colors={Gradients.companion}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.applyButton}
+                  >
+                    <Ionicons name="people-outline" size={18} color="#fff" />
+                    <Text style={styles.applyButtonText}>동행 신청</Text>
+                  </LinearGradient>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.submitApplyButton}
-                  onPress={handleApply}
-                  disabled={applying}
+                  onPress={() => navigation.navigate('Chat', {
+                    targetUserId: companion.user_id,
+                    targetNickname: companion.author?.nickname ?? '작성자',
+                  })}
+                  activeOpacity={0.85}
+                  style={styles.messageButtonWrap}
                 >
-                  {applying ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <Text style={styles.submitApplyText}>신청하기</Text>
-                  )}
+                  <LinearGradient
+                    colors={Gradients.chat}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.messageButton}
+                  >
+                    <Ionicons name="chatbubble-outline" size={18} color="#fff" />
+                    <Text style={styles.applyButtonText}>메시지</Text>
+                  </LinearGradient>
                 </TouchableOpacity>
               </View>
-            </>
-          ) : (
+            )
+          )}
+          {!isOpen && (
             <TouchableOpacity
-              onPress={() => setShowApplyInput(true)}
+              onPress={() => navigation.navigate('Chat', {
+                targetUserId: companion.user_id,
+                targetNickname: companion.author?.nickname ?? '작성자',
+              })}
               activeOpacity={0.85}
               style={styles.applyButtonWrap}
             >
               <LinearGradient
-                colors={Gradients.companion}
+                colors={Gradients.chat}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.applyButton}
               >
-                <Ionicons name="people-outline" size={18} color="#fff" />
-                <Text style={styles.applyButtonText}>동행 신청</Text>
+                <Ionicons name="chatbubble-outline" size={18} color="#fff" />
+                <Text style={styles.applyButtonText}>작성자에게 메시지 보내기</Text>
               </LinearGradient>
             </TouchableOpacity>
           )}
@@ -488,4 +530,20 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
   },
   rejectButtonText: { color: Colors.textMedium, fontSize: 13, fontWeight: '600' as const },
+
+  actionButtonRow: { flexDirection: 'row', gap: 10 },
+  messageButtonWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.card,
+  },
+  messageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderRadius: Radius.full,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
 });

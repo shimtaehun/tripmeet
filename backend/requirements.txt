@@ -22,3 +22,6 @@ python-multipart==0.0.20
 
 # Google Gemini (일정 생성)
 google-genai>=0.7.0
+
+# Firebase Admin SDK (커스텀 토큰 발급)
+firebase-admin==6.5.0

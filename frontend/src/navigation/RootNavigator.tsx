@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Session } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import { supabase } from '../services/supabaseClient';
+import { signInToFirebase } from '../services/firebaseClient';
 import MainTabs from './MainTabs';
 import LoginScreen from '../screens/auth/LoginScreen';
 import LandingScreen from '../screens/landing/LandingScreen';
@@ -78,6 +79,12 @@ export default function RootNavigator() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
+      // 세션이 생기면 Firebase Auth에도 로그인해 Firestore 보안 규칙을 통과시킨다.
+      if (session?.access_token) {
+        signInToFirebase(session.access_token).catch((e) =>
+          console.error('Firebase 로그인 오류:', e),
+        );
+      }
     });
 
     // openAuthSessionAsync가 'cancel'을 반환해도 OS가 딥링크를 처리한 경우 대비
