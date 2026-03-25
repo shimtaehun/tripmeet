@@ -4,6 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from app.db.supabase_client import get_supabase
 from app.middleware.auth import get_current_user
+from app.services.notification_service import send_push_notification
 
 router = APIRouter(prefix="/companions", tags=["companions"])
 
@@ -65,6 +66,7 @@ def _get_author(supabase, user_id: str) -> Optional[dict]:
 def list_companions(
     status: Optional[str] = Query(None),
     cursor: Optional[str] = Query(None),
+    my: Optional[bool] = Query(None, description="true이면 내 동행 구인글만 반환"),
     current_user: dict = Depends(get_current_user),
 ):
     """
@@ -84,6 +86,8 @@ def list_companions(
     )
     if status:
         query = query.eq("status", status)
+    if my:
+        query = query.eq("user_id", current_user["id"])
     if cursor:
         query = query.lt("created_at", cursor)
 
@@ -313,7 +317,7 @@ def update_application_status(
 
     app = (
         supabase.table("companion_applications")
-        .select("id, status")
+        .select("id, status, applicant_id")
         .eq("id", application_id)
         .eq("companion_id", companion_id)
         .single()
@@ -324,4 +328,36 @@ def update_application_status(
 
     supabase.table("companion_applications").update({"status": new_status}).eq("id", application_id).execute()
 
+    # 신청자에게 결과 푸시 알림 발송 (실패해도 응답에 영향 없음)
+    companion_data = supabase.table("companions").select("destination").eq("id", companion_id).single().execute()
+    destination = companion_data.data.get("destination", "여행") if companion_data.data else "여행"
+    if new_status == "accepted":
+        send_push_notification(
+            to_user_id=app.data["applicant_id"],
+            title="동행 신청 수락",
+            body=f"{destination} 동행 신청이 수락되었습니다.",
+            data={"type": "companion_accepted", "companion_id": companion_id},
+        )
+    else:
+        send_push_notification(
+            to_user_id=app.data["applicant_id"],
+            title="동행 신청 결과",
+            body=f"{destination} 동행 신청이 거절되었습니다.",
+            data={"type": "companion_rejected", "companion_id": companion_id},
+        )
+
     return {"id": application_id, "status": new_status}
+
+
+@router.get("/my-applications", response_model=list[dict])
+def my_applications(current_user: dict = Depends(get_current_user)):
+    """내가 신청한 동행 구인 목록 조회 (신청 상태 + 해당 게시글 정보 포함, 최신순)"""
+    supabase = get_supabase()
+    result = (
+        supabase.table("companion_applications")
+        .select("id, status, message, created_at, companion_id, companions(destination, travel_start_date, travel_end_date, status)")
+        .eq("applicant_id", current_user["id"])
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return result.data or []

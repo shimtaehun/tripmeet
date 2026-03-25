@@ -22,6 +22,19 @@ class PostUpdate(BaseModel):
     content: Optional[str] = None
 
 
+class CommentCreate(BaseModel):
+    content: str
+
+
+class CommentItem(BaseModel):
+    id: str
+    post_id: str
+    user_id: str
+    content: str
+    created_at: str
+    author: Optional[AuthorInfo] = None
+
+
 class AuthorInfo(BaseModel):
     nickname: str
     profile_image_url: Optional[str] = None
@@ -62,6 +75,7 @@ def _get_author(supabase, user_id: str) -> Optional[dict]:
 def list_posts(
     category: Optional[str] = Query(None),
     cursor: Optional[str] = Query(None),
+    my: Optional[bool] = Query(None, description="true이면 내 게시글만 반환"),
     current_user: dict = Depends(get_current_user),
 ):
     """
@@ -81,6 +95,8 @@ def list_posts(
     )
     if category:
         query = query.eq("category", category)
+    if my:
+        query = query.eq("user_id", current_user["id"])
     if cursor:
         query = query.lt("created_at", cursor)
 
@@ -174,3 +190,69 @@ def delete_post(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다.")
 
     supabase.table("posts").delete().eq("id", post_id).execute()
+
+
+@router.get("/{post_id}/comments", response_model=list[CommentItem])
+def list_comments(
+    post_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """게시글 댓글 목록 조회 (최신순)"""
+    supabase = get_supabase()
+
+    post_check = supabase.table("posts").select("id").eq("id", post_id).single().execute()
+    if not post_check.data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="게시글을 찾을 수 없습니다.")
+
+    result = supabase.table("post_comments").select("*").eq("post_id", post_id).order("created_at", desc=False).execute()
+    comments = result.data or []
+
+    for comment in comments:
+        comment["author"] = _get_author(supabase, comment["user_id"])
+
+    return comments
+
+
+@router.post("/{post_id}/comments", response_model=CommentItem, status_code=status.HTTP_201_CREATED)
+def create_comment(
+    post_id: str,
+    body: CommentCreate,
+    current_user: dict = Depends(get_current_user),
+):
+    """댓글 작성"""
+    if not body.content.strip():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="댓글 내용을 입력해주세요.")
+
+    supabase = get_supabase()
+
+    post_check = supabase.table("posts").select("id").eq("id", post_id).single().execute()
+    if not post_check.data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="게시글을 찾을 수 없습니다.")
+
+    result = supabase.table("post_comments").insert({
+        "post_id": post_id,
+        "user_id": current_user["id"],
+        "content": body.content.strip(),
+    }).execute()
+
+    comment = result.data[0]
+    comment["author"] = _get_author(supabase, current_user["id"])
+    return comment
+
+
+@router.delete("/{post_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_comment(
+    post_id: str,
+    comment_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """댓글 삭제 (작성자 본인만 가능)"""
+    supabase = get_supabase()
+
+    existing = supabase.table("post_comments").select("user_id").eq("id", comment_id).eq("post_id", post_id).single().execute()
+    if not existing.data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="댓글을 찾을 수 없습니다.")
+    if existing.data["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다.")
+
+    supabase.table("post_comments").delete().eq("id", comment_id).execute()

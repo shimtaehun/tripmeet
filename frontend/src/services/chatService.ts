@@ -8,6 +8,8 @@ import {
   serverTimestamp,
   setDoc,
   getDoc,
+  updateDoc,
+  increment,
   Unsubscribe,
 } from 'firebase/firestore';
 import { db } from './firebaseClient';
@@ -51,7 +53,7 @@ export async function getOrCreateChatRoom(
 }
 
 /**
- * 메시지를 전송하고 채팅방의 lastMessage를 갱신한다.
+ * 메시지를 전송하고 채팅방의 lastMessage와 상대방 미읽음 카운트를 갱신한다.
  */
 export async function sendMessage(
   roomId: string,
@@ -66,7 +68,27 @@ export async function sendMessage(
   });
 
   const roomRef = doc(db, 'chatRooms', roomId);
-  await setDoc(roomRef, { lastMessage: text.trim(), lastMessageAt: serverTimestamp() }, { merge: true });
+  const roomSnap = await getDoc(roomRef);
+  const participants: string[] = roomSnap.data()?.participants ?? [];
+  const recipientId = participants.find((id) => id !== senderId);
+
+  const update: Record<string, unknown> = {
+    lastMessage: text.trim(),
+    lastMessageAt: serverTimestamp(),
+  };
+  if (recipientId) {
+    update[`unreadCounts.${recipientId}`] = increment(1);
+  }
+
+  await setDoc(roomRef, update, { merge: true });
+}
+
+/**
+ * 채팅방 입장 시 내 미읽음 카운트를 0으로 초기화한다.
+ */
+export async function markRoomAsRead(roomId: string, userId: string): Promise<void> {
+  const roomRef = doc(db, 'chatRooms', roomId);
+  await updateDoc(roomRef, { [`unreadCounts.${userId}`]: 0 });
 }
 
 /**

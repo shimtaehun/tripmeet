@@ -61,6 +61,7 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
               source={{ uri: item.image_urls[0] }}
               style={styles.thumbnail}
               onError={() => setImageError(true)}
+              accessibilityLabel={`${item.name} 대표 사진`}
             />
           ) : (
             <LinearGradient

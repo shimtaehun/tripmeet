@@ -114,6 +114,7 @@ export default function ProfileScreen() {
                   : require('../../../assets/icon.png')
               }
               style={styles.avatar}
+              accessibilityLabel={`${profile?.nickname ?? '사용자'} 프로필 사진`}
             />
           </View>
           <View style={styles.onlineBadge}>
@@ -165,13 +166,13 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.menuRow}
-            onPress={() => navigation.navigate('Community')}
+            onPress={() => navigation.navigate('MyActivity')}
             activeOpacity={0.7}
           >
             <LinearGradient colors={Gradients.community} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
               <Ionicons name="document-text-outline" size={18} color="#fff" />
             </LinearGradient>
-            <Text style={styles.menuLabel}>내가 쓴 글</Text>
+            <Text style={styles.menuLabel}>내 활동 내역</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
           </TouchableOpacity>
         </View>

@@ -28,6 +28,8 @@ export interface Restaurant {
   image_urls: string[];
   created_at: string;
   author: AuthorInfo | null;
+  avg_rating: number | null;
+  review_count: number | null;
 }
 
 export interface RestaurantListResponse {
@@ -49,11 +51,13 @@ async function getAuthHeader(): Promise<string> {
   return `Bearer ${session.access_token}`;
 }
 
-export async function getRestaurants(locationName?: string, cursor?: string): Promise<RestaurantListResponse> {
+export async function getRestaurants(locationName?: string, cursor?: string, sort?: string, my?: boolean): Promise<RestaurantListResponse> {
   const auth = await getAuthHeader();
   const params = new URLSearchParams();
   if (locationName) params.append('location_name', locationName);
   if (cursor) params.append('cursor', cursor);
+  if (sort) params.append('sort', sort);
+  if (my) params.append('my', 'true');
   const query = params.toString() ? `?${params.toString()}` : '';
 
   const res = await apiFetch(`${API_URL}/restaurants/${query}`, {

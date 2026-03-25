@@ -15,12 +15,43 @@ import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
+interface LocationPreset {
+  label: string;
+  locationName: string;
+  country: string;
+  region: string;
+}
+
+const LOCATION_PRESETS: LocationPreset[] = [
+  { label: '홍대', locationName: '홍대', country: '한국', region: '서울' },
+  { label: '강남', locationName: '강남', country: '한국', region: '서울' },
+  { label: '명동', locationName: '명동', country: '한국', region: '서울' },
+  { label: '해운대', locationName: '해운대', country: '한국', region: '부산' },
+  { label: '제주', locationName: '제주', country: '한국', region: '제주' },
+  { label: '경주', locationName: '경주', country: '한국', region: '경북' },
+  { label: '속초', locationName: '속초', country: '한국', region: '강원' },
+  { label: '여수', locationName: '여수', country: '한국', region: '전남' },
+  { label: '도쿄', locationName: '도쿄', country: '일본', region: '도쿄도' },
+  { label: '오사카', locationName: '오사카', country: '일본', region: '오사카부' },
+  { label: '방콕', locationName: '방콕', country: '태국', region: '방콕' },
+  { label: '다낭', locationName: '다낭', country: '베트남', region: '다낭' },
+  { label: '파리', locationName: '파리', country: '프랑스', region: '일드프랑스' },
+  { label: '뉴욕', locationName: '뉴욕', country: '미국', region: '뉴욕주' },
+  { label: '바르셀로나', locationName: '바르셀로나', country: '스페인', region: '카탈루냐' },
+];
+
 export default function LocationSelectScreen() {
   const navigation = useNavigation<any>();
   const [locationName, setLocationName] = useState('');
   const [country, setCountry] = useState('');
   const [region, setRegion] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const applyPreset = (preset: LocationPreset) => {
+    setLocationName(preset.locationName);
+    setCountry(preset.country);
+    setRegion(preset.region);
+  };
 
   const handleRegister = async () => {
     if (!locationName.trim() || !country.trim()) {
@@ -92,7 +123,26 @@ export default function LocationSelectScreen() {
       </View>
 
       <View style={styles.formCard}>
-        <Text style={styles.label}>여행지 이름 <Text style={styles.required}>*</Text></Text>
+        <Text style={styles.label}>인기 여행지</Text>
+        <View style={styles.presetGrid}>
+          {LOCATION_PRESETS.map((preset) => {
+            const isSelected = locationName === preset.locationName;
+            return (
+              <TouchableOpacity
+                key={preset.label}
+                style={[styles.presetChip, isSelected && styles.presetChipSelected]}
+                onPress={() => applyPreset(preset)}
+                activeOpacity={0.75}
+              >
+                <Text style={[styles.presetChipText, isSelected && styles.presetChipTextSelected]}>
+                  {preset.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <Text style={[styles.label, { marginTop: 20 }]}>여행지 이름 <Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
           value={locationName}
@@ -232,4 +282,32 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
+
+  presetGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+  },
+  presetChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  presetChipSelected: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  presetChipText: {
+    fontSize: 13,
+    color: Colors.textMedium,
+    fontWeight: '500' as const,
+  },
+  presetChipTextSelected: {
+    color: '#fff',
+    fontWeight: '700' as const,
+  },
 });

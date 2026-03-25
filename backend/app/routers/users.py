@@ -97,3 +97,17 @@ async def upload_profile_image(
     supabase.table("users").update({"profile_image_url": url}).eq("id", current_user["id"]).execute()
 
     return {"profile_image_url": url}
+
+
+class PushTokenRequest(BaseModel):
+    push_token: str
+
+
+@router.patch("/me/push-token", status_code=status.HTTP_204_NO_CONTENT)
+def update_push_token(
+    body: PushTokenRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Expo 푸시 토큰 저장 (앱 시작 시 등록, 알림 발송에 사용)"""
+    supabase = get_supabase()
+    supabase.table("users").update({"push_token": body.push_token}).eq("id", current_user["id"]).execute()

@@ -17,6 +17,7 @@ import {
   getOrCreateChatRoom,
   sendMessage,
   subscribeToMessages,
+  markRoomAsRead,
   ChatMessage,
 } from '../../services/chatService';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -40,6 +41,7 @@ export default function ChatScreen() {
       setMyUserId(userId);
       const id = await getOrCreateChatRoom(userId, targetUserId);
       setRoomId(id);
+      markRoomAsRead(id, userId).catch(() => {});
     });
   }, []);
 

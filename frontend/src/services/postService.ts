@@ -40,11 +40,12 @@ async function getAuthHeader(): Promise<string> {
   return `Bearer ${session.access_token}`;
 }
 
-export async function getPosts(category?: string, cursor?: string): Promise<PostListResponse> {
+export async function getPosts(category?: string, cursor?: string, my?: boolean): Promise<PostListResponse> {
   const auth = await getAuthHeader();
   const params = new URLSearchParams();
   if (category) params.append('category', category);
   if (cursor) params.append('cursor', cursor);
+  if (my) params.append('my', 'true');
   const query = params.toString() ? `?${params.toString()}` : '';
 
   const res = await apiFetch(`${API_URL}/posts/${query}`, {
@@ -99,4 +100,42 @@ export async function deletePost(id: string): Promise<void> {
     } catch {}
     throw new Error(detail);
   }
+}
+
+export interface Comment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  author: AuthorInfo | null;
+}
+
+export async function getComments(postId: string): Promise<Comment[]> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/posts/${postId}/comments`, {
+    headers: { Authorization: auth },
+  });
+  if (!res.ok) throw new Error('댓글 조회 실패');
+  return res.json();
+}
+
+export async function createComment(postId: string, content: string): Promise<Comment> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/posts/${postId}/comments`, {
+    method: 'POST',
+    headers: { Authorization: auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) throw new Error('댓글 작성 실패');
+  return res.json();
+}
+
+export async function deleteComment(postId: string, commentId: string): Promise<void> {
+  const auth = await getAuthHeader();
+  const res = await apiFetch(`${API_URL}/posts/${postId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: { Authorization: auth },
+  });
+  if (!res.ok) throw new Error('댓글 삭제 실패');
 }

@@ -26,6 +26,7 @@ interface ChatRoom {
   participants: string[];
   lastMessage: string;
   lastMessageAt: number;
+  unreadCounts: Record<string, number>;
 }
 
 export default function ChatListScreen() {
@@ -57,6 +58,7 @@ export default function ChatListScreen() {
         participants: doc.data().participants,
         lastMessage: doc.data().lastMessage ?? '',
         lastMessageAt: doc.data().lastMessageAt?.toMillis() ?? 0,
+        unreadCounts: doc.data().unreadCounts ?? {},
       }));
       setRooms(data);
       setLoading(false);
@@ -133,6 +135,7 @@ export default function ChatListScreen() {
           renderItem={({ item }) => {
             const targetId = getTargetUserId(item);
             const targetNickname = getTargetNickname(item);
+            const unread = myUserId ? (item.unreadCounts[myUserId] ?? 0) : 0;
             return (
               <TouchableOpacity
                 style={styles.roomItem}
@@ -155,10 +158,15 @@ export default function ChatListScreen() {
                 </LinearGradient>
                 <View style={styles.roomInfo}>
                   <Text style={styles.roomName}>{targetNickname}</Text>
-                  <Text style={styles.lastMessage} numberOfLines={1}>
+                  <Text style={[styles.lastMessage, unread > 0 && styles.lastMessageUnread]} numberOfLines={1}>
                     {item.lastMessage || '대화를 시작해보세요.'}
                   </Text>
                 </View>
+                {unread > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{unread > 99 ? '99+' : unread}</Text>
+                  </View>
+                )}
                 <Ionicons name="chevron-forward" size={14} color={Colors.border} />
               </TouchableOpacity>
             );
@@ -211,4 +219,17 @@ const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 },
   emptyTitle: { fontSize: 16, fontWeight: '600' as const, color: Colors.textMedium },
   emptyHint: { fontSize: 13, color: Colors.textLight, textAlign: 'center' },
+
+  lastMessageUnread: { color: Colors.text, fontWeight: '600' as const },
+  badge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    marginRight: 4,
+  },
+  badgeText: { fontSize: 11, color: '#fff', fontWeight: '700' as const },
 });

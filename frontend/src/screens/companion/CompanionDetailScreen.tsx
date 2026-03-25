@@ -22,6 +22,7 @@ import {
   CompanionDetail,
   ApplicationInfo,
 } from '../../services/companionService';
+import { toggleBookmark, checkBookmark } from '../../services/bookmarkService';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 
@@ -38,6 +39,7 @@ export default function CompanionDetailScreen() {
   const [showApplyInput, setShowApplyInput] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [closeModalVisible, setCloseModalVisible] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     title: string; message: string; confirmText: string; confirmColor?: string; onConfirm: () => void;
   } | null>(null);
@@ -49,6 +51,8 @@ export default function CompanionDetailScreen() {
     try {
       const data = await getCompanion(companionId);
       setCompanion(data);
+      const bm = await checkBookmark('companion', companionId);
+      setBookmarked(bm);
     } catch (e) {
       console.error('동행 구인 조회 오류:', e);
       Alert.alert('오류', '동행 구인 정보를 불러올 수 없습니다.', [
@@ -62,6 +66,15 @@ export default function CompanionDetailScreen() {
   useEffect(() => {
     loadData();
   }, [companionId]);
+
+  const handleBookmark = async () => {
+    try {
+      const next = await toggleBookmark('companion', companionId);
+      setBookmarked(next);
+    } catch (e) {
+      console.error('북마크 오류:', e);
+    }
+  };
 
   const handleDeleteConfirm = async () => {
     setDeleteModalVisible(false);
@@ -112,6 +125,13 @@ export default function CompanionDetailScreen() {
         try {
           await updateApplicationStatus(companionId, app.id, newStatus);
           await loadData();
+
+          if (newStatus === 'accepted') {
+            navigation.navigate('Chat', {
+              targetUserId: app.applicant_id,
+              targetNickname: app.applicant?.nickname ?? '신청자',
+            });
+          }
         } catch (e) {
           console.error('신청 상태 변경 오류:', e);
           Alert.alert('오류', '상태 변경에 실패했습니다.');
@@ -150,26 +170,41 @@ export default function CompanionDetailScreen() {
             <Ionicons name="arrow-back" size={18} color="#fff" />
           </View>
         </TouchableOpacity>
-        {isAuthor && (
-          <View style={styles.authorActions}>
-            {isOpen && (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('CompanionEdit', { companionId: companion.id })}
-                style={styles.actionBtn}
-              >
-                <Text style={styles.editText}>수정</Text>
-              </TouchableOpacity>
-            )}
-            {isOpen && (
-              <TouchableOpacity onPress={() => setCloseModalVisible(true)} style={styles.actionBtn}>
-                <Text style={styles.closeText}>마감</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={styles.actionBtn}>
-              <Text style={styles.deleteText}>삭제</Text>
+        <View style={styles.authorActions}>
+          {!isAuthor && (
+            <TouchableOpacity
+              onPress={handleBookmark}
+              style={styles.actionBtn}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Ionicons
+                name={bookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={20}
+                color={bookmarked ? Colors.amber : 'rgba(255,255,255,0.85)'}
+              />
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+          {isAuthor && (
+            <>
+              {isOpen && (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('CompanionEdit', { companionId: companion.id })}
+                  style={styles.actionBtn}
+                >
+                  <Text style={styles.editText}>수정</Text>
+                </TouchableOpacity>
+              )}
+              {isOpen && (
+                <TouchableOpacity onPress={() => setCloseModalVisible(true)} style={styles.actionBtn}>
+                  <Text style={styles.closeText}>마감</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => setDeleteModalVisible(true)} style={styles.actionBtn}>
+                <Text style={styles.deleteText}>삭제</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </LinearGradient>
 
       <View style={styles.content}>

@@ -198,6 +198,7 @@ function DestCard({
           style={{ width: cardW, height: cardH }}
           imageStyle={{ borderRadius: Radius.xl }}
           resizeMode="cover"
+          accessibilityLabel={`${dest.city} 배경 이미지`}
         >
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.78)']}

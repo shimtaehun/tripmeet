@@ -45,11 +45,12 @@ async function getAuthHeader(): Promise<string> {
   return `Bearer ${session.access_token}`;
 }
 
-export async function getCompanions(status?: 'open' | 'closed', cursor?: string): Promise<CompanionListResponse> {
+export async function getCompanions(status?: 'open' | 'closed', cursor?: string, my?: boolean): Promise<CompanionListResponse> {
   const auth = await getAuthHeader();
   const params = new URLSearchParams();
   if (status) params.append('status', status);
   if (cursor) params.append('cursor', cursor);
+  if (my) params.append('my', 'true');
   const query = params.toString() ? `?${params.toString()}` : '';
 
   const res = await apiFetch(`${API_URL}/companions/${query}`, {

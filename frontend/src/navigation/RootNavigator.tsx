@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AppState, AppStateStatus } from 'react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import { supabase } from '../services/supabaseClient';
 import { signInToFirebase } from '../services/firebaseClient';
+import { registerForPushNotifications } from '../services/notificationService';
 import MainTabs from './MainTabs';
 import LoginScreen from '../screens/auth/LoginScreen';
 import LandingScreen from '../screens/landing/LandingScreen';
@@ -15,6 +17,7 @@ import RestaurantDetailScreen from '../screens/restaurant/RestaurantDetailScreen
 import CompanionCreateScreen from '../screens/companion/CompanionCreateScreen';
 import CompanionDetailScreen from '../screens/companion/CompanionDetailScreen';
 import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
+import MyActivityScreen from '../screens/profile/MyActivityScreen';
 import ItineraryResultScreen from '../screens/itinerary/ItineraryResultScreen';
 import MyItinerariesScreen from '../screens/itinerary/MyItinerariesScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
@@ -48,6 +51,7 @@ const linking = {
       CompanionEdit: 'companion/:companionId/edit',
       CompanionDetail: 'companion/:companionId',
       ProfileEdit: 'profile/edit',
+      MyActivity: 'profile/activity',
       ItineraryResult: 'itinerary/result',
       MyItineraries: 'itinerary/my',
       Chat: 'chat',
@@ -67,10 +71,28 @@ async function handleAuthCallback(url: string) {
   }
 }
 
+function pingServer() {
+  fetch(`${process.env.EXPO_PUBLIC_API_URL}/health`).catch(() => {});
+}
+
 export default function RootNavigator() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLanding, setShowLanding] = useState(true);
+  const appState = useRef<AppStateStatus>(AppState.currentState);
+
+  // 앱이 포그라운드로 복귀할 때 서버를 웜업한다.
+  // Render.com 무료 티어는 15분 비활동 시 슬립되므로 앱 진입 시 미리 깨워 첫 API 응답 지연을 줄인다.
+  useEffect(() => {
+    pingServer();
+    const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {
+      if (appState.current !== 'active' && nextState === 'active') {
+        pingServer();
+      }
+      appState.current = nextState;
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     // onAuthStateChange는 구독 즉시 INITIAL_SESSION 이벤트를 발생시키므로
@@ -83,6 +105,9 @@ export default function RootNavigator() {
       if (session?.access_token) {
         signInToFirebase(session.access_token).catch((e) =>
           console.error('Firebase 로그인 오류:', e),
+        );
+        registerForPushNotifications().catch((e) =>
+          console.error('푸시 알림 등록 오류:', e),
         );
       }
     });
@@ -127,6 +152,7 @@ export default function RootNavigator() {
             <Stack.Screen name="CompanionEdit" component={CompanionCreateScreen} />
             <Stack.Screen name="CompanionDetail" component={CompanionDetailScreen} />
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
+            <Stack.Screen name="MyActivity" component={MyActivityScreen} />
             <Stack.Screen name="ItineraryResult" component={ItineraryResultScreen} />
             <Stack.Screen name="MyItineraries" component={MyItinerariesScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />

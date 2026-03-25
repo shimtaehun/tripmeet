@@ -219,7 +219,7 @@ export default function RestaurantCreateScreen() {
         <View style={styles.imageRow}>
           {images.map((img, index) => (
             <View key={index} style={styles.imageWrapper}>
-              <Image source={{ uri: img.uri }} style={styles.imageThumbnail} />
+              <Image source={{ uri: img.uri }} style={styles.imageThumbnail} accessibilityLabel={`선택된 사진 ${index + 1}`} />
               <TouchableOpacity
                 style={styles.removeButton}
                 onPress={() => handleRemoveImage(index)}

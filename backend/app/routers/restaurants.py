@@ -37,6 +37,8 @@ class RestaurantDetail(BaseModel):
     image_urls: list[str]
     created_at: str
     author: Optional[AuthorInfo] = None
+    avg_rating: Optional[float] = None
+    review_count: Optional[int] = None
 
 
 class RestaurantUpdate(BaseModel):
@@ -60,22 +62,26 @@ def _get_author(supabase, user_id: str) -> Optional[dict]:
 def list_restaurants(
     location_name: Optional[str] = Query(None),
     cursor: Optional[str] = Query(None),
+    sort: Optional[str] = Query(None, description="rating: 별점 높은 순, created_at(기본): 최신순"),
+    my: Optional[bool] = Query(None, description="true이면 내 맛집만 반환"),
     current_user: dict = Depends(get_current_user),
 ):
     """
     맛집 목록 조회.
-    location_name 필터와 cursor 기반 페이지네이션(20개씩)을 지원한다.
-    cursor는 이전 페이지의 마지막 항목의 created_at 값이다.
+    location_name 필터, cursor 기반 페이지네이션(20개씩), sort(rating/created_at)를 지원한다.
     """
     supabase = get_supabase()
+    order_col = "rating" if sort == "rating" else "created_at"
     query = (
         supabase.table("restaurants")
         .select("id, user_id, name, location_name, rating, image_urls, created_at")
-        .order("created_at", desc=True)
+        .order(order_col, desc=True)
         .limit(PAGE_SIZE)
     )
     if location_name:
         query = query.ilike("location_name", f"%{location_name}%")
+    if my:
+        query = query.eq("user_id", current_user["id"])
     if cursor:
         query = query.lt("created_at", cursor)
 
@@ -144,6 +150,17 @@ def get_restaurant(
 
     restaurant = result.data
     restaurant["author"] = _get_author(supabase, restaurant["user_id"])
+
+    same_name_result = supabase.table("restaurants") \
+        .select("rating") \
+        .ilike("name", restaurant["name"]) \
+        .ilike("location_name", restaurant["location_name"]) \
+        .execute()
+    same = same_name_result.data or []
+    if same:
+        restaurant["review_count"] = len(same)
+        restaurant["avg_rating"] = round(sum(r["rating"] for r in same) / len(same), 1)
+
     return restaurant
 
 

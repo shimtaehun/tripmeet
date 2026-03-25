@@ -108,10 +108,14 @@ export default function ItineraryResultScreen() {
       }
 
       const updated = await res.json();
-      setItinerary((prev) => ({ ...prev, content: updated.content }));
+      setItinerary((prev) => ({
+        ...prev,
+        content: updated.content,
+        is_cached: false,
+      }));
       setRevisionModalVisible(false);
       setRevisionText('');
-      Alert.alert('수정 완료', 'AI가 일정을 수정했습니다.');
+      Alert.alert('수정 및 저장 완료', 'AI가 일정을 수정하고 저장 기록에 반영했습니다.');
     } catch (e: any) {
       Alert.alert('오류', e?.message ?? '수정에 실패했습니다. 다시 시도해주세요.');
     } finally {
