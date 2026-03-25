@@ -32,6 +32,7 @@ export interface ApplicationInfo {
 export interface CompanionDetail extends CompanionSummary {
   author: AuthorInfo | null;
   applications: ApplicationInfo[];
+  my_application: ApplicationInfo | null;
 }
 
 export interface CompanionListResponse {

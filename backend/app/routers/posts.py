@@ -204,7 +204,7 @@ def list_comments(
     if not post_check.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="게시글을 찾을 수 없습니다.")
 
-    result = supabase.table("post_comments").select("*").eq("post_id", post_id).order("created_at", desc=False).execute()
+    result = supabase.table("post_comments").select("*").eq("post_id", post_id).order("created_at", desc=True).execute()
     comments = result.data or []
 
     for comment in comments:

@@ -42,6 +42,7 @@ class CompanionSummary(BaseModel):
 class CompanionDetail(CompanionSummary):
     author: Optional[AuthorInfo] = None
     applications: list[ApplicationInfo] = []
+    my_application: Optional[ApplicationInfo] = None
 
 
 class CompanionUpdate(BaseModel):
@@ -169,6 +170,21 @@ def get_companion(
         companion["applications"] = applications
     else:
         companion["applications"] = []
+        # 비작성자에게는 본인 신청 내역만 반환
+        my_app_result = (
+            supabase.table("companion_applications")
+            .select("id, applicant_id, message, status, created_at")
+            .eq("companion_id", companion_id)
+            .eq("applicant_id", current_user["id"])
+            .limit(1)
+            .execute()
+        )
+        if my_app_result.data:
+            app = my_app_result.data[0]
+            app["applicant"] = None
+            companion["my_application"] = app
+        else:
+            companion["my_application"] = None
 
     return companion
 

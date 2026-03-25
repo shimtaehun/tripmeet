@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from app.db.supabase_client import get_supabase
@@ -44,7 +46,7 @@ def register_location(
     # 기존 활성 위치 비활성화
     supabase.table("travel_locations").update({
         "is_active": False,
-        "deactivated_at": "now()",
+        "deactivated_at": datetime.now(timezone.utc).isoformat(),
     }).eq("user_id", user_id).eq("is_active", True).execute()
 
     # 새 위치 등록
@@ -68,7 +70,7 @@ def deactivate_location(
 
     result = supabase.table("travel_locations").update({
         "is_active": False,
-        "deactivated_at": "now()",
+        "deactivated_at": datetime.now(timezone.utc).isoformat(),
     }).eq("id", location_id).eq("user_id", current_user["id"]).execute()
 
     if not result.data:

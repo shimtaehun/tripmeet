@@ -102,9 +102,9 @@ export default function CompanionDetailScreen() {
     setApplying(true);
     try {
       await applyCompanion(companionId, applyMessage.trim() || undefined);
-      Alert.alert('완료', '동행 신청이 완료되었습니다.');
       setShowApplyInput(false);
       setApplyMessage('');
+      await loadData();
     } catch (e: any) {
       console.error('동행 신청 오류:', e);
       Alert.alert('오류', e.message ?? '동행 신청에 실패했습니다.');
@@ -246,7 +246,52 @@ export default function CompanionDetailScreen() {
 
       {!isAuthor && (
         <View style={styles.applySection}>
-          {isOpen && (
+          {/* 신청 완료 후 상태 표시 */}
+          {companion.my_application && (
+            <View style={styles.myApplicationBox}>
+              {companion.my_application.status === 'pending' && (
+                <View style={styles.myAppStatus}>
+                  <Ionicons name="time-outline" size={18} color={Colors.amber} />
+                  <Text style={styles.myAppStatusText}>신청 완료 — 수락 대기 중입니다.</Text>
+                </View>
+              )}
+              {companion.my_application.status === 'accepted' && (
+                <>
+                  <View style={styles.myAppStatus}>
+                    <Ionicons name="checkmark-circle" size={18} color={Colors.green} />
+                    <Text style={[styles.myAppStatusText, { color: Colors.green }]}>동행 신청이 수락되었습니다!</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Chat', {
+                      targetUserId: companion.user_id,
+                      targetNickname: companion.author?.nickname ?? '작성자',
+                    })}
+                    activeOpacity={0.85}
+                    style={[styles.applyButtonWrap, { marginTop: 10 }]}
+                  >
+                    <LinearGradient
+                      colors={Gradients.chat}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.applyButton}
+                    >
+                      <Ionicons name="chatbubble-outline" size={18} color="#fff" />
+                      <Text style={styles.applyButtonText}>채팅하기</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </>
+              )}
+              {companion.my_application.status === 'rejected' && (
+                <View style={styles.myAppStatus}>
+                  <Ionicons name="close-circle-outline" size={18} color={Colors.red} />
+                  <Text style={[styles.myAppStatusText, { color: Colors.red }]}>동행 신청이 거절되었습니다.</Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* 아직 신청 안 한 경우 */}
+          {!companion.my_application && isOpen && (
             showApplyInput ? (
               <>
                 <TextInput
@@ -316,7 +361,8 @@ export default function CompanionDetailScreen() {
               </View>
             )
           )}
-          {!isOpen && (
+
+          {!isOpen && !companion.my_application && (
             <TouchableOpacity
               onPress={() => navigation.navigate('Chat', {
                 targetUserId: companion.user_id,
@@ -566,6 +612,24 @@ const styles = StyleSheet.create({
   },
   rejectButtonText: { color: Colors.textMedium, fontSize: 13, fontWeight: '600' as const },
 
+  myApplicationBox: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginBottom: 10,
+  },
+  myAppStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  myAppStatusText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.textMedium,
+  },
   actionButtonRow: { flexDirection: 'row', gap: 10 },
   messageButtonWrap: {
     borderRadius: Radius.full,

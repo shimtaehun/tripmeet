@@ -312,7 +312,8 @@ def _call_gemini(
 
     text = response.text.strip()
     if text.startswith("```"):
-        text = text[text.index("\n") + 1:]
+        newline_pos = text.find("\n")
+        text = text[newline_pos + 1:] if newline_pos != -1 else text
         if "```" in text:
             text = text[:text.rindex("```")]
     return json.loads(text.strip())
@@ -345,7 +346,8 @@ def revise_itinerary(existing_content: dict, revision_request: str) -> dict:
 
     text = response.text.strip()
     if text.startswith("```"):
-        text = text[text.index("\n") + 1:]
+        newline_pos = text.find("\n")
+        text = text[newline_pos + 1:] if newline_pos != -1 else text
         if "```" in text:
             text = text[:text.rindex("```")]
     return json.loads(text.strip())

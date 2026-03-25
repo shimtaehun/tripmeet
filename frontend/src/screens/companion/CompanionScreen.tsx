@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
 import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
@@ -112,10 +112,12 @@ export default function CompanionScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchCompanions(statusFilter).finally(() => setLoading(false));
-  }, [statusFilter, fetchCompanions]);
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      fetchCompanions(statusFilter).finally(() => setLoading(false));
+    }, [statusFilter, fetchCompanions])
+  );
 
   const handleRefresh = async () => {
     setRefreshing(true);
