@@ -90,7 +90,7 @@ export default function MatchingScreen() {
     return (
       <View style={styles.root}>
         <LinearGradient
-          colors={Gradients.matching}
+          colors={Gradients.matching as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
@@ -119,7 +119,7 @@ export default function MatchingScreen() {
             style={styles.registerBtnWrap}
           >
             <LinearGradient
-              colors={Gradients.coral}
+              colors={Gradients.coral as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.registerBtn}
@@ -136,7 +136,7 @@ export default function MatchingScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={Gradients.matching}
+        colors={Gradients.matching as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
@@ -171,7 +171,7 @@ export default function MatchingScreen() {
             style={styles.refreshBtnWrap}
           >
             <LinearGradient
-              colors={Gradients.coral}
+              colors={Gradients.coral as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.refreshBtn}
