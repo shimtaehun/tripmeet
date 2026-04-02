@@ -136,7 +136,7 @@ export default function CompanionScreen() {
     <View style={styles.root}>
       {/* 그라디언트 헤더 */}
       <LinearGradient
-        colors={Gradients.companion}
+        colors={Gradients.companion as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
@@ -168,7 +168,7 @@ export default function CompanionScreen() {
               >
                 {active ? (
                   <LinearGradient
-                    colors={Gradients.companion}
+                    colors={Gradients.companion as [string, string, ...string[]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.tabGradient}
