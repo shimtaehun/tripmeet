@@ -92,7 +92,7 @@ export default function LocationSelectScreen() {
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <LinearGradient
-        colors={Gradients.indigo}
+        colors={Gradients.indigo as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -109,7 +109,7 @@ export default function LocationSelectScreen() {
 
       <View style={styles.titleSection}>
         <LinearGradient
-          colors={Gradients.indigo}
+          colors={Gradients.indigo as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.iconWrap}
@@ -177,7 +177,7 @@ export default function LocationSelectScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.indigo}
+          colors={Gradients.indigo as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.submitBtn, loading && { opacity: 0.65 }]}

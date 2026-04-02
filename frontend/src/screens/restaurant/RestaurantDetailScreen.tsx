@@ -101,7 +101,7 @@ export default function RestaurantDetailScreen() {
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <LinearGradient
-        colors={Gradients.food}
+        colors={Gradients.food as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}

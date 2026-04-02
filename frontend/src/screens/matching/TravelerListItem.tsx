@@ -94,7 +94,7 @@ export default function TravelerListItem({
           {/* 아바타 — 그라디언트 링으로 프리미엄 느낌 */}
           <View style={styles.avatarWrap}>
             <LinearGradient
-              colors={Gradients.matching}
+              colors={Gradients.matching as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.avatarRing}
@@ -140,7 +140,7 @@ export default function TravelerListItem({
 
           {/* CTA 버튼 — 매칭 그린 그라디언트 */}
           <LinearGradient
-            colors={Gradients.matching}
+            colors={Gradients.matching as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.chatBtn}

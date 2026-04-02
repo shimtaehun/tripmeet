@@ -258,7 +258,7 @@ export default function MyActivityScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={Gradients.profile}
+        colors={Gradients.profile as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
