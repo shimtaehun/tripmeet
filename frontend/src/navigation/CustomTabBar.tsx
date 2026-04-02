@@ -12,161 +12,127 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Gradients, Radius, Shadow } from '../utils/theme';
 import { useResponsive, TOP_NAV_H } from '../utils/responsive';
 
-// 탭별 아이콘/레이블 메타데이터
 const TAB_META: Record<string, {
   label: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
   iconActive: React.ComponentProps<typeof Ionicons>['name'];
-  activeColor: string;
+  gradient: string[];
 }> = {
-  Home:       { label: '홈',      icon: 'home-outline',        iconActive: 'home',        activeColor: Colors.primary },
-  Matching:   { label: '매칭',    icon: 'location-outline',    iconActive: 'location',    activeColor: Colors.green   },
-  Community:  { label: '커뮤니티', icon: 'chatbubbles-outline', iconActive: 'chatbubbles', activeColor: Colors.primary },
-  Restaurant: { label: '맛집',    icon: 'restaurant-outline',  iconActive: 'restaurant',  activeColor: Colors.red     },
-  Companion:  { label: '동행',    icon: 'people-outline',      iconActive: 'people',      activeColor: Colors.amber   },
-  Itinerary:  { label: 'AI 일정', icon: 'sparkles-outline',    iconActive: 'sparkles',    activeColor: '#7C3AED'      },
-  ChatList:   { label: '채팅',   icon: 'chatbubble-outline',  iconActive: 'chatbubble',  activeColor: Colors.cyan    },
-  Profile:    { label: '내 정보', icon: 'person-outline',      iconActive: 'person',      activeColor: Colors.primary },
+  Home:       { label: '홈',       icon: 'home-outline',        iconActive: 'home',        gradient: Gradients.primary   },
+  Matching:   { label: '매칭',     icon: 'location-outline',    iconActive: 'location',    gradient: Gradients.matching  },
+  Community:  { label: '커뮤니티',  icon: 'chatbubbles-outline', iconActive: 'chatbubbles', gradient: Gradients.community },
+  Restaurant: { label: '맛집',     icon: 'restaurant-outline',  iconActive: 'restaurant',  gradient: Gradients.food      },
+  Companion:  { label: '동행',     icon: 'people-outline',      iconActive: 'people',      gradient: Gradients.companion },
+  Itinerary:  { label: 'AI 일정',  icon: 'sparkles-outline',    iconActive: 'sparkles',    gradient: Gradients.ai        },
+  ChatList:   { label: '채팅',     icon: 'chatbubble-outline',  iconActive: 'chatbubble',  gradient: Gradients.chat      },
+  Profile:    { label: '내 정보',  icon: 'person-outline',      iconActive: 'person',      gradient: Gradients.profile   },
 };
 
-// ─── 데스크톱 전용 상단 네비게이션 바 ─────────────────────────────
 function WebTopNav({ state, navigation }: Pick<BottomTabBarProps, 'state' | 'navigation'>) {
   return (
     <View style={webStyles.container}>
-
-      {/* 로고 */}
       <TouchableOpacity
         style={webStyles.logo}
         onPress={() => navigation.navigate('Home')}
         activeOpacity={0.8}
       >
-        <Ionicons name="airplane" size={16} color={Colors.primary} />
+        <LinearGradient
+          colors={Gradients.primary}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={webStyles.logoIcon}
+        >
+          <Ionicons name="airplane" size={13} color="#fff" />
+        </LinearGradient>
         <Text style={webStyles.logoText}>TripMeet</Text>
       </TouchableOpacity>
 
-      {/* 네비게이션 탭 목록 */}
       <View style={webStyles.navItems}>
         {state.routes.map((route, index) => {
           const meta = TAB_META[route.name];
           if (!meta) return null;
-
           const isFocused = state.index === index;
-
           const onPress = () => {
-            // React Navigation 표준 탭 전환 이벤트 발행
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
           };
-
           return (
             <TouchableOpacity
               key={route.key}
               onPress={onPress}
-              style={[
-                webStyles.navItem,
-                isFocused && webStyles.navItemActive,
-              ]}
+              style={[webStyles.navItem, isFocused && webStyles.navItemActive]}
               activeOpacity={0.7}
               accessibilityRole="tab"
               accessibilityState={{ selected: isFocused }}
               accessibilityLabel={meta.label}
             >
-              <Text
-                style={[
-                  webStyles.navItemText,
-                  isFocused && webStyles.navItemTextActive,
-                ]}
-              >
+              <Text style={[webStyles.navItemText, isFocused && webStyles.navItemTextActive]}>
                 {meta.label}
               </Text>
             </TouchableOpacity>
           );
         })}
       </View>
-
     </View>
   );
 }
 
-// ─── 모바일 전용 하단 탭바 ─────────────────────────────────────────
 function MobileBottomBar({ state, navigation, descriptors }: BottomTabBarProps) {
   return (
-    <View style={mobileStyles.container}>
-      {state.routes.map((route, index) => {
-        const meta = TAB_META[route.name];
-        if (!meta) return null;
-
-        const isFocused = state.index === index;
-        const color = isFocused ? meta.activeColor : Colors.tabInactive;
-        const iconName = isFocused ? meta.iconActive : meta.icon;
-
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        // descriptors에서 tabBarLabel 옵션 확인
-        const options = descriptors[route.key]?.options;
-        const label = (options?.tabBarLabel as string | undefined) ?? meta.label;
-
-        return (
-          <TouchableOpacity
-            key={route.key}
-            onPress={onPress}
-            style={mobileStyles.tab}
-            activeOpacity={0.7}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: isFocused }}
-            accessibilityLabel={label}
-          >
-            {isFocused ? (
-              <LinearGradient
-                colors={Gradients.indigo}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={mobileStyles.iconWrapActive}
-              >
-                <Ionicons name={iconName} size={20} color="#fff" />
-              </LinearGradient>
-            ) : (
-              <View style={mobileStyles.iconWrap}>
-                <Ionicons name={iconName} size={22} color={color} />
-              </View>
-            )}
-            <Text style={[mobileStyles.label, { color }]}>{label}</Text>
-          </TouchableOpacity>
-        );
-      })}
+    <View style={mobileStyles.wrapper}>
+      <View style={mobileStyles.container}>
+        {state.routes.map((route, index) => {
+          const meta = TAB_META[route.name];
+          if (!meta) return null;
+          const isFocused = state.index === index;
+          const onPress = () => {
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
+          };
+          const options = descriptors[route.key]?.options;
+          const label = (options?.tabBarLabel as string | undefined) ?? meta.label;
+          return (
+            <TouchableOpacity
+              key={route.key}
+              onPress={onPress}
+              style={mobileStyles.tab}
+              activeOpacity={0.7}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isFocused }}
+              accessibilityLabel={label}
+            >
+              {isFocused ? (
+                <LinearGradient
+                  colors={meta.gradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={mobileStyles.iconWrapActive}
+                >
+                  <Ionicons name={meta.iconActive} size={18} color="#fff" />
+                </LinearGradient>
+              ) : (
+                <View style={mobileStyles.iconWrap}>
+                  <Ionicons name={meta.icon} size={20} color={Colors.tabInactive} />
+                </View>
+              )}
+              <Text style={[mobileStyles.label, { color: isFocused ? Colors.primary : Colors.tabInactive }]}>
+                {label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
-// ─── 메인 내보내기 — 화면 너비에 따라 분기 ─────────────────────────
 export default function CustomTabBar(props: BottomTabBarProps) {
   const { isDesktop } = useResponsive();
-
-  if (isDesktop) {
-    return <WebTopNav state={props.state} navigation={props.navigation} />;
-  }
-
+  if (isDesktop) return <WebTopNav state={props.state} navigation={props.navigation} />;
   return <MobileBottomBar {...props} />;
 }
 
-// ─── 데스크톱 상단 네비 스타일 ───────────────────────────────────────
 const webStyles = StyleSheet.create({
-  // position: absolute로 화면 최상단에 고정
   container: {
     position: 'absolute',
     top: 0,
@@ -176,93 +142,97 @@ const webStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 32,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: 'rgba(250,250,248,0.92)',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: 'rgba(232,232,230,0.80)',
     zIndex: 100,
-    // 웹에서만 backdrop-filter blur 적용
-    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(12px)' } : {}),
+    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' } as any : {}),
     ...Shadow.sm,
   },
-
   logo: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginRight: 40,
   },
+  logoIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logoText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '900' as const,
     color: Colors.text,
     letterSpacing: -0.5,
   },
-
   navItems: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
     flex: 1,
   },
-
   navItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     alignItems: 'center',
     borderRadius: Radius.full,
   },
-
   navItemActive: {
     backgroundColor: Colors.primaryLight,
   },
-
   navItemText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500' as const,
-    color: Colors.textMedium,
+    color: Colors.textLight,
   },
-
   navItemTextActive: {
     fontWeight: '700' as const,
     color: Colors.primary,
   },
 });
 
-// ─── 모바일 하단 탭바 스타일 ─────────────────────────────────────────
 const mobileStyles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: Colors.background,
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
   container: {
     flexDirection: 'row',
     backgroundColor: Colors.card,
-    // 상단 인디고 그라디언트 라인 효과 — borderTop 대신 box-shadow 활용
-    borderTopWidth: 2,
-    borderTopColor: Colors.primary,
-    height: 64,
-    paddingBottom: 10,
-    paddingTop: 6,
+    borderRadius: Radius.xxl,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    ...Shadow.card,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: 3,
+    paddingVertical: 2,
   },
   iconWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    width: 32,
+    height: 32,
   },
-  // 활성 탭 아이콘 — 인디고 그라디언트 배경
   iconWrapActive: {
-    borderRadius: Radius.md,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    width: 32,
+    height: 32,
+    borderRadius: Radius.sm + 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '600' as const,
-    marginTop: 2,
   },
 });
