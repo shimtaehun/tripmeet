@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getPosts, PostSummary } from '../../services/postService';
-import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation, Spacing, Typography } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 const CATEGORIES = [
@@ -312,4 +312,52 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadow.primary,
   },
+
+  root:              { flex: 1, backgroundColor: Colors.background },
+  headerInner:       { flex: 1 },
+  writeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: Radius.full,
+  },
+  writeBtnText:      { fontSize: 13, fontWeight: '600' as const, color: '#fff' },
+  tabBarWrap:        { paddingHorizontal: Spacing.screenPad, paddingBottom: Spacing.md },
+  tabBarWrapDesktop: { paddingHorizontal: Spacing.screenPad, paddingBottom: Spacing.md },
+  tabBar:            { flexDirection: 'row', gap: 8 },
+  tab: {
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  tabGradient:       { paddingHorizontal: 16, paddingVertical: 7, borderRadius: Radius.full },
+  tabText:           { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
+  tabTextActive:     { fontWeight: '700' as const, color: '#fff' },
+  loader:            { marginVertical: 24 },
+  columnWrapper:     { gap: 12 },
+  gridItem:          { flex: 1 },
+  listContent:       { paddingHorizontal: Spacing.screenPad, paddingBottom: 32 },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+  },
+  emptyTitle:        { ...Typography.h4, marginBottom: 8, textAlign: 'center' as const },
+  emptyHint:         { ...Typography.bodyMd, textAlign: 'center' as const },
+  postBody:          { flex: 1 },
+  postTop:           { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 8 },
+  postFooter:        { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 },
+  postDate:          { ...Typography.caption },
+  postFooterDot:     { width: 3, height: 3, borderRadius: 2, backgroundColor: Colors.border },
+  postFooterView:    { flexDirection: 'row', alignItems: 'center', gap: 4 },
 });
