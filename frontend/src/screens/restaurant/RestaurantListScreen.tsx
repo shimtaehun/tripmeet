@@ -65,7 +65,7 @@ function RestaurantCard({ item, index }: { item: RestaurantSummary; index: numbe
             />
           ) : (
             <LinearGradient
-              colors={Gradients.food}
+              colors={Gradients.food as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[styles.thumbnail, styles.thumbnailEmpty]}
@@ -137,7 +137,7 @@ export default function RestaurantListScreen() {
     <View style={styles.root}>
       {/* 그라디언트 헤더 */}
       <LinearGradient
-        colors={Gradients.food}
+        colors={Gradients.food as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
@@ -168,7 +168,7 @@ export default function RestaurantListScreen() {
         />
         <TouchableOpacity onPress={handleSearch} activeOpacity={0.85}>
           <LinearGradient
-            colors={Gradients.coral}
+            colors={Gradients.coral as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.searchBtn}
