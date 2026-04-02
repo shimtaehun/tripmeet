@@ -153,7 +153,7 @@ export default function ItineraryResultScreen() {
       nestedScrollEnabled
     >
       <LinearGradient
-        colors={Gradients.ai}
+        colors={Gradients.ai as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -196,7 +196,7 @@ export default function ItineraryResultScreen() {
           <View key={day.day} style={styles.dayBlock}>
             {/* Day 헤더 — LinearGradient 전체 너비 */}
             <LinearGradient
-              colors={Gradients.coral}
+              colors={Gradients.coral as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.dayLabelRow}
@@ -257,7 +257,7 @@ export default function ItineraryResultScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={Gradients.ai}
+            colors={Gradients.ai as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.reviseBtn}
@@ -282,7 +282,7 @@ export default function ItineraryResultScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={Gradients.coral}
+            colors={Gradients.coral as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.shareBtn}
@@ -312,7 +312,7 @@ export default function ItineraryResultScreen() {
         />
         <View style={styles.modalSheet}>
           <LinearGradient
-            colors={Gradients.ai}
+            colors={Gradients.ai as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.modalHeader}
@@ -344,7 +344,7 @@ export default function ItineraryResultScreen() {
               style={styles.modalSubmitWrap}
             >
               <LinearGradient
-                colors={Gradients.ai}
+                colors={Gradients.ai as [string, string, ...string[]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[styles.modalSubmitBtn, (revising || !revisionText.trim()) && { opacity: 0.55 }]}

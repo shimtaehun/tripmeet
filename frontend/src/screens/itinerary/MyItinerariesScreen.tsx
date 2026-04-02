@@ -69,7 +69,7 @@ export default function MyItinerariesScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={Gradients.ai}
+        colors={Gradients.ai as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -102,7 +102,7 @@ export default function MyItinerariesScreen() {
               <View style={styles.cardAccentBar} />
               <View style={styles.cardLeft}>
                 <LinearGradient
-                  colors={Gradients.ai}
+                  colors={Gradients.ai as [string, string, ...string[]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.iconWrap}

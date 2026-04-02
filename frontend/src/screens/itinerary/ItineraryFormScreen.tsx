@@ -96,7 +96,7 @@ export default function ItineraryFormScreen() {
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <LinearGradient
-        colors={Gradients.ai}
+        colors={Gradients.ai as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroBanner}
@@ -231,7 +231,7 @@ export default function ItineraryFormScreen() {
         activeOpacity={0.85}
       >
         <LinearGradient
-          colors={Gradients.coral}
+          colors={Gradients.coral as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.btn, loading && { opacity: 0.65 }]}
