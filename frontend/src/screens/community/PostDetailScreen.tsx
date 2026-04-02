@@ -164,7 +164,7 @@ export default function PostDetailScreen() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView ref={scrollRef} style={styles.root} showsVerticalScrollIndicator={false}>
         <LinearGradient
-          colors={Gradients.community}
+          colors={Gradients.community as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.header}
@@ -197,11 +197,11 @@ export default function PostDetailScreen() {
         <View style={styles.content}>
           <View style={styles.meta}>
             <LinearGradient
-              colors={
+              colors={(
                 post.category === 'review' ? [Colors.green, '#34D399'] :
                 post.category === 'info'   ? [Colors.amber, '#FCD34D'] :
                 Gradients.indigo
-              }
+              ) as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.categoryBadge}

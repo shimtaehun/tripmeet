@@ -63,7 +63,7 @@ export default function PostCreateScreen() {
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <LinearGradient
-        colors={Gradients.community}
+        colors={Gradients.community as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
