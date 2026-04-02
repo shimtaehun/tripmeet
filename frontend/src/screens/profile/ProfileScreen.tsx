@@ -98,7 +98,7 @@ export default function ProfileScreen() {
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {/* 그라디언트 프로필 헤더 */}
       <LinearGradient
-        colors={Gradients.profile}
+        colors={Gradients.profile as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 40 }]}
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
             onPress={() => navigation.navigate('ProfileEdit', { profile })}
             activeOpacity={0.7}
           >
-            <LinearGradient colors={Gradients.profile} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+            <LinearGradient colors={Gradients.profile as [string, string, ...string[]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
               <Ionicons name="create-outline" size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.menuLabel}>프로필 수정</Text>
@@ -169,7 +169,7 @@ export default function ProfileScreen() {
             onPress={() => navigation.navigate('MyActivity')}
             activeOpacity={0.7}
           >
-            <LinearGradient colors={Gradients.community} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+            <LinearGradient colors={Gradients.community as [string, string, ...string[]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
               <Ionicons name="document-text-outline" size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.menuLabel}>내 활동 내역</Text>
@@ -187,7 +187,7 @@ export default function ProfileScreen() {
             onPress={() => Alert.alert('공지사항', '준비 중입니다.')}
             activeOpacity={0.7}
           >
-            <LinearGradient colors={Gradients.companion} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+            <LinearGradient colors={Gradients.companion as [string, string, ...string[]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
               <Ionicons name="megaphone-outline" size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.menuLabel}>공지사항</Text>
@@ -201,7 +201,7 @@ export default function ProfileScreen() {
             onPress={() => Alert.alert('이용약관', '준비 중입니다.')}
             activeOpacity={0.7}
           >
-            <LinearGradient colors={Gradients.indigo} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
+            <LinearGradient colors={Gradients.indigo as [string, string, ...string[]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.menuIconWrap}>
               <Ionicons name="document-outline" size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.menuLabel}>이용약관</Text>
