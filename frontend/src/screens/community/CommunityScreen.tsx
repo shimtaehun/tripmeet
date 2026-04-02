@@ -231,99 +231,85 @@ export default function CommunityScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  container:     { flex: 1, backgroundColor: Colors.background },
+  scrollContent: { paddingBottom: 32 },
 
-  header: {
-    paddingHorizontal: Spacing.screenPad,
-    paddingTop: 52,
-    paddingBottom: 20,
-  },
-  // 헤더 내부 flex row — max-width 중앙 정렬에 사용
-  headerInner: {
+  header:    { paddingBottom: Spacing.lg, paddingHorizontal: Spacing.screenPad },
+  headerTitle: { ...Typography.display, color: Colors.textOnDark, marginBottom: 4 },
+  headerSub:   { ...Typography.body, color: 'rgba(255,255,255,0.65)' },
+  headerRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: Spacing.md,
   },
-  headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff' },
-  writeBtn: {
+  newPostBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.30)',
-    borderRadius: Radius.full,
+    borderColor: 'rgba(255,255,255,0.22)',
     paddingHorizontal: 14,
     paddingVertical: 8,
-  },
-  writeBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' as const },
-
-  tabBarWrap: {
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  tabBarWrapDesktop: { paddingHorizontal: Spacing.screenPad },
-  tabBar: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-  },
-  tab: {
     borderRadius: Radius.full,
-    overflow: 'hidden',
-    backgroundColor: Colors.surface,
   },
-  tabGradient: {
+  newPostBtnText: { fontSize: 13, fontWeight: '600' as const, color: '#fff' },
+
+  filterWrap: { paddingHorizontal: Spacing.screenPad, paddingVertical: Spacing.md },
+  filterRow:  { flexDirection: 'row', gap: 8 },
+  filterChip: {
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: Radius.full,
-  },
-  tabText: { fontSize: 13, color: Colors.textMedium, fontWeight: '500' as const, paddingHorizontal: 16, paddingVertical: 6 },
-  tabTextActive: { fontSize: 13, color: '#fff', fontWeight: '700' as const },
-
-  listContent: { padding: 14, paddingBottom: 48 },
-  // 2열 그리드: 열 간격
-  columnWrapper: { gap: 10, marginBottom: 10 },
-  // 2열 그리드: 각 아이템이 균등하게 공간 차지
-  gridItem: { flex: 1 },
-
-  postCard: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
     backgroundColor: Colors.card,
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  filterChipActive: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primaryLight,
+  },
+  filterChipText:       { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
+  filterChipTextActive: { fontWeight: '700' as const, color: Colors.primary },
+
+  postCard: {
+    backgroundColor: Colors.card,
+    marginHorizontal: Spacing.screenPad,
+    borderRadius: Radius.card,
+    padding: 16,
+    marginBottom: 12,
     ...Shadow.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  catBar: { width: 5 },
-  postBody: { flex: 1, padding: 16 },
-  postTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
+  catBar:      { width: '100%' as any, height: 3, borderRadius: 2, marginBottom: 12 },
+  cardContent: { flex: 1 },
+  catRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   catBadge: {
-    borderRadius: Radius.xs,
     paddingHorizontal: 8,
     paddingVertical: 3,
+    borderRadius: Radius.sm,
   },
-  catBadgeText: { fontSize: 11, fontWeight: '700' as const },
-  postTitle: {
-    fontSize: 15, fontWeight: '800' as const, color: Colors.text,
-    lineHeight: 22, marginBottom: 10,
-  },
-  postFooter: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  postDate: { fontSize: 11, color: Colors.textLight },
-  postFooterDot: { fontSize: 11, color: Colors.textLight },
-  postFooterView: { fontSize: 11, color: Colors.textLight },
+  catBadgeText:  { fontSize: 11, fontWeight: '700' as const },
+  postTitle:     { ...Typography.h4, lineHeight: 22, marginBottom: 10 },
+  postMeta:      { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  postMetaItem:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  postMetaText:  { ...Typography.caption },
+  postTime:      { ...Typography.caption, marginLeft: 'auto' as any },
 
-  loader: { marginTop: 60 },
-  empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
-  emptyTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textMedium },
-  emptyHint: { fontSize: 13, color: Colors.textLight },
+  emptyWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 64 },
+  emptyText: { ...Typography.body, marginTop: 12 },
+
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 52,
+    height: 52,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadow.primary,
+  },
 });
