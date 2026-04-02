@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Gradients, Radius, Shadow, Animation, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Animation, Spacing, Typography } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 const HERO_IMG =
@@ -127,7 +127,7 @@ function QuickMenuItem({
           style={[styles.quickItem, isDesktop && styles.quickItemDesktop]}
         >
           <LinearGradient
-            colors={item.gradient}
+            colors={item.gradient as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[styles.quickIconWrap, isDesktop && styles.quickIconWrapDesktop]}
@@ -252,7 +252,7 @@ function TravelerCard({
     >
       <TouchableOpacity style={styles.travelerCard} onPress={onPress} activeOpacity={0.88}>
         <LinearGradient
-          colors={traveler.color}
+          colors={traveler.color as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.travelerAvatar}
@@ -268,7 +268,7 @@ function TravelerCard({
           </View>
         </View>
         <LinearGradient
-          colors={traveler.color}
+          colors={traveler.color as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.chatChip}
@@ -367,7 +367,7 @@ function CompanionCard({
     >
       <TouchableOpacity style={[styles.companionCard, { flex: 1 }]} onPress={onPress} activeOpacity={0.88}>
         <LinearGradient
-          colors={post.gradient}
+          colors={post.gradient as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.companionEmojiWrap}
@@ -811,14 +811,8 @@ const styles = StyleSheet.create({
   destInfo:     { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 14 },
   destCity:     { fontSize: 16, fontWeight: '800' as const, color: '#fff', letterSpacing: -0.3, marginBottom: 2 },
   destCountry:  { fontSize: 11, color: 'rgba(255,255,255,0.70)', marginBottom: 6 },
-  destCount: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.20)',
-    borderRadius: Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
   destCountText: { fontSize: 10, color: '#fff', fontWeight: '600' as const },
+  destCount:     { fontSize: 11, color: '#fff', fontWeight: '600' as const },
 
   travelerCard: {
     flexDirection: 'row',
@@ -888,13 +882,297 @@ const styles = StyleSheet.create({
   companionDest:     { ...Typography.h4, marginBottom: 3 },
   companionPeriod:   { ...Typography.caption, marginBottom: 5 },
   companionDesc:     { ...Typography.bodyMd, lineHeight: 20 },
-  companionCount: {
-    backgroundColor: Colors.primaryLight,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+  companionCountText: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const },
+  companionCount:     { fontSize: 16, fontWeight: '800' as const, color: Colors.primary },
+
+  // ── 루트 / 스크롤 ──
+  root:    { flex: 1, backgroundColor: Colors.background },
+  scroll:  { flex: 1 },
+  content: { paddingBottom: 40 },
+
+  // ── 히어로 내부 ──
+  heroTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.screenPad,
+    marginBottom: 16,
+  },
+  logoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: Radius.full,
+  },
+  logoText:  { fontSize: 15, fontWeight: '700' as const, color: '#fff', letterSpacing: -0.3 },
+  notifBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBody: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: Spacing.screenPad,
+    paddingBottom: Spacing.lg,
+  },
+  statsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.20)',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+    marginBottom: 14,
+  },
+  statsDot:  { width: 8, height: 8, borderRadius: 4, backgroundColor: '#4ADE80' },
+  statsText: { fontSize: 12, color: 'rgba(255,255,255,0.90)', fontWeight: '600' as const },
+  heroGreeting: {
+    fontSize: 30,
+    fontWeight: '800' as const,
+    color: '#fff',
+    letterSpacing: -0.8,
+    lineHeight: 38,
+    marginBottom: 8,
+  },
+  heroGreetingDesktop: { fontSize: 42, lineHeight: 52 },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 10,
+    marginTop: 18,
+  },
+  searchBarDesktop: { maxWidth: 520, paddingVertical: 14 },
+  searchIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchPlaceholder: { flex: 1, fontSize: 14, color: 'rgba(255,255,255,0.75)' },
+  searchFilterBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // ── 페이지 콘텐츠 ──
+  pageContent: { paddingTop: 6 },
+
+  // ── 빠른 메뉴 (신규) ──
+  quickSection:        { paddingVertical: Spacing.lg, paddingHorizontal: Spacing.screenPad },
+  quickSectionDesktop: { paddingVertical: 28 },
+  quickGridDesktop:    { flexDirection: 'row', justifyContent: 'center', gap: 24 },
+  quickList:           { paddingHorizontal: Spacing.screenPad, gap: 16 },
+  quickItem:           { alignItems: 'center', gap: 6 },
+  quickItemDesktop:    { width: 80, alignItems: 'center', gap: 6 },
+  quickIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: Radius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadow.primary,
+  },
+  quickIconWrapDesktop: {
+    width: 60,
+    height: 60,
+    borderRadius: Radius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadow.primary,
+  },
+  quickLabel:        { ...Typography.caption, color: Colors.textMedium, textAlign: 'center' as const, fontWeight: '600' as const },
+  quickLabelDesktop: { fontSize: 13, color: Colors.textMedium, textAlign: 'center' as const, fontWeight: '600' as const },
+
+  // ── AI 배너 ──
+  aiBannerWrap:        { paddingHorizontal: Spacing.screenPad, marginBottom: Spacing.lg },
+  aiBannerWrapDesktop: { paddingHorizontal: 0 },
+  aiBanner: {
+    borderRadius: Radius.card,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    overflow: 'hidden',
+    ...Shadow.primary,
+  },
+  aiBannerDesktop: { padding: 28, borderRadius: Radius.xl },
+  aiBannerDecor1: {
+    position: 'absolute',
+    top: -30,
+    right: 80,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  aiBannerDecor2: {
+    position: 'absolute',
+    bottom: -20,
+    left: 40,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  aiLeft:      { flex: 1, gap: 6 },
+  aiChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  aiChipText:       { fontSize: 10, fontWeight: '800' as const, color: '#FCD34D', letterSpacing: 0.8 },
+  aiBannerTitle:    { fontSize: 18, fontWeight: '800' as const, color: '#fff', letterSpacing: -0.4 },
+  aiBannerSub:      { fontSize: 12, color: 'rgba(255,255,255,0.75)' },
+  aiBannerCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 4,
+  },
+  aiBannerCtaText:  { fontSize: 13, fontWeight: '700' as const, color: '#fff' },
+  aiIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // ── 섹션 공통 ──
+  sectionWrap: {
+    paddingHorizontal: Spacing.screenPad,
+    paddingTop: Spacing.lg,
+    paddingBottom: 4,
+  },
+  sectionWrapAlt: {
+    paddingTop: Spacing.lg,
+    paddingBottom: 4,
+    backgroundColor: Colors.background,
+  },
+  sectionRow:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 14, paddingHorizontal: Spacing.screenPad },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sectionAccentBar: { width: 3, height: 20, borderRadius: 2 },
+  sectionSub:      { ...Typography.caption },
+  sectionMoreRow:  { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 2 },
+  sectionMore:     { fontSize: 12, color: Colors.primary, fontWeight: '600' as const },
+
+  // ── 근처 여행자 ──
+  travelerList:        { gap: 0 },
+  travelerListDesktop: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  travelerInfo:        { flex: 1 },
+  travelerStatusRow:   { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
+  travelerStatusDot:   { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.green },
+  travelerStatusText:  { fontSize: 11, color: Colors.textLight },
+  chatChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+  },
+  chatChipText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
+
+  // ── 인기 여행지 ──
+  destCardWrap: {
+    width: 160,
+    height: 200,
+    borderRadius: Radius.card,
+    overflow: 'hidden',
+    ...Shadow.card,
+  },
+  destList:        { paddingHorizontal: Spacing.screenPad, gap: 12 },
+  destGridDesktop: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: Spacing.screenPad },
+  destRatingRow:   { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
+  destRating:      { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: '600' as const },
+  destBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.20)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  destDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.7)' },
+
+  // ── 커뮤니티 글 ──
+  postList:        { gap: 10 },
+  postListDesktop: { flexDirection: 'row', gap: 12 },
+  postAccentBar:   { width: 3, alignSelf: 'stretch', borderRadius: 2, minHeight: 60 },
+  postCategoryWrap:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  postCategoryBadge: {
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  postCategory: { fontSize: 11, fontWeight: '700' as const },
+  postTime:     { fontSize: 11, color: Colors.textLight },
+  postMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+
+  // ── 동행 구인 ──
+  companionList:        { gap: 10, paddingHorizontal: Spacing.screenPad },
+  companionListDesktop: { flexDirection: 'row', gap: 12 },
+  companionEmojiWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  companionHeader:      { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  companionPeriodBadge: {
+    backgroundColor: Colors.primaryLight,
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  companionCountWrap: { alignItems: 'center', gap: 2 },
+  companionCountSub:  { fontSize: 10, color: Colors.textLight },
+
+  // ── 안전 안내 ──
+  safetyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: Spacing.screenPad,
+    paddingVertical: Spacing.md,
     marginTop: 8,
   },
-  companionCountText: { fontSize: 11, color: Colors.primary, fontWeight: '700' as const },
+  safetyIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  safetyText: { ...Typography.caption, flex: 1 },
 });
