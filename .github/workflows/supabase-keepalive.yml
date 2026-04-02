@@ -1,0 +1,23 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 0 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase DB
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/users?select=id&limit=1")
+          echo "응답 코드: $STATUS"
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "206" ]; then
+            echo "Supabase 응답 이상: $STATUS"
+            exit 1
+          fi
+          echo "Supabase 정상 응답 확인"
