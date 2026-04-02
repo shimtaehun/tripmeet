@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getCompanions, CompanionSummary } from '../../services/companionService';
-import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing, Typography } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 type StatusFilter = 'all' | 'open' | 'closed';
@@ -323,4 +323,53 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadow.primary,
   },
+
+  root:         { flex: 1, backgroundColor: Colors.background },
+  dateRow:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  dateRange:    { ...Typography.caption, color: Colors.textMedium },
+  description:  { ...Typography.bodyMd, lineHeight: 20, marginBottom: 12 },
+  cardBottom:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  participants: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dot:          { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.border },
+  createdAt:    { ...Typography.caption },
+  chevron:      { marginLeft: 4 },
+  loader:       { marginVertical: 24 },
+  listContent:  { paddingBottom: 32 },
+  empty:        { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 64 },
+  emptyTitle:   { ...Typography.h4, marginBottom: 8, textAlign: 'center' as const },
+  emptyHint:    { ...Typography.bodyMd, textAlign: 'center' as const },
+  tabBarWrap:        { paddingHorizontal: Spacing.screenPad, paddingBottom: Spacing.md },
+  tabBarWrapDesktop: { paddingHorizontal: Spacing.screenPad, paddingBottom: Spacing.md },
+  tabBar:       { flexDirection: 'row', gap: 8 },
+  tab: {
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  tabGradient:   { paddingHorizontal: 16, paddingVertical: 7, borderRadius: Radius.full },
+  tabText:       { fontSize: 13, fontWeight: '500' as const, color: Colors.textMedium },
+  tabTextActive: { fontWeight: '700' as const, color: '#fff' },
+  headerInner:   { flex: 1 },
+  addBtn: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: Radius.full,
+    marginTop: Spacing.md,
+  },
+  addBtnText:    { fontSize: 13, fontWeight: '600' as const, color: '#fff' },
+  footerLoader:  { marginVertical: 16 },
+  separator:     { height: 0 },
+  columnWrapper: { paddingHorizontal: Spacing.screenPad, gap: 12 },
+  gridItem:      { flex: 1 },
 });
