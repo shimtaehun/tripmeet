@@ -156,7 +156,7 @@ export default function CompanionDetailScreen() {
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
       <LinearGradient
-        colors={Gradients.companion}
+        colors={Gradients.companion as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -270,7 +270,7 @@ export default function CompanionDetailScreen() {
                     style={[styles.applyButtonWrap, { marginTop: 10 }]}
                   >
                     <LinearGradient
-                      colors={Gradients.chat}
+                      colors={Gradients.chat as [string, string, ...string[]]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                       style={styles.applyButton}
@@ -331,7 +331,7 @@ export default function CompanionDetailScreen() {
                   style={[styles.applyButtonWrap, { flex: 1 }]}
                 >
                   <LinearGradient
-                    colors={Gradients.companion}
+                    colors={Gradients.companion as [string, string, ...string[]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.applyButton}
@@ -349,7 +349,7 @@ export default function CompanionDetailScreen() {
                   style={styles.messageButtonWrap}
                 >
                   <LinearGradient
-                    colors={Gradients.chat}
+                    colors={Gradients.chat as [string, string, ...string[]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.messageButton}
@@ -372,7 +372,7 @@ export default function CompanionDetailScreen() {
               style={styles.applyButtonWrap}
             >
               <LinearGradient
-                colors={Gradients.chat}
+                colors={Gradients.chat as [string, string, ...string[]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.applyButton}
