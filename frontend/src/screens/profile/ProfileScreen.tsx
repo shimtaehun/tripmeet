@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabaseClient';
-import { Colors, Gradients, Radius, Shadow, Spacing } from '../../utils/theme';
+import { Colors, Gradients, Radius, Shadow, Spacing, Typography } from '../../utils/theme';
 import { useResponsive, MAX_WIDTH, TOP_NAV_H } from '../../utils/responsive';
 
 interface UserProfile {
@@ -230,10 +230,20 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingRoot: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
-  root: { flex: 1, backgroundColor: Colors.background },
+  // 루트 레이아웃
+  loadingRoot: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.background,
+  },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
   content: { paddingBottom: 48 },
 
+  // 프로필 헤더 (LinearGradient 위에 overlay되는 카드 영역)
   header: {
     alignItems: 'center',
     paddingTop: 56,
@@ -251,19 +261,27 @@ const styles = StyleSheet.create({
     top: -60,
     right: -40,
   },
+
+  // 아바타
   avatarContainer: { alignItems: 'center', marginBottom: 16 },
   avatarRing: {
     width: 108,
     height: 108,
-    borderRadius: 54,
+    borderRadius: Radius.full,
     padding: 3,
     backgroundColor: 'rgba(255,255,255,0.30)',
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.50)',
     overflow: 'hidden',
-    ...Shadow.lg,
+    ...Shadow.primary,
   },
-  avatar: { width: '100%', height: '100%', borderRadius: 52 },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: Radius.full,
+  },
+
+  // 온라인 배지
   onlineBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -282,10 +300,32 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: 'rgba(255,255,255,0.8)',
   },
-  onlineBadgeText: { fontSize: 11, fontWeight: '700' as const, color: '#fff' },
-  nickname: { fontSize: 24, fontWeight: '800' as const, color: '#fff', marginBottom: 6 },
-  bio: { fontSize: 14, color: 'rgba(255,255,255,0.80)', textAlign: 'center', lineHeight: 20 },
-  bioEmpty: { fontSize: 13, color: 'rgba(255,255,255,0.50)', fontStyle: 'italic' as const },
+  onlineBadgeText: {
+    fontSize: 11,
+    fontWeight: '700' as const,
+    color: '#fff',
+  },
+
+  // 닉네임·소개
+  nickname: {
+    fontSize: 24,
+    fontWeight: '800' as const,
+    color: '#fff',
+    marginBottom: 6,
+  },
+  bio: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.80)',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  bioEmpty: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.50)',
+    fontStyle: 'italic' as const,
+  },
+
+  // 통계 pills (배지/태그)
   statsRow: {
     flexDirection: 'row',
     gap: 8,
@@ -294,29 +334,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statsPill: {
-    backgroundColor: 'rgba(255,255,255,0.20)',
     borderRadius: Radius.full,
+    backgroundColor: Colors.primaryLight,
     paddingHorizontal: 14,
     paddingVertical: 5,
   },
-  statsPillText: { fontSize: 12, color: '#fff', fontWeight: '600' as const },
+  statsPillText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontWeight: '600' as const,
+  },
 
+  // 섹션
   sectionWrap: {
     marginHorizontal: Spacing.screenPad,
     marginTop: 20,
   },
   sectionLabel: {
-    fontSize: 12,
-    fontWeight: '600' as const,
-    color: Colors.textLight,
+    ...Typography.h3,
     marginBottom: 8,
     marginLeft: 4,
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
   },
+
+  // 메뉴 카드
   menuCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.xl,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.border,
@@ -328,6 +371,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     gap: 12,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    borderWidth: 0,
   },
   menuIconWrap: {
     width: 40,
@@ -337,9 +383,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  menuLabel: { flex: 1, fontSize: 15, fontWeight: '600' as const, color: Colors.text },
+  menuLabel: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600' as const,
+    color: Colors.text,
+  },
   menuLabelDestructive: { color: Colors.red },
-  menuDivider: { height: 1, backgroundColor: Colors.divider, marginHorizontal: 16 },
+  menuDivider: {
+    height: 1,
+    backgroundColor: Colors.divider,
+    marginHorizontal: 16,
+  },
 
-  version: { textAlign: 'center', marginTop: 32, fontSize: 12, color: Colors.textLight },
+  // 버전 텍스트
+  version: {
+    textAlign: 'center',
+    marginTop: 32,
+    fontSize: 12,
+    color: Colors.textLight,
+  },
 });
