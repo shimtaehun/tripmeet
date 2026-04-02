@@ -210,8 +210,13 @@ export default function MatchingScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  // 루트 — Supanova 배경색 적용
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
 
+  // 헤더 — LinearGradient(Gradients.matching) 위에 올라감, 기존 패딩 유지
   header: {
     paddingHorizontal: Spacing.screenPad,
     paddingTop: 52,
@@ -223,9 +228,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
-  headerTitle: { fontSize: 22, fontWeight: '800' as const, color: '#fff', marginBottom: 2 },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
-  headerLocation: { fontWeight: '700' as const, color: '#fff' },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '800' as const,
+    color: Colors.textOnDark,
+    marginBottom: 2,
+  },
+  headerSub: {
+    fontSize: 13,
+    color: Colors.textOnDarkSub,
+  },
+  headerLocation: {
+    fontWeight: '700' as const,
+    color: Colors.textOnDark,
+  },
+  // 위치 변경 버튼 — glassmorphism pill 스타일
   changeBtn: {
     backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
@@ -234,11 +251,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
-  changeBtnText: { fontSize: 13, color: '#fff', fontWeight: '600' as const },
+  changeBtnText: {
+    fontSize: 13,
+    color: Colors.textOnDark,
+    fontWeight: '600' as const,
+  },
 
-  // 상하 패딩 확보 — 카드 그림자가 잘리지 않도록 상단 여백 추가
-  listContent: { padding: 16, paddingTop: 20, paddingBottom: 40 },
+  // 리스트 컨텐츠 — 카드 그림자가 잘리지 않도록 상단 여백 추가
+  listContent: {
+    padding: 16,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
 
+  // 레이더 애니메이션 래퍼
   radarWrap: {
     width: 130,
     height: 130,
@@ -246,6 +272,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 28,
   },
+  // 펄스 링 — 녹색 테두리, 애니메이션으로 확대/축소
   pulseRing: {
     position: 'absolute',
     width: 120,
@@ -254,10 +281,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.green,
   },
+  // 레이더 중앙 원형 — 활성 필터 원칙 적용 (greenLight 배경, green 테두리)
   radarDot: {
     width: 68,
     height: 68,
-    borderRadius: 34,
+    borderRadius: Radius.full,
     backgroundColor: Colors.greenLight,
     borderWidth: 2,
     borderColor: Colors.greenBorder,
@@ -266,6 +294,7 @@ const styles = StyleSheet.create({
     ...Shadow.green,
   },
 
+  // 빈 상태 컨테이너
   emptyRoot: {
     flex: 1,
     alignItems: 'center',
@@ -273,19 +302,37 @@ const styles = StyleSheet.create({
     padding: 32,
     gap: 8,
   },
+  // 빈 상태 제목 (위치 미등록)
   emptyTitle: {
-    fontSize: 19, fontWeight: '700' as const, color: Colors.text,
-    textAlign: 'center', marginTop: 8,
+    fontSize: 19,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    textAlign: 'center',
+    marginTop: 8,
   },
+  // 빈 상태 제목 (여행자 없음) — 빈 상태 텍스트 원칙: Colors.textLight
   emptyTitleLg: {
-    fontSize: 18, fontWeight: '700' as const, color: Colors.text,
-    textAlign: 'center', marginTop: 12,
+    fontSize: 18,
+    fontWeight: '700' as const,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginTop: 12,
   },
+  // 빈 상태 보조 설명 — Colors.textLight 적용
   emptyDesc: {
-    fontSize: 14, color: Colors.textMedium, textAlign: 'center',
-    lineHeight: 22, marginBottom: 16,
+    fontSize: 14,
+    color: Colors.textLight,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 16,
   },
-  registerBtnWrap: { borderRadius: Radius.full, overflow: 'hidden', ...Shadow.blue },
+  // 위치 등록 버튼 래퍼 — Shadow.primary 적용 (FAB 준용)
+  registerBtnWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.primary,
+  },
+  // 위치 등록 버튼 — LinearGradient(Gradients.coral) 컨테이너
   registerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,8 +340,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 16,
   },
-  registerBtnText: { fontSize: 15, fontWeight: '700' as const, color: '#fff' },
-  refreshBtnWrap: { borderRadius: Radius.full, overflow: 'hidden', ...Shadow.blue },
+  registerBtnText: {
+    fontSize: 15,
+    fontWeight: '700' as const,
+    color: Colors.textOnDark,
+  },
+  // 새로고침 버튼 래퍼 — Shadow.primary 적용 (FAB 준용)
+  refreshBtnWrap: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    ...Shadow.primary,
+  },
+  // 새로고침 버튼 — LinearGradient(Gradients.coral) 컨테이너
   refreshBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -302,7 +359,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingVertical: 14,
   },
-  refreshBtnText: { fontSize: 14, fontWeight: '700' as const, color: '#fff' },
+  refreshBtnText: {
+    fontSize: 14,
+    fontWeight: '700' as const,
+    color: Colors.textOnDark,
+  },
 
   loader: { marginTop: 60 },
 });
