@@ -11,1193 +11,448 @@ const LANDING_HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TripMeet — 여행자를 위한 커뮤니티</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<title>TripMeet — 여행자 커뮤니티</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Pretendard', 'sans-serif'] },
+        colors: {
+          indigo: {
+            950: '#1E1B4B',
+            900: '#312E81',
+            800: '#3730A3',
+            700: '#4338CA',
+            600: '#4F46E5',
+            500: '#6366F1',
+            400: '#818CF8',
+            100: '#E0E7FF',
+            50:  '#EEF2FF',
+          },
+        },
+        animation: {
+          'fade-up':   'fadeUp 0.7s cubic-bezier(.16,1,.3,1) both',
+          'float':     'float 6s ease-in-out infinite',
+          'float-alt': 'float 8s ease-in-out 2s infinite',
+          'glow':      'glow 3s ease-in-out infinite',
+        },
+        keyframes: {
+          fadeUp:  { from: { opacity: '0', transform: 'translateY(24px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+          float:   { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-12px)' } },
+          glow:    { '0%,100%': { boxShadow: '0 0 40px rgba(99,102,241,.25)' }, '50%': { boxShadow: '0 0 80px rgba(99,102,241,.45)' } },
+        },
+      }
+    }
+  }
+</script>
 <style>
-  :root {
-    --primary: #6366F1;
-    --primaryDark: #4338CA;
-    --primaryLight: #EEF2FF;
-    --secondary: #818CF8;
-    --accent: #F97316;
-    --dark: #1E1B4B;
-    --dark2: #312E81;
-    --white: #FFFFFF;
-    --gray: #F5F7FF;
-    --text-gray: #4B5563;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  * { font-family: 'Pretendard', sans-serif; }
   html { scroll-behavior: smooth; }
+  body { background: #FAFAF8; overflow-x: hidden; color: #0A0A0B; }
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: #F8FAFC;
-    color: var(--dark);
-    overflow-x: hidden;
-  }
-
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 60px;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(59,130,246,0.08);
-  }
-
-  .logo {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 24px;
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -1px;
-  }
-
-  .nav-links { display: flex; gap: 36px; list-style: none; }
-  .nav-links a {
-    text-decoration: none;
-    color: var(--dark);
-    font-size: 14px;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--primary); }
-
-  .nav-cta {
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    color: white;
-    border: none;
-    padding: 12px 28px;
-    border-radius: 100px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: 'Noto Sans KR', sans-serif;
-    text-decoration: none;
-    display: inline-block;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.25);
-  }
-  .nav-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(59,130,246,0.35);
-  }
-
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    padding: 120px 60px 60px;
-    gap: 60px;
+  .bezel-card {
+    background: white;
+    border: 1px solid rgba(99,102,241,.10);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05), 0 12px 40px rgba(99,102,241,.08);
     position: relative;
-    overflow: hidden;
-    background: linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 60%, #DBEAFE 100%);
   }
 
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -200px; right: -200px;
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: pulse 6s ease-in-out infinite;
+  .phone-bezel {
+    background: #0F0E1A;
+    border-radius: 44px;
+    padding: 16px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.08),
+      0 48px 96px rgba(0,0,0,.45),
+      0 0 80px rgba(99,102,241,.20);
   }
-
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -100px; left: -100px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(30,64,175,0.08) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: pulse 8s ease-in-out infinite reverse;
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.7; }
-  }
-
-  .hero-left { position: relative; z-index: 1; }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(59,130,246,0.10);
-    color: var(--primaryDark);
-    padding: 8px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 28px;
-    border: 1px solid rgba(59,130,246,0.15);
-    animation: fadeInUp 0.6s ease both;
-  }
-
-  .hero-badge span { font-size: 16px; }
-
-  .hero-title {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 64px;
-    line-height: 1.05;
-    letter-spacing: -2px;
-    margin-bottom: 24px;
-    color: var(--dark);
-    animation: fadeInUp 0.6s ease 0.1s both;
-  }
-
-  .hero-title .highlight {
-    background: linear-gradient(135deg, var(--primaryDark) 0%, var(--primary) 50%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: block;
-  }
-
-  .hero-sub {
-    font-size: 18px;
-    color: var(--text-gray);
-    line-height: 1.7;
-    margin-bottom: 44px;
-    font-weight: 300;
-    animation: fadeInUp 0.6s ease 0.2s both;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    animation: fadeInUp 0.6s ease 0.3s both;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    border-radius: 100px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 8px 32px rgba(59,130,246,0.35);
-    font-family: 'Noto Sans KR', sans-serif;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 48px rgba(59,130,246,0.45);
-  }
-
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primaryDark);
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: gap 0.2s;
-  }
-
-  .btn-ghost:hover { gap: 14px; }
-
-  .hero-stats {
-    display: flex;
-    gap: 40px;
-    margin-top: 56px;
-    padding-top: 40px;
-    border-top: 1px solid rgba(59,130,246,0.12);
-    animation: fadeInUp 0.6s ease 0.4s both;
-  }
-
-  .stat-item {}
-  .stat-num {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 32px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .stat-label { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
-
-  /* HERO RIGHT - Phone Mockup */
-  .hero-right {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    animation: fadeInUp 0.8s ease 0.2s both;
-  }
-
-  .phone-mockup {
-    width: 280px;
-    height: 560px;
-    background: var(--dark2);
-    border-radius: 40px;
-    padding: 20px;
-    box-shadow: 0 40px 100px rgba(15,23,42,0.25), 0 0 0 1px rgba(255,255,255,0.08), 0 0 60px rgba(59,130,246,0.15);
-    position: relative;
-    transform: rotate(3deg);
-  }
-
   .phone-screen {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #1E40AF 100%);
-    border-radius: 28px;
+    background: linear-gradient(160deg, #0F0E1A 0%, #1E1B4B 60%, #312E81 100%);
+    border-radius: 32px;
     overflow: hidden;
-    position: relative;
   }
 
-  .phone-header {
-    padding: 20px 16px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .shimmer-line {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s ease-in-out infinite;
+    border-radius: 4px;
   }
 
-  .phone-logo {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 18px;
-    background: linear-gradient(135deg, var(--secondary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .nav-blur {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(250,250,248,.88);
   }
 
-  .phone-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-
-  .phone-location-card {
-    margin: 8px 16px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(59,130,246,0.2);
-    border-radius: 16px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .location-icon { font-size: 20px; }
-
-  .location-text {}
-  .location-name { color: white; font-size: 13px; font-weight: 600; }
-  .location-sub { color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 2px; }
-
-  .phone-section-title {
-    color: rgba(255,255,255,0.5);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 12px 16px 8px;
-  }
-
-  .traveler-card {
-    margin: 4px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(59,130,246,0.12);
-    border-radius: 14px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.5s ease both;
-  }
-
-  .traveler-card:nth-child(2) { animation-delay: 0.1s; }
-  .traveler-card:nth-child(3) { animation-delay: 0.2s; }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .traveler-avatar {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .traveler-info { flex: 1; }
-  .traveler-name { color: white; font-size: 12px; font-weight: 600; }
-  .traveler-from { color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 2px; }
-
-  .chat-btn {
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 100px;
-    font-size: 10px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .floating-badge {
-    position: absolute;
-    background: white;
-    border-radius: 16px;
-    padding: 10px 16px;
-    box-shadow: 0 8px 32px rgba(59,130,246,0.15);
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    animation: float 3s ease-in-out infinite;
-    border: 1px solid rgba(59,130,246,0.1);
-  }
-
-  .badge-1 {
-    top: 60px; right: -40px;
-    animation-delay: 0s;
-  }
-
-  .badge-2 {
-    bottom: 120px; left: -50px;
-    animation-delay: 1.5s;
-  }
-
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-12px); }
+  }
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 40px rgba(99,102,241,.20); }
+    50%      { box-shadow: 0 0 80px rgba(99,102,241,.45); }
   }
 
-  /* ABOUT / APP INTRO */
-  .about {
-    padding: 80px 60px;
-    background: white;
-    border-bottom: 1px solid rgba(59,130,246,0.06);
-  }
-
-  .about-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: center;
-  }
-
-  .about-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 40px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    line-height: 1.15;
-    margin: 16px 0 20px;
-  }
-
-  .about-title span {
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .about-desc {
-    font-size: 15px;
-    color: var(--text-gray);
-    line-height: 1.85;
-    margin-bottom: 28px;
-  }
-
-  .about-points {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .about-point {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 15px;
-    color: var(--dark);
-    font-weight: 500;
-  }
-
-  .point-check {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .about-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .mini-card {
-    background: #F8FAFC;
-    border: 1px solid rgba(59,130,246,0.08);
-    border-radius: 20px;
-    padding: 18px 22px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.3s;
-    cursor: default;
-  }
-
-  .mini-card:hover {
-    transform: translateX(8px);
-    border-color: rgba(59,130,246,0.2);
-    box-shadow: 0 8px 32px rgba(59,130,246,0.08);
-  }
-
-  .mini-card-accent {
-    background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(30,64,175,0.04));
-    border-color: rgba(59,130,246,0.12);
-  }
-
-  .mini-icon {
-    font-size: 26px;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(59,130,246,0.1);
-    flex-shrink: 0;
-  }
-
-  .mini-card strong {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--dark);
-    display: block;
-  }
-
-  .mini-card span {
-    font-size: 12px;
-    color: var(--text-gray);
-    margin-top: 3px;
-    display: block;
-  }
-
-  /* HOW IT WORKS - sub */
-  .how-sub {
-    font-size: 16px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 16px;
-    line-height: 1.75;
-    font-weight: 300;
-  }
-
-  .how-success {
-    margin-top: 64px;
-    background: rgba(59,130,246,0.08);
-    border: 1px solid rgba(59,130,246,0.2);
-    border-radius: 20px;
-    padding: 24px 36px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    max-width: 540px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .success-emoji { font-size: 36px; flex-shrink: 0; }
-
-  .success-text strong {
-    display: block;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 4px;
-  }
-
-  .success-text span {
-    font-size: 13px;
-    color: rgba(255,255,255,0.45);
-  }
-
-  /* FEATURES */
-  .features {
-    padding: 100px 60px;
-    background: white;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 64px;
-  }
-
-  .section-tag {
-    display: inline-block;
-    background: rgba(59,130,246,0.08);
-    color: var(--primaryDark);
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    border: 1px solid rgba(59,130,246,0.12);
-  }
-
-  .section-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 44px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    line-height: 1.15;
-  }
-
-  .section-title span {
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-
-  .feature-card {
-    background: #F8FAFC;
-    border: 1px solid rgba(59,130,246,0.07);
-    border-radius: 24px;
-    padding: 36px 32px;
-    transition: all 0.3s;
-    cursor: default;
-  }
-
-  .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 24px 64px rgba(59,130,246,0.10);
-    border-color: rgba(59,130,246,0.18);
-  }
-
-  .feature-icon {
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    margin-bottom: 20px;
-  }
-
-  .feature-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    letter-spacing: -0.5px;
-  }
-
-  .feature-desc {
-    font-size: 14px;
-    color: var(--text-gray);
-    line-height: 1.7;
-  }
-
-  /* HOW IT WORKS */
-  .how {
-    padding: 100px 60px;
-    background: linear-gradient(160deg, var(--dark) 0%, var(--dark2) 50%, #1E3A8A 100%);
-    color: white;
-  }
-
-  .how .section-title { color: white; }
-  .how .section-tag {
-    background: rgba(59,130,246,0.15);
-    color: var(--secondary);
-    border-color: rgba(59,130,246,0.2);
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    margin-top: 64px;
-    position: relative;
-  }
-
-  .steps::before {
-    content: '';
-    position: absolute;
-    top: 32px; left: 10%; right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primaryDark), var(--primary), var(--accent));
-    opacity: 0.35;
-  }
-
-  .step {
-    text-align: center;
-    position: relative;
-  }
-
-  .step-num {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    margin: 0 auto 20px;
-    box-shadow: 0 8px 24px rgba(59,130,246,0.4);
-  }
-
-  .step-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .step-desc {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.6;
-  }
-
-  /* DESTINATIONS */
-  .destinations {
-    padding: 100px 60px;
-    background: #FAFAFA;
-  }
-
-  .dest-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: 220px 220px;
-    gap: 16px;
-    margin-top: 48px;
-  }
-
-  .dest-card {
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    transition: transform 0.3s;
-  }
-
-  .dest-card:hover { transform: scale(0.98); }
-
-  .dest-card.large { grid-row: 1 / 3; }
-
-  .dest-bg {
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: flex-end;
-    padding: 24px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-  }
-
-  .dest-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(15,23,42,0.7) 0%, transparent 60%);
-  }
-
-  .dest-info { position: relative; z-index: 1; color: white; }
-  .dest-name {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .dest-count { font-size: 12px; opacity: 0.7; margin-top: 4px; }
-
-  .dest-seoul { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); }
-  .dest-tokyo { background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 100%); }
-  .dest-paris { background: linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%); }
-  .dest-bali { background: linear-gradient(135deg, #065F46 0%, #10B981 100%); }
-  .dest-nyc { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); }
-
-  /* CTA */
-  .cta {
-    padding: 120px 60px;
-    background: linear-gradient(135deg, var(--dark) 0%, #1E3A8A 60%, var(--primaryDark) 100%);
-    text-align: center;
-    color: white;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta::before {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 800px; height: 800px;
-    background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 60%);
-    border-radius: 50%;
-    animation: pulse 5s ease-in-out infinite;
-  }
-
-  .cta-content { position: relative; z-index: 1; }
-
-  .cta-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 56px;
-    font-weight: 900;
-    letter-spacing: -2px;
-    line-height: 1.1;
-    margin-bottom: 20px;
-  }
-
-  .cta-title span {
-    background: linear-gradient(135deg, var(--secondary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .cta-sub {
-    font-size: 18px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 48px;
-    font-weight: 300;
-  }
-
-  .cta-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .btn-store {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: white;
-    padding: 14px 28px;
-    border-radius: 14px;
-    text-decoration: none;
-    transition: all 0.3s;
-    backdrop-filter: blur(10px);
-  }
-
-  .btn-store:hover {
-    background: rgba(255,255,255,0.15);
-    transform: translateY(-3px);
-  }
-
-  .btn-store-icon { font-size: 24px; }
-  .btn-store-text {}
-  .btn-store-sub { font-size: 11px; opacity: 0.6; }
-  .btn-store-name { font-size: 16px; font-weight: 700; }
-
-  /* FOOTER */
-  footer {
-    background: var(--dark);
-    color: rgba(255,255,255,0.35);
-    padding: 40px 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid rgba(59,130,246,0.1);
-  }
-
-  .footer-logo {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    background: linear-gradient(135deg, var(--primaryDark), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  footer p { font-size: 13px; }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    nav { padding: 14px 20px; }
-    .nav-links { display: none; }
-    .nav-cta { padding: 10px 18px; font-size: 13px; }
-    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
-    .hero-right { display: none; }
-    .hero-title { font-size: 42px; }
-    .about { padding: 60px 24px; }
-    .about-inner { grid-template-columns: 1fr; gap: 40px; }
-    .about-title { font-size: 30px; }
-    .features { padding: 60px 24px; }
-    .features-grid { grid-template-columns: 1fr; }
-    .how { padding: 60px 24px; }
-    .how-sub { font-size: 14px; }
-    .how-success { padding: 20px 24px; }
-    .steps { grid-template-columns: 1fr 1fr; }
-    .destinations { padding: 60px 24px; }
-    .dest-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-    .dest-card.large { grid-row: auto; }
-    .cta { padding: 80px 24px; }
-    .cta-title { font-size: 36px; }
-    .cta-buttons { flex-direction: column; }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
-  }
+  .animate-fade-up   { animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) both; }
+  .animate-float     { animation: float 6s ease-in-out infinite; }
+  .animate-float-alt { animation: float 8s ease-in-out 2s infinite; }
+  .animate-glow      { animation: glow 3s ease-in-out infinite; }
+  .delay-100 { animation-delay: .10s; }
+  .delay-200 { animation-delay: .20s; }
+  .delay-300 { animation-delay: .30s; }
+  .delay-400 { animation-delay: .40s; }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">TripMeet</div>
-  <ul class="nav-links">
-    <li><a href="#features">기능</a></li>
-    <li><a href="#how">이용방법</a></li>
-    <li><a href="#destinations">여행지</a></li>
-  </ul>
-  <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="nav-cta">지금 시작하기</a>
+<!-- 네비게이션 -->
+<nav class="nav-blur fixed top-0 left-0 right-0 z-50" style="border-bottom:1px solid rgba(99,102,241,.10);">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#4338CA,#4F46E5);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(79,70,229,.35);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 17l9-13 9 13H3z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <span style="font-size:18px;font-weight:900;letter-spacing:-0.5px;color:#0A0A0B;">TripMeet</span>
+    </div>
+    <ul style="display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0;">
+      <li><a href="#about" style="padding:8px 16px;font-size:13px;font-weight:500;color:#3D3D40;text-decoration:none;border-radius:999px;transition:all .2s;" onmouseover="this.style.background='#EEF2FF';this.style.color='#4338CA'" onmouseout="this.style.background='transparent';this.style.color='#3D3D40'">소개</a></li>
+      <li><a href="#features" style="padding:8px 16px;font-size:13px;font-weight:500;color:#3D3D40;text-decoration:none;border-radius:999px;transition:all .2s;" onmouseover="this.style.background='#EEF2FF';this.style.color='#4338CA'" onmouseout="this.style.background='transparent';this.style.color='#3D3D40'">기능</a></li>
+      <li><a href="#how" style="padding:8px 16px;font-size:13px;font-weight:500;color:#3D3D40;text-decoration:none;border-radius:999px;transition:all .2s;" onmouseover="this.style.background='#EEF2FF';this.style.color='#4338CA'" onmouseout="this.style.background='transparent';this.style.color='#3D3D40'">이용방법</a></li>
+    </ul>
+    <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;"
+       style="display:inline-flex;align-items:center;gap:8px;background:#4338CA;color:white;font-size:13px;font-weight:700;padding:10px 22px;border-radius:999px;text-decoration:none;box-shadow:0 4px 16px rgba(67,56,202,.35);transition:all .2s;"
+       onmouseover="this.style.background='#3730A3';this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 24px rgba(67,56,202,.40)'"
+       onmouseout="this.style.background='#4338CA';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 16px rgba(67,56,202,.35)'">
+      무료 시작
+    </a>
+  </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-badge">
-      <span>✈️</span>
-      혼자 여행해도 외롭지 않아요
-    </div>
-    <h1 class="hero-title">
-      여행에서<br>
-      <span class="highlight">진짜 친구를</span>
-      만나세요
-    </h1>
-    <p class="hero-sub">
-      같은 곳에 있는 여행자와 즉시 연결되고,<br>
-      AI가 맞춤 일정을 짜드려요.
-    </p>
-    <div class="hero-actions">
-      <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="btn-primary">무료로 시작하기</a>
-      <a href="#how" class="btn-ghost">어떻게 작동하나요? →</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num">12K+</div>
-        <div class="stat-label">활성 여행자</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">94개</div>
-        <div class="stat-label">지원 여행지</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">4.9★</div>
-        <div class="stat-label">앱스토어 평점</div>
-      </div>
-    </div>
-  </div>
+<!-- 히어로 -->
+<section style="min-height:100vh;padding-top:64px;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(160deg, #FAFAF8 0%, #F0F0FF 60%, #E8EDFF 100%);">
+  <!-- 배경 오브 -->
+  <div style="position:absolute;top:-100px;right:-100px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle, rgba(99,102,241,.12) 0%, transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:0;left:-50px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle, rgba(249,115,22,.06) 0%, transparent 70%);pointer-events:none;"></div>
 
-  <div class="hero-right">
-    <div style="position: relative;">
-      <div class="phone-mockup">
-        <div class="phone-screen">
-          <div class="phone-header">
-            <div class="phone-logo">TripMeet</div>
-            <div class="phone-avatar"></div>
-          </div>
-          <div class="phone-location-card">
-            <div class="location-icon">📍</div>
-            <div class="location-text">
-              <div class="location-name">도쿄, 일본</div>
-              <div class="location-sub">현재 여행 중 · 3일차</div>
-            </div>
-          </div>
-          <div class="phone-section-title">근처 여행자 3명</div>
-          <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #1E40AF, #3B82F6);">😊</div>
-            <div class="traveler-info">
-              <div class="traveler-name">지민 · 25세</div>
-              <div class="traveler-from">서울에서 · 혼자 여행 중</div>
-            </div>
-            <button class="chat-btn">채팅</button>
-          </div>
-          <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #0369A1, #0EA5E9);">🧳</div>
-            <div class="traveler-info">
-              <div class="traveler-name">준혁 · 28세</div>
-              <div class="traveler-from">부산에서 · 혼자 여행 중</div>
-            </div>
-            <button class="chat-btn">채팅</button>
-          </div>
-          <div class="traveler-card">
-            <div class="traveler-avatar" style="background: linear-gradient(135deg, #065F46, #10B981);">✈️</div>
-            <div class="traveler-info">
-              <div class="traveler-name">수아 · 23세</div>
-              <div class="traveler-from">인천에서 · 혼자 여행 중</div>
-            </div>
-            <button class="chat-btn">채팅</button>
-          </div>
+  <div style="max-width:1152px;margin:0 auto;padding:80px 24px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <!-- 왼쪽: 카피 -->
+    <div class="animate-fade-up">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;color:#4338CA;font-size:11px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:28px;letter-spacing:0.6px;text-transform:uppercase;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+        지금 12,000명이 여행 중
+      </div>
+      <h1 style="font-size:62px;font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;color:#0A0A0B;">
+        여행에서<br>
+        <span style="background:linear-gradient(135deg,#4338CA 0%,#4F46E5 50%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">진짜 연결을</span><br>
+        경험하세요
+      </h1>
+      <p style="font-size:17px;color:#898989;line-height:1.75;margin-bottom:36px;font-weight:400;max-width:400px;">
+        같은 여행지의 여행자와 즉시 매칭되고,<br>AI가 나만의 일정을 완성해드려요.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:48px;">
+        <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;"
+           style="display:inline-flex;align-items:center;gap:10px;background:#4338CA;color:white;font-size:15px;font-weight:700;padding:16px 32px;border-radius:16px;text-decoration:none;box-shadow:0 8px 32px rgba(67,56,202,.30);transition:all .3s;"
+           onmouseover="this.style.background='#3730A3';this.style.transform='translateY(-2px)';this.style.boxShadow='0 16px 48px rgba(67,56,202,.40)'"
+           onmouseout="this.style.background='#4338CA';this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(67,56,202,.30)'">
+          지금 무료로 시작하기
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#how" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#898989;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#4338CA'" onmouseout="this.style.color='#898989'">
+          어떻게 작동하나요
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <!-- 통계 -->
+      <div style="display:flex;align-items:center;gap:32px;padding-top:32px;border-top:1px solid rgba(99,102,241,.12);">
+        <div>
+          <div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#4338CA;">12K+</div>
+          <div style="font-size:11px;color:#898989;margin-top:4px;">활성 여행자</div>
+        </div>
+        <div style="width:1px;height:36px;background:#E8E8E6;"></div>
+        <div>
+          <div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#4338CA;">94개</div>
+          <div style="font-size:11px;color:#898989;margin-top:4px;">지원 여행지</div>
+        </div>
+        <div style="width:1px;height:36px;background:#E8E8E6;"></div>
+        <div>
+          <div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#4338CA;">4.9★</div>
+          <div style="font-size:11px;color:#898989;margin-top:4px;">평균 평점</div>
         </div>
       </div>
-      <div class="floating-badge badge-1">🔥 지금 핫한 도쿄!</div>
-      <div class="floating-badge badge-2">💬 새 메시지 2개</div>
     </div>
-  </div>
-</section>
 
-<!-- ABOUT -->
-<section class="about">
-  <div class="about-inner">
-    <div class="about-text">
-      <div class="section-tag">🌏 TripMeet 소개</div>
-      <h2 class="about-title">혼자 여행자를 위한<br><span>올인원 여행 커뮤니티</span></h2>
-      <p class="about-desc">네이버 카페에서 동행 구하고, 구글 맵으로 맛집 찾고, 카카오톡으로 연락하는 번거로움은 이제 그만. TripMeet 하나로 여행지에서 필요한 모든 것을 해결하세요.</p>
-      <div class="about-points">
-        <div class="about-point">
-          <div class="point-check">✓</div>
-          <span>같은 여행지의 여행자와 즉시 실시간 매칭</span>
+    <!-- 오른쪽: 폰 목업 -->
+    <div style="display:flex;justify-content:center;" class="animate-fade-up delay-200">
+      <div style="position:relative;">
+        <!-- 배경 글로우 -->
+        <div style="position:absolute;inset:-20px;filter:blur(60px);background:radial-gradient(circle,rgba(99,102,241,.25),transparent 70%);border-radius:50%;" class="animate-glow"></div>
+        <!-- 폰 베젤 -->
+        <div class="phone-bezel animate-float" style="width:260px;height:520px;position:relative;z-index:1;">
+          <div class="phone-screen" style="width:100%;height:100%;">
+            <!-- 앱 헤더 -->
+            <div style="padding:20px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:16px;font-weight:900;color:white;letter-spacing:-0.5px;">TripMeet</span>
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#F97316);" class="shimmer-line"></div>
+            </div>
+            <!-- 위치 카드 -->
+            <div style="margin:0 16px 12px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);display:flex;align-items:center;gap:10px;">
+              <div style="width:28px;height:28px;border-radius:10px;background:rgba(99,102,241,.25);display:flex;align-items:center;justify-content:center;font-size:14px;">📍</div>
+              <div>
+                <div style="color:white;font-size:12px;font-weight:600;">도쿄, 일본</div>
+                <div style="color:rgba(255,255,255,.40);font-size:10px;margin-top:2px;">3일차 여행 중</div>
+              </div>
+            </div>
+            <!-- 섹션 라벨 -->
+            <div style="padding:0 16px 8px;color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">근처 여행자</div>
+            <!-- 여행자 카드 3개 -->
+            <div style="padding:0 16px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1E40AF,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:12px;">😊</div>
+                <div style="flex:1;">
+                  <div style="color:white;font-size:11px;font-weight:600;">지민 · 25세</div>
+                  <div style="color:rgba(255,255,255,.35);font-size:10px;">서울 · 혼자 여행</div>
+                </div>
+                <button style="font-size:10px;font-weight:700;background:#4F46E5;color:white;border:none;padding:4px 10px;border-radius:999px;cursor:pointer;">채팅</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0369A1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:12px;">🧳</div>
+                <div style="flex:1;">
+                  <div style="color:white;font-size:11px;font-weight:600;">준혁 · 28세</div>
+                  <div style="color:rgba(255,255,255,.35);font-size:10px;">부산 · 혼자 여행</div>
+                </div>
+                <button style="font-size:10px;font-weight:700;background:#4F46E5;color:white;border:none;padding:4px 10px;border-radius:999px;cursor:pointer;">채팅</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#065F46,#10B981);display:flex;align-items:center;justify-content:center;font-size:12px;">✈️</div>
+                <div style="flex:1;">
+                  <div style="color:white;font-size:11px;font-weight:600;">수아 · 23세</div>
+                  <div style="color:rgba(255,255,255,.35);font-size:10px;">인천 · 혼자 여행</div>
+                </div>
+                <button style="font-size:10px;font-weight:700;background:#4F46E5;color:white;border:none;padding:4px 10px;border-radius:999px;cursor:pointer;">채팅</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="about-point">
-          <div class="point-check">✓</div>
-          <span>AI가 목적지·기간·예산에 맞는 일정 자동 생성</span>
+        <!-- 플로팅 배지 -->
+        <div class="bezel-card animate-float-alt" style="position:absolute;right:-48px;top:60px;padding:8px 14px;font-size:12px;font-weight:700;color:#4338CA;white-space:nowrap;z-index:2;">
+          도쿄 지금 핫해요
         </div>
-        <div class="about-point">
-          <div class="point-check">✓</div>
-          <span>현지 여행자가 직접 추천하는 진짜 맛집 정보</span>
-        </div>
-        <div class="about-point">
-          <div class="point-check">✓</div>
-          <span>GPS 수집 없이 지역 단위로 안전한 매칭</span>
-        </div>
-      </div>
-    </div>
-    <div class="about-cards">
-      <div class="mini-card">
-        <div class="mini-icon">🗾</div>
-        <div>
-          <strong>도쿄 여행 중</strong>
-          <span>근처 여행자 3명 발견됨</span>
-        </div>
-      </div>
-      <div class="mini-card mini-card-accent">
-        <div class="mini-icon">🤖</div>
-        <div>
-          <strong>제주도 2박 3일 일정</strong>
-          <span>AI가 맞춤 코스 자동 완성</span>
-        </div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-icon">🍜</div>
-        <div>
-          <strong>부산 광안리 맛집</strong>
-          <span>여행자 직접 추천 15곳</span>
-        </div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-icon">👥</div>
-        <div>
-          <strong>오사카 동행 구인</strong>
-          <span>미리 동반자 모집 가능</span>
+        <div class="bezel-card animate-float" style="position:absolute;left:-60px;bottom:80px;padding:8px 14px;font-size:12px;font-weight:600;color:#3D3D40;white-space:nowrap;z-index:2;animation-delay:1s;">
+          새 메시지 2개
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="section-header">
-    <div class="section-tag">✨ 핵심 기능</div>
-    <h2 class="section-title">여행이 <span>더 풍요로워지는</span><br>6가지 이유</h2>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(59,130,246,0.1);">🤝</div>
-      <div class="feature-title">실시간 여행자 매칭</div>
-      <div class="feature-desc">같은 지역에 있는 여행자와 즉시 연결돼요. GPS 없이 직접 선택한 위치 기반으로 안전하게 매칭됩니다.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(124,58,237,0.1);">🤖</div>
-      <div class="feature-title">AI 맞춤 일정 생성</div>
-      <div class="feature-desc">"제주도 2박3일, 혼자, 예산 30만원"만 입력하면 완성된 여행 일정을 바로 받아볼 수 있어요.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(239,68,68,0.1);">🍜</div>
-      <div class="feature-title">여행자 맛집 공유</div>
-      <div class="feature-desc">현지 여행자들이 직접 다녀온 진짜 맛집만 공유해요. 관광객용 리뷰가 아닌 생생한 후기를 확인하세요.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(16,185,129,0.1);">💬</div>
-      <div class="feature-title">실시간 채팅</div>
-      <div class="feature-desc">마음에 드는 여행자를 발견했다면 즉시 채팅을 시작하세요. 함께 밥 먹고, 관광하고, 새로운 친구를 만들어요.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(245,158,11,0.1);">🗺️</div>
-      <div class="feature-title">동행 구인 게시판</div>
-      <div class="feature-desc">"다음 달 오사카 동행 구해요" 미리 게시하고 같이 여행할 사람을 찾아보세요.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background: rgba(14,165,233,0.1);">🏘️</div>
-      <div class="feature-title">여행자 커뮤니티</div>
-      <div class="feature-desc">여행 꿀팁, 질문, 후기를 자유롭게 나눠요. 네이버 카페보다 훨씬 빠르고 편리한 여행 커뮤니티.</div>
+<!-- 소개 -->
+<section style="padding:112px 0;" id="about">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+      <!-- 왼쪽: 벤토 그리드 카드 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="animate-fade-up">
+        <div class="bezel-card" style="padding:20px;grid-column:1/-1;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#4338CA,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 6px 16px rgba(67,56,202,.30);">🗾</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0A0A0B;">도쿄 여행 중</div>
+              <div style="font-size:12px;color:#898989;margin-top:2px;">근처 여행자 3명 발견</div>
+            </div>
+          </div>
+          <div style="height:6px;background:#EEF2FF;border-radius:999px;overflow:hidden;">
+            <div class="shimmer-line" style="width:75%;height:100%;background:linear-gradient(90deg,#4338CA,#6366F1,rgba(255,255,255,.3),#4338CA);background-size:200% 100%;"></div>
+          </div>
+        </div>
+        <div class="bezel-card" style="padding:20px;">
+          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#6D28D9,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(109,40,217,.25);">🤖</div>
+          <div style="font-size:13px;font-weight:700;color:#0A0A0B;margin-bottom:4px;">AI 일정</div>
+          <div style="font-size:12px;color:#898989;line-height:1.5;">제주 2박 3일 맞춤 코스 자동 완성</div>
+        </div>
+        <div class="bezel-card" style="padding:20px;">
+          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#9D174D,#DB2777);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(157,23,77,.25);">🍜</div>
+          <div style="font-size:13px;font-weight:700;color:#0A0A0B;margin-bottom:4px;">맛집 추천</div>
+          <div style="font-size:12px;color:#898989;line-height:1.5;">부산 광안리 여행자 직추 15곳</div>
+        </div>
+        <div class="bezel-card" style="padding:20px;grid-column:1/-1;background:linear-gradient(135deg,#4338CA,#312E81);border-color:rgba(99,102,241,.3);">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;">👥</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:white;">오사카 동행 구인</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.60);margin-top:2px;">미리 동반자 모집 가능</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 오른쪽: 텍스트 -->
+      <div class="animate-fade-up delay-100">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;color:#4338CA;font-size:11px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:24px;letter-spacing:0.6px;text-transform:uppercase;">
+          TripMeet 소개
+        </div>
+        <h2 style="font-size:40px;font-weight:900;letter-spacing:-1.5px;line-height:1.15;margin-bottom:20px;color:#0A0A0B;">
+          혼자 여행자를 위한<br>
+          <span style="background:linear-gradient(135deg,#4338CA,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">올인원 커뮤니티</span>
+        </h2>
+        <p style="font-size:15px;color:#898989;line-height:1.75;margin-bottom:28px;font-weight:400;">
+          네이버 카페, 구글 맵, 카카오톡을 오가는 번거로움은 이제 그만. TripMeet 하나로 여행지에서 필요한 모든 것을 해결하세요.
+        </p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+          <li style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#4338CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-size:14px;color:#3D3D40;line-height:1.6;">같은 여행지의 여행자와 즉시 실시간 매칭</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#4338CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-size:14px;color:#3D3D40;line-height:1.6;">AI가 목적지·기간·예산에 맞는 일정 자동 생성</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#4338CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-size:14px;color:#3D3D40;line-height:1.6;">현지 여행자가 직접 추천하는 진짜 맛집 정보</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#EEF2FF;border:1px solid #C7D2FE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#4338CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-size:14px;color:#3D3D40;line-height:1.6;">GPS 수집 없이 안전한 지역 단위 매칭</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="how" id="how">
-  <div class="section-header">
-    <div class="section-tag">🚀 이용방법</div>
-    <h2 class="section-title" style="color: white;">단 <span>4단계</span>면<br>새 친구를 만나요</h2>
-    <p class="how-sub">복잡한 설정 없이, 오늘 여행지에서 바로 새 친구를 사귀어 보세요.<br>가입부터 첫 채팅까지 단 5분이면 충분합니다.</p>
-  </div>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-title">구글로 3초 가입</div>
-      <div class="step-desc">복잡한 회원가입 없이 구글 계정 하나로 즉시 시작하세요. 이메일 인증도 필요 없어요.</div>
+<!-- 기능 -->
+<section style="padding:112px 0;background:white;" id="features">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;">
+    <div style="text-align:center;margin-bottom:64px;" class="animate-fade-up">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;color:#4338CA;font-size:11px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:20px;letter-spacing:0.6px;text-transform:uppercase;">핵심 기능</div>
+      <h2 style="font-size:42px;font-weight:900;letter-spacing:-1.5px;line-height:1.15;color:#0A0A0B;">
+        여행이 더 풍요로워지는<br>
+        <span style="background:linear-gradient(135deg,#4338CA,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">6가지 이유</span>
+      </h2>
     </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-title">여행지 선택</div>
-      <div class="step-desc">지금 여행 중인 곳을 직접 선택하세요. GPS 수집 없이 지역 단위로만 매칭되어 안전합니다.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-title">여행자 발견</div>
-      <div class="step-desc">같은 지역의 여행자 목록을 즉시 확인하세요. 닉네임과 자기소개를 보고 마음에 드는 사람을 찾아요.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-title">채팅 & 새 친구!</div>
-      <div class="step-desc">마음에 들면 채팅을 시작하세요. 함께 밥 먹고 관광하며 평생 기억에 남을 여행 친구를 사귀어요.</div>
-    </div>
-  </div>
-  <div class="how-success">
-    <div class="success-emoji">🎉</div>
-    <div class="success-text">
-      <strong>완료! 이제 여행 친구가 생겼어요</strong>
-      <span>평균 5분이면 첫 채팅 메시지를 받을 수 있어요</span>
+    <!-- 비대칭 벤토 그리드 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;" class="animate-fade-up delay-100">
+      <div class="bezel-card" style="padding:28px;grid-column:span 2;cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#4338CA,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;box-shadow:0 6px 20px rgba(67,56,202,.25);">🤝</div>
+        <div style="font-size:17px;font-weight:700;color:#0A0A0B;margin-bottom:8px;">실시간 여행자 매칭</div>
+        <div style="font-size:14px;color:#898989;line-height:1.7;">같은 여행지에 있는 여행자와 즉시 연결하세요. GPS 없이 도시 단위로 안전하게 매칭됩니다.</div>
+      </div>
+      <div class="bezel-card" style="padding:28px;cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#6D28D9,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;box-shadow:0 6px 20px rgba(109,40,217,.25);">🤖</div>
+        <div style="font-size:17px;font-weight:700;color:#0A0A0B;margin-bottom:8px;">AI 일정 생성</div>
+        <div style="font-size:14px;color:#898989;line-height:1.7;">Gemini AI가 여행지·기간·예산에 최적화된 일정을 자동으로 완성합니다.</div>
+      </div>
+      <div class="bezel-card" style="padding:28px;cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#9D174D,#DB2777);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;box-shadow:0 6px 20px rgba(157,23,77,.25);">🍜</div>
+        <div style="font-size:17px;font-weight:700;color:#0A0A0B;margin-bottom:8px;">여행자 맛집</div>
+        <div style="font-size:14px;color:#898989;line-height:1.7;">가이드북이 아닌 실제 여행자들이 직접 추천하는 진짜 현지 맛집.</div>
+      </div>
+      <div class="bezel-card" style="padding:28px;grid-column:span 2;cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#78350F,#D97706);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;box-shadow:0 6px 20px rgba(120,53,15,.25);">👥</div>
+        <div style="font-size:17px;font-weight:700;color:#0A0A0B;margin-bottom:8px;">동행 구인</div>
+        <div style="font-size:14px;color:#898989;line-height:1.7;">출발 전에 미리 동행을 구하세요. 여행 목적지와 일정을 공유해 맞는 파트너를 찾아드립니다.</div>
+      </div>
+      <div class="bezel-card" style="padding:28px;cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#1E3A8A,#2563EB);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;box-shadow:0 6px 20px rgba(30,58,138,.25);">💬</div>
+        <div style="font-size:17px;font-weight:700;color:#0A0A0B;margin-bottom:8px;">여행 커뮤니티</div>
+        <div style="font-size:14px;color:#898989;line-height:1.7;">여행 후기, 꿀팁, 질문을 공유하며 경험을 나누세요.</div>
+      </div>
+      <div class="bezel-card" style="padding:28px;grid-column:span 2;background:linear-gradient(135deg,#4338CA,#1E1B4B);border-color:rgba(99,102,241,.4);cursor:default;transition:transform .3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;">💬</div>
+        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px;">실시간 채팅</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.7;">매칭된 여행자와 앱 내 채팅으로 바로 소통하세요. 일정 조율부터 만남까지 한곳에서.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- DESTINATIONS -->
-<section class="destinations" id="destinations">
-  <div class="section-header">
-    <div class="section-tag">🌍 인기 여행지</div>
-    <h2 class="section-title">지금 <span>가장 핫한</span><br>여행지에서 만나요</h2>
-  </div>
-  <div class="dest-grid">
-    <div class="dest-card large">
-      <div class="dest-bg dest-tokyo" style="height: 100%;">
-        <div class="dest-info">
-          <div class="dest-name">🗼 도쿄</div>
-          <div class="dest-count">지금 247명 여행 중</div>
-        </div>
-      </div>
+<!-- 이용 방법 -->
+<section style="padding:112px 0;background:#0F0E1A;" id="how">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;">
+    <div style="text-align:center;margin-bottom:64px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);color:#818CF8;font-size:11px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:20px;letter-spacing:0.6px;text-transform:uppercase;">이용 방법</div>
+      <h2 style="font-size:42px;font-weight:900;letter-spacing:-1.5px;line-height:1.15;color:white;">
+        딱 3단계면<br>
+        <span style="background:linear-gradient(135deg,#818CF8,#C7D2FE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">여행이 달라져요</span>
+      </h2>
     </div>
-    <div class="dest-card">
-      <div class="dest-bg dest-seoul">
-        <div class="dest-info">
-          <div class="dest-name">🏙️ 서울</div>
-          <div class="dest-count">189명</div>
-        </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;">
+      <div style="text-align:center;">
+        <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;transition:background .3s;" onmouseover="this.style.background='rgba(99,102,241,.25)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📍</div>
+        <div style="font-size:32px;font-weight:900;color:rgba(255,255,255,.08);margin-bottom:8px;letter-spacing:-1px;">01</div>
+        <div style="font-size:15px;font-weight:700;color:white;margin-bottom:10px;">여행지 등록</div>
+        <div style="font-size:13px;color:rgba(130,140,248,.80);line-height:1.7;">현재 여행 중인 도시를 선택하면 자동으로 같은 지역 여행자와 연결됩니다.</div>
       </div>
-    </div>
-    <div class="dest-card">
-      <div class="dest-bg dest-bali">
-        <div class="dest-info">
-          <div class="dest-name">🌴 발리</div>
-          <div class="dest-count">156명</div>
-        </div>
+      <div style="text-align:center;">
+        <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;transition:background .3s;" onmouseover="this.style.background='rgba(99,102,241,.25)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🤝</div>
+        <div style="font-size:32px;font-weight:900;color:rgba(255,255,255,.08);margin-bottom:8px;letter-spacing:-1px;">02</div>
+        <div style="font-size:15px;font-weight:700;color:white;margin-bottom:10px;">여행자 탐색</div>
+        <div style="font-size:13px;color:rgba(130,140,248,.80);line-height:1.7;">근처 여행자 목록을 확인하고 마음에 드는 사람에게 채팅을 보내세요.</div>
       </div>
-    </div>
-    <div class="dest-card">
-      <div class="dest-bg dest-paris">
-        <div class="dest-info">
-          <div class="dest-name">🗼 파리</div>
-          <div class="dest-count">134명</div>
-        </div>
-      </div>
-    </div>
-    <div class="dest-card">
-      <div class="dest-bg dest-nyc">
-        <div class="dest-info">
-          <div class="dest-name">🗽 뉴욕</div>
-          <div class="dest-count">98명</div>
-        </div>
+      <div style="text-align:center;">
+        <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;transition:background .3s;" onmouseover="this.style.background='rgba(99,102,241,.25)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌏</div>
+        <div style="font-size:32px;font-weight:900;color:rgba(255,255,255,.08);margin-bottom:8px;letter-spacing:-1px;">03</div>
+        <div style="font-size:15px;font-weight:700;color:white;margin-bottom:10px;">함께 여행</div>
+        <div style="font-size:13px;color:rgba(130,140,248,.80);line-height:1.7;">맛집, 관광지, 일정을 공유하며 혼자이지만 혼자가 아닌 여행을 즐기세요.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="cta">
-  <div class="cta-content">
-    <h2 class="cta-title">
-      혼자 여행도<br>
-      <span>외롭지 않아요</span>
-    </h2>
-    <p class="cta-sub">지금 바로 시작하고 전 세계 여행자들과 연결되세요</p>
-    <div class="cta-buttons">
-      <a href="#" class="btn-store" style="opacity:0.5;cursor:not-allowed;">
-        <div class="btn-store-icon">🍎</div>
-        <div class="btn-store-text">
-          <div class="btn-store-sub">Coming Soon</div>
-          <div class="btn-store-name">App Store</div>
-        </div>
-      </a>
-      <a href="#" class="btn-store" style="opacity:0.5;cursor:not-allowed;">
-        <div class="btn-store-icon">▶</div>
-        <div class="btn-store-text">
-          <div class="btn-store-sub">Coming Soon</div>
-          <div class="btn-store-name">Google Play</div>
-        </div>
-      </a>
-      <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;" class="btn-primary" style="padding: 16px 36px;">웹으로 시작하기</a>
+<section style="padding:112px 0;">
+  <div style="max-width:800px;margin:0 auto;padding:0 24px;text-align:center;">
+    <div class="bezel-card" style="padding:64px 48px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,.05),transparent 60%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:48px;margin-bottom:24px;">✈️</div>
+        <h2 style="font-size:42px;font-weight:900;letter-spacing:-1.5px;line-height:1.15;color:#0A0A0B;margin-bottom:16px;">
+          다음 여행은<br>
+          <span style="background:linear-gradient(135deg,#4338CA,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">TripMeet과 함께</span>
+        </h2>
+        <p style="font-size:15px;color:#898989;margin-bottom:36px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.7;">지금 가입하면 12,000명의 여행자 커뮤니티에 바로 합류할 수 있어요.</p>
+        <a href="#" onclick="window.parent.postMessage('navigate:login', '*'); return false;"
+           style="display:inline-flex;align-items:center;gap:10px;background:#4338CA;color:white;font-size:15px;font-weight:700;padding:16px 36px;border-radius:16px;text-decoration:none;box-shadow:0 8px 32px rgba(67,56,202,.30);transition:all .3s;margin-bottom:16px;"
+           onmouseover="this.style.background='#3730A3';this.style.transform='translateY(-2px)';this.style.boxShadow='0 16px 48px rgba(67,56,202,.40)'"
+           onmouseout="this.style.background='#4338CA';this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(67,56,202,.30)'">
+          웹으로 무료 시작하기
+        </a>
+        <p style="font-size:12px;color:#898989;margin:0;">신용카드 불필요 · 영구 무료</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">TripMeet</div>
-  <p>© 2026 TripMeet. All rights reserved.</p>
-  <p>여행자를 위한 커뮤니티</p>
+<!-- 푸터 -->
+<footer style="padding:40px 0;border-top:1px solid #E8E8E6;">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#4338CA,#4F46E5);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(67,56,202,.25);">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 17l9-13 9 13H3z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <span style="font-size:14px;font-weight:700;color:#0A0A0B;">TripMeet</span>
+    </div>
+    <p style="font-size:12px;color:#898989;margin:0;">© 2026 TripMeet. 여행자를 위한 커뮤니티.</p>
+  </div>
 </footer>
 
 </body>
