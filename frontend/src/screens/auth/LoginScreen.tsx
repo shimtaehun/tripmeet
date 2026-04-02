@@ -23,9 +23,9 @@ WebBrowser.maybeCompleteAuthSession();
 const { height: H } = Dimensions.get('window');
 
 const FEATURES = [
-  { icon: 'sparkles' as const,   label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성',  gradient: ['#4C1D95', '#8B5CF6'] as string[] },
-  { icon: 'location' as const,   label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결',   gradient: ['#065F46', '#10B981'] as string[] },
-  { icon: 'restaurant' as const, label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유',      gradient: ['#9D174D', '#EC4899'] as string[] },
+  { icon: 'sparkles' as const,   label: 'AI 맞춤 일정',      desc: '목적지·기간·예산으로 자동 완성',  gradient: ['#4C1D95', '#8B5CF6'] as [string, string, ...string[]] },
+  { icon: 'location' as const,   label: '실시간 여행자 매칭', desc: '같은 도시 여행자와 즉시 연결',   gradient: ['#065F46', '#10B981'] as [string, string, ...string[]] },
+  { icon: 'restaurant' as const, label: '맛집 & 커뮤니티',   desc: '현지인이 검증한 정보 공유',      gradient: ['#9D174D', '#EC4899'] as [string, string, ...string[]] },
 ];
 
 export default function LoginScreen() {
@@ -97,7 +97,7 @@ export default function LoginScreen() {
       <StatusBar barStyle="light-content" />
 
       <LinearGradient
-        colors={Gradients.hero}
+        colors={Gradients.hero as [string, string, ...string[]]}
         start={{ x: 0.1, y: 0 }}
         end={{ x: 0.9, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -135,7 +135,7 @@ export default function LoginScreen() {
               style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureDivider]}
             >
               <LinearGradient
-                colors={f.gradient}
+                colors={f.gradient as [string, string, ...string[]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.featureIconWrap}
@@ -159,7 +159,7 @@ export default function LoginScreen() {
             style={[styles.btn, loading && styles.btnDisabled]}
           >
             <LinearGradient
-              colors={Gradients.coral}
+              colors={Gradients.coral as [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.btnGradient}

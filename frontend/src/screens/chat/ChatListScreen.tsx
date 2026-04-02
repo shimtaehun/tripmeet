@@ -112,7 +112,7 @@ export default function ChatListScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={Gradients.chat}
+        colors={Gradients.chat as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -149,7 +149,7 @@ export default function ChatListScreen() {
               >
                 <View style={styles.cyanAccentBar} />
                 <LinearGradient
-                  colors={Gradients.chat}
+                  colors={Gradients.chat as [string, string, ...string[]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.avatarWrap}

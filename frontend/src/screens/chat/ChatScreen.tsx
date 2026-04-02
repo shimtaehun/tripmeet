@@ -73,7 +73,7 @@ export default function ChatScreen() {
       <View style={[styles.messageRow, isMine ? styles.myRow : styles.theirRow]}>
         {isMine ? (
           <LinearGradient
-            colors={Gradients.indigo}
+            colors={Gradients.indigo as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[styles.bubble, styles.myBubble]}
@@ -96,7 +96,7 @@ export default function ChatScreen() {
       keyboardVerticalOffset={90}
     >
       <LinearGradient
-        colors={Gradients.chat}
+        colors={Gradients.chat as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -138,7 +138,7 @@ export default function ChatScreen() {
           style={styles.sendButtonWrap}
         >
           <LinearGradient
-            colors={inputText.trim() ? Gradients.indigo : [Colors.primaryBorder, Colors.primaryBorder]}
+            colors={(inputText.trim() ? Gradients.indigo : [Colors.primaryBorder, Colors.primaryBorder]) as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.sendButton}
