@@ -37,7 +37,7 @@ function WebTopNav({ state, navigation }: Pick<BottomTabBarProps, 'state' | 'nav
         activeOpacity={0.8}
       >
         <LinearGradient
-          colors={Gradients.primary}
+          colors={Gradients.primary as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={webStyles.logoIcon}
@@ -103,7 +103,7 @@ function MobileBottomBar({ state, navigation, descriptors }: BottomTabBarProps) 
             >
               {isFocused ? (
                 <LinearGradient
-                  colors={meta.gradient}
+                  colors={meta.gradient as [string, string, ...string[]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={mobileStyles.iconWrapActive}

@@ -130,7 +130,7 @@ export default function CommunityScreen() {
     <View style={styles.root}>
       {/* 그라디언트 헤더 — 데스크톱에서 상단 네비 높이만큼 paddingTop 추가 */}
       <LinearGradient
-        colors={Gradients.community}
+        colors={Gradients.community as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, isDesktop && { paddingTop: TOP_NAV_H + 20 }]}
@@ -162,7 +162,7 @@ export default function CommunityScreen() {
               >
                 {active ? (
                   <LinearGradient
-                    colors={Gradients.community}
+                    colors={Gradients.community as [string, string, ...string[]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.tabGradient}
