@@ -9,3 +9,6 @@ skills-lock.json
 # 환경변수 (루트 레벨 대비)
 .env
 .env.local
+
+# 프레임 추출 원본 영상 (용량 과다)
+frontend/public/hero-video.mp4
