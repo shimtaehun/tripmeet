@@ -1,4 +1,3 @@
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { supabase } from './supabaseClient';
 import { apiFetch } from './apiClient';
@@ -12,6 +11,8 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
  */
 export async function registerForPushNotifications(): Promise<void> {
   if (Platform.OS === 'web') return;
+
+  const Notifications = await import('expo-notifications');
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
