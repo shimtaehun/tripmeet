@@ -20,9 +20,11 @@
 | **동행 게시판** | 여행 동행 모집글을 작성하고 열람할 수 있는 커뮤니티 게시판 |
 | **실시간 오픈채팅** | WebSocket 기반 실시간 채팅방에서 여행자들과 자유롭게 소통 |
 | **회원 인증 시스템** | JWT 토큰 기반 회원가입/로그인 (비밀번호 bcrypt 암호화) |
-<img width="1905" height="806" alt="스크린샷 2026-05-21 100114" src="https://github.com/user-attachments/assets/54860b40-87b6-4cdb-a23e-69ec9ed733f9" />
+<img width="1919" height="867" alt="스크린샷 2026-05-21 111010" src="https://github.com/user-attachments/assets/fac85755-20b6-4a78-83f9-63ee5f1c4c3e" />
+<img width="1919" height="869" alt="스크린샷 2026-05-21 111039" src="https://github.com/user-attachments/assets/402c1647-6b78-4cd3-bd33-e95b29eef0d5" />
 <img width="1897" height="869" alt="스크린샷 2026-05-21 095120" src="https://github.com/user-attachments/assets/92e67910-a8d1-43c3-8d2d-5866ec8e467a" />
 <img width="1899" height="866" alt="스크린샷 2026-05-21 095525" src="https://github.com/user-attachments/assets/133e869e-2001-4c24-8ceb-e69514d1d068" />
+<img width="1919" height="866" alt="스크린샷 2026-05-21 111137" src="https://github.com/user-attachments/assets/2a8ef61f-e993-478b-9ee7-6b9145391c9e" />
 
 <br/>
 
