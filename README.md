@@ -16,7 +16,11 @@
 | 기능 | 설명 |
 |------|------|
 | **AI 동행 매칭** | 사용자의 자기소개(bio)를 벡터 임베딩으로 변환하여 여행 성향이 유사한 동행을 자동 추천 |
+<img width="1905" height="806" alt="스크린샷 2026-05-21 100114" src="https://github.com/user-attachments/assets/54860b40-87b6-4cdb-a23e-69ec9ed733f9" />
 | **AI 여행 가이드** | RAG(Retrieval-Augmented Generation) 기반으로 여행 정보를 검색하고 Gemini AI가 맞춤 답변 제공 |
+<img width="1897" height="869" alt="스크린샷 2026-05-21 095120" src="https://github.com/user-attachments/assets/92e67910-a8d1-43c3-8d2d-5866ec8e467a" />
+<img width="1899" height="866" alt="스크린샷 2026-05-21 095525" src="https://github.com/user-attachments/assets/133e869e-2001-4c24-8ceb-e69514d1d068" />
+
 | **동행 게시판** | 여행 동행 모집글을 작성하고 열람할 수 있는 커뮤니티 게시판 |
 | **실시간 오픈채팅** | WebSocket 기반 실시간 채팅방에서 여행자들과 자유롭게 소통 |
 | **회원 인증 시스템** | JWT 토큰 기반 회원가입/로그인 (비밀번호 bcrypt 암호화) |
