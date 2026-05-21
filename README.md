@@ -4,6 +4,8 @@
 > AI 알고리즘이 여행 스타일을 분석하여 최적의 동행을 추천하고, 실시간 채팅과 AI 여행 가이드를 제공합니다.
 >
 > **1인 개발** | 기획 · 프론트엔드 · 백엔드 · AI 추천 시스템 전체 직접 구현 (2025.12 ~ 2026.01)
+>
+> **배포 링크**| https://tripmeet.onrender.com/
 
 <br/>
 
@@ -20,6 +22,8 @@
 | **동행 게시판** | 여행 동행 모집글을 작성하고 열람할 수 있는 커뮤니티 게시판 |
 | **실시간 오픈채팅** | WebSocket 기반 실시간 채팅방에서 여행자들과 자유롭게 소통 |
 | **회원 인증 시스템** | JWT 토큰 기반 회원가입/로그인 (비밀번호 bcrypt 암호화) |
+
+<img width="1918" height="872" alt="image" src="https://github.com/user-attachments/assets/8916c4ff-9644-47d5-80df-9749fe973640" />
 <img width="1919" height="867" alt="스크린샷 2026-05-21 111010" src="https://github.com/user-attachments/assets/fac85755-20b6-4a78-83f9-63ee5f1c4c3e" />
 <img width="1919" height="869" alt="스크린샷 2026-05-21 111039" src="https://github.com/user-attachments/assets/402c1647-6b78-4cd3-bd33-e95b29eef0d5" />
 <img width="1897" height="869" alt="스크린샷 2026-05-21 095120" src="https://github.com/user-attachments/assets/92e67910-a8d1-43c3-8d2d-5866ec8e467a" />
