@@ -1,25 +1,64 @@
+<div align="center">
+
 # TripMeet
 
-혼자 여행하면서 동행을 구하거나, 현지 맛집 정보를 모으거나, 일정을 짜는 과정이 생각보다 번거롭습니다. 네이버 카페에서 동행 글을 찾고, 블로그를 뒤지고, 엑셀로 일정을 정리하는 흐름이 여전한데 — 이걸 하나로 묶으면 어떨까 싶어서 만들었습니다.
-
-React Native + FastAPI로 직접 개발한 여행 동행 매칭 모바일 앱입니다. 기획부터 프론트엔드, 백엔드, AI 시스템까지 전부 혼자 구현했습니다. 2025년 12월부터 2026년 3월까지 약 3개월.
-
-**앱 (웹)**: https://tripmeet-app.onrender.com  
-**API**: https://tripmeet-backend.onrender.com/health  
-**랜딩페이지**: https://tripmeet-landing.onrender.com
+혼자 여행하면서 동행을 구하거나, 현지 맛집 정보를 모으거나, 일정을 짜는 과정이 생각보다 번거롭습니다.  
+이걸 하나로 묶으면 어떨까 싶어서 만든 여행 동행 매칭 모바일 앱입니다.
 
 <br/>
 
-<img width="1918" height="872" alt="image" src="https://github.com/user-attachments/assets/8916c4ff-9644-47d5-80df-9749fe973640" />
-<img width="1919" height="867" alt="스크린샷 2026-05-21 111010" src="https://github.com/user-attachments/assets/fac85755-20b6-4a78-83f9-63ee5f1c4c3e" />
-<img width="1919" height="869" alt="스크린샷 2026-05-21 111039" src="https://github.com/user-attachments/assets/402c1647-6b78-4cd3-bd33-e95b29eef0d5" />
-<img width="1897" height="869" alt="스크린샷 2026-05-21 095120" src="https://github.com/user-attachments/assets/92e67910-a8d1-43c3-8d2d-5866ec8e467a" />
-<img width="1899" height="866" alt="스크린샷 2026-05-21 095525" src="https://github.com/user-attachments/assets/133e869e-2001-4c24-8ceb-e69514d1d068" />
-<img width="1919" height="866" alt="스크린샷 2026-05-21 111137" src="https://github.com/user-attachments/assets/2a8ef61f-e993-478b-9ee7-6b9145391c9e" />
+![React Native](https://img.shields.io/badge/React_Native-0.83-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Expo](https://img.shields.io/badge/Expo-55-000020?style=flat-square&logo=expo&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white)
+![Redis](https://img.shields.io/badge/Upstash_Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+
+<br/>
+
+**1인 개발** · 기획 · 프론트엔드 · 백엔드 · AI 시스템 전부 직접 구현 · 2025.12 ~ 2026.03
+
+<br/>
+
+[**앱 바로가기**](https://tripmeet-app.onrender.com) &nbsp;·&nbsp; [**API 상태**](https://tripmeet-backend.onrender.com/health) &nbsp;·&nbsp; [**랜딩페이지**](https://tripmeet-landing.onrender.com)
+
+</div>
+
+<br/>
+
+---
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/8916c4ff-9644-47d5-80df-9749fe973640" /></td>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/fac85755-20b6-4a78-83f9-63ee5f1c4c3e" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/402c1647-6b78-4cd3-bd33-e95b29eef0d5" /></td>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/92e67910-a8d1-43c3-8d2d-5866ec8e467a" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/133e869e-2001-4c24-8ceb-e69514d1d068" /></td>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/2a8ef61f-e993-478b-9ee7-6b9145391c9e" /></td>
+  </tr>
+</table>
 
 ---
 
 ## 주요 기능
+
+| | 기능 | 설명 |
+|---|---|---|
+| 🧭 | **동행 매칭** | 자기소개 벡터 임베딩으로 여행 성향이 유사한 사람을 추천 |
+| 🗓️ | **AI 일정 생성** | 앱 데이터 기반 RAG + Redis 캐싱으로 맞춤 여행 일정 생성 |
+| 💬 | **실시간 채팅** | Firebase Firestore 기반 1:1 채팅 |
+| 📋 | **동행 구인** | 동행 모집 · 신청 · 수락/거절 흐름 |
+| 🍜 | **맛집 리뷰** | 사진 5장 · 별점 · 위치 기반 맛집 등록 |
+| 📝 | **커뮤니티** | 질문 · 후기 · 정보 카테고리 게시판 |
+
+<br/>
 
 ### 동행 매칭
 자기소개를 입력하면 같은 여행지에 있는 비슷한 성향의 여행자를 추천합니다. 텍스트를 Google Gemini(`text-embedding-004`)로 768차원 벡터로 변환하고, PostgreSQL의 pgvector로 코사인 유사도를 계산합니다. GPS는 사용하지 않고 사용자가 직접 여행지를 입력하는 방식입니다.
@@ -27,12 +66,13 @@ React Native + FastAPI로 직접 개발한 여행 동행 매칭 모바일 앱입
 ### AI 일정 생성
 여행지, 기간, 인원, 예산을 입력하면 하루 단위 일정을 만들어줍니다. 단순히 Gemini에 요청하는 게 아니라, 앱에 쌓인 데이터를 컨텍스트로 넣어서 품질을 높입니다. 동일한 조건의 요청은 Redis에 7일 캐시해서 반복 API 호출을 줄였습니다.
 
-캐시 미스 시 아래 5가지 데이터를 Supabase에서 조회해서 Gemini 프롬프트에 포함합니다:
-- 같은 여행지의 기존 생성 일정 (인기 관광지 · 식당 자동 집계)
-- 앱에 등록된 맛집 (평점 높은 순)
-- 커뮤니티 후기 · 정보 게시글
-- 동행 출발월 통계 (인기 시즌 파악)
-- 요청 사용자의 자기소개 (개인화)
+> [!NOTE]
+> 캐시 미스 시 아래 5가지 데이터를 Supabase에서 조회해 Gemini 프롬프트에 포함합니다.
+> - 같은 여행지의 기존 생성 일정 (인기 관광지 · 식당 자동 집계)
+> - 앱에 등록된 맛집 (평점 높은 순)
+> - 커뮤니티 후기 · 정보 게시글
+> - 동행 출발월 통계 (인기 시즌 파악)
+> - 요청 사용자의 자기소개 (개인화)
 
 사용자가 늘수록 추천 품질이 자연스럽게 올라가는 구조입니다.
 
@@ -52,44 +92,87 @@ Firebase Firestore를 직접 사용합니다. 두 사용자의 ID 조합으로 �
 
 ## 기술 스택
 
-**Frontend**
-
-| | 버전 |
-|---|---|
-| React Native | 0.83.2 |
-| Expo | ~55.0.4 |
-| TypeScript | ~5.9.2 |
-| React Navigation (bottom-tabs + stack) | ^7.x |
-| Supabase JS SDK | ^2.78.0 |
-| Firebase SDK | ^12.10.0 |
-| expo-image-manipulator (클라이언트 압축) | ^55.0.9 |
-
-**Backend**
-
-| | 버전 |
-|---|---|
-| FastAPI | 0.115.5 |
-| Python | 3.10+ |
-| Supabase (PostgreSQL + Auth) | 2.10.0 |
-| google-genai (Gemini 2.5 Flash) | >=0.7.0 |
-| upstash-redis (REST API) | 1.1.0 |
-| boto3 (Cloudflare R2 · S3 호환) | 1.35.74 |
-| firebase-admin | 6.5.0 |
-
-**인프라 & 외부 서비스**
-
-| 서비스 | 용도 |
-|--------|------|
-| Supabase | PostgreSQL + pgvector + 구글 OAuth (PKCE) |
-| Render.com | FastAPI 백엔드 + Expo Web 정적 배포 |
-| Firebase Firestore | 실시간 1:1 채팅 |
-| Cloudflare R2 | 이미지 저장 (S3 호환) |
-| Upstash Redis | AI 일정 결과 캐싱 |
-| Google Gemini API | 텍스트 임베딩 + 일정 생성 |
+<table>
+  <tr>
+    <th>구분</th>
+    <th>기술</th>
+    <th>버전</th>
+  </tr>
+  <tr>
+    <td rowspan="5"><b>Frontend</b></td>
+    <td>React Native</td>
+    <td>0.83.2</td>
+  </tr>
+  <tr>
+    <td>Expo</td>
+    <td>~55.0.4</td>
+  </tr>
+  <tr>
+    <td>TypeScript</td>
+    <td>~5.9.2</td>
+  </tr>
+  <tr>
+    <td>Supabase JS SDK</td>
+    <td>^2.78.0</td>
+  </tr>
+  <tr>
+    <td>Firebase SDK</td>
+    <td>^12.10.0</td>
+  </tr>
+  <tr>
+    <td rowspan="5"><b>Backend</b></td>
+    <td>FastAPI</td>
+    <td>0.115.5</td>
+  </tr>
+  <tr>
+    <td>Python</td>
+    <td>3.10+</td>
+  </tr>
+  <tr>
+    <td>google-genai (Gemini 2.5 Flash)</td>
+    <td>>=0.7.0</td>
+  </tr>
+  <tr>
+    <td>upstash-redis</td>
+    <td>1.1.0</td>
+  </tr>
+  <tr>
+    <td>boto3 (Cloudflare R2)</td>
+    <td>1.35.74</td>
+  </tr>
+  <tr>
+    <td rowspan="6"><b>인프라</b></td>
+    <td>Supabase</td>
+    <td>PostgreSQL + pgvector + 구글 OAuth (PKCE)</td>
+  </tr>
+  <tr>
+    <td>Render.com</td>
+    <td>FastAPI 백엔드 + Expo Web 정적 배포</td>
+  </tr>
+  <tr>
+    <td>Firebase Firestore</td>
+    <td>실시간 1:1 채팅</td>
+  </tr>
+  <tr>
+    <td>Cloudflare R2</td>
+    <td>이미지 저장 (S3 호환)</td>
+  </tr>
+  <tr>
+    <td>Upstash Redis</td>
+    <td>AI 일정 결과 캐싱</td>
+  </tr>
+  <tr>
+    <td>Google Gemini API</td>
+    <td>텍스트 임베딩 + 일정 생성</td>
+  </tr>
+</table>
 
 ---
 
 ## 프로젝트 구조
+
+<details>
+<summary>폴더 구조 보기</summary>
 
 ```
 tripmeet/
@@ -144,15 +227,16 @@ tripmeet/
     └── eas.json                 # EAS Build 프로필
 ```
 
+</details>
+
 ---
 
 ## 시작하기
 
 ### 사전 준비
 
-- Node.js 18+, Python 3.10+
-- `npm install -g expo-cli`
-- 아래 서비스 계정 필요: Supabase, Firebase, Google Cloud (Gemini API), Cloudflare R2, Upstash Redis
+- Node.js 18+, Python 3.10+, `npm install -g expo-cli`
+- 서비스 계정 필요: Supabase · Firebase · Google Cloud (Gemini API) · Cloudflare R2 · Upstash Redis
 
 ### 1. 저장소 클론
 
@@ -224,7 +308,16 @@ npx expo start
 
 ### AI 일정 생성 — RAG + Redis 캐싱
 
-캐시 키는 `{여행지}:{기간}:{인원}:{예산구간}:v2` 형식으로 구성됩니다. Redis에서 히트되면 바로 반환하고, 미스면 Supabase에서 앱 데이터를 조회해 Gemini 프롬프트를 구성한 뒤 생성합니다. 결과는 Redis(TTL 7일)와 DB 양쪽에 저장합니다.
+캐시 키는 `{여행지}:{기간}:{인원}:{예산구간}:v2` 형식으로 구성됩니다.
+
+```
+요청 수신
+  └─ Redis 캐시 조회
+       ├─ 히트 → 즉시 반환
+       └─ 미스 → Supabase에서 앱 데이터 5종 조회
+                └─ Gemini 프롬프트 구성 → 일정 생성
+                     └─ Redis (TTL 7일) + DB 저장
+```
 
 ---
 
@@ -248,9 +341,11 @@ Supabase PostgreSQL을 사용합니다. pgvector 확장으로 동행 매칭용 �
 
 Render.com에 3개 서비스로 배포합니다. `render.yaml`에 설정이 있습니다.
 
-- **tripmeet-api** — FastAPI 백엔드 (Python, Singapore 리전)
-- **tripmeet-app** — Expo Web 빌드 정적 배포 (`npx expo export --platform web`)
-- **tripmeet-landing** — 랜딩페이지 정적 배포
+| 서비스 | 설명 |
+|--------|------|
+| `tripmeet-api` | FastAPI 백엔드 (Python, Singapore 리전) |
+| `tripmeet-app` | Expo Web 빌드 정적 배포 (`npx expo export --platform web`) |
+| `tripmeet-landing` | 랜딩페이지 정적 배포 |
 
 ---
 
