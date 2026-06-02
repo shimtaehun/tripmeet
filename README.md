@@ -1,18 +1,14 @@
 <div align="center">
 
-# TripMeet — 여행 동행 매칭 앱
-
-혼자 여행하면서 동행을 구하거나, 현지 맛집 정보를 모으거나, 일정을 짜는 과정이 생각보다 번거롭습니다.  
-이걸 하나로 묶으면 어떨까 싶어서 만든 여행 동행 매칭 모바일 앱입니다.
-
 <br/>
 
-<table>
-  <tr>
-    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/325ca095-7891-4b84-ae27-a7a8ba2b2d95" width="100%" /><br/><sub><b>AI 일정 생성</b></sub></td>
-    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/805183a8-6411-4796-96a5-b745c2af91b7" width="100%" /><br/><sub><b>동행 채팅</b></sub></td>
-  </tr>
-</table>
+# 🧳 TripMeet
+
+### 혼자 떠나는 여행을, 외롭지 않게
+
+혼자 하는 여행은 자유롭지만, 준비할 건 생각보다 많습니다.  
+같이 갈 동행을 찾고, 맛집을 모으고, 하루 일정을 짜다 보면 어느새 지치죠.  
+**TripMeet은 그 번거로운 과정을 앱 하나에 담았습니다.**
 
 <br/>
 
@@ -27,17 +23,42 @@
 
 <br/>
 
-**1인 개발** · 기획 · 프론트엔드 · 백엔드 · AI 시스템 전부 직접 구현 · 2025.12 ~ 2026.03
+`1인 개발`  ·  기획 · 프론트엔드 · 백엔드 · AI 시스템 전부 직접 구현  ·  2025.12 ~ 2026.03
 
 <br/>
 
-[**앱 바로가기**](https://tripmeet-app.onrender.com) &nbsp;·&nbsp; [**API 상태**](https://tripmeet-backend.onrender.com/health) &nbsp;·&nbsp; [**랜딩페이지**](https://tripmeet-landing.onrender.com)
+[**🔗 앱 바로가기**](https://tripmeet-app.onrender.com) &nbsp;·&nbsp; [**API 상태**](https://tripmeet-backend.onrender.com/health) &nbsp;·&nbsp; [**랜딩페이지**](https://tripmeet-landing.onrender.com)
 
 </div>
 
 <br/>
 
 ---
+
+<div align="center">
+
+## 🎬 데모
+
+<img src="https://github.com/user-attachments/assets/325ca095-7891-4b84-ae27-a7a8ba2b2d95" width="80%" />
+
+**AI 일정 생성** — 여행지 · 기간 · 인원 · 예산만 입력하면 하루 단위 일정이 완성됩니다
+
+<br/>
+<br/>
+
+<img src="https://github.com/user-attachments/assets/805183a8-6411-4796-96a5-b745c2af91b7" width="80%" />
+
+**동행 채팅** — 매칭된 동행과 실시간으로 1:1 대화를 나눕니다
+
+</div>
+
+<br/>
+
+---
+
+<div align="center">
+
+## 📱 화면 미리보기
 
 <table>
   <tr>
@@ -54,25 +75,66 @@
   </tr>
 </table>
 
----
-
-## 주요 기능
-
-| | 기능 | 설명 |
-|---|---|---|
-| 🧭 | **동행 매칭** | 자기소개 벡터 임베딩으로 여행 성향이 유사한 사람을 추천 |
-| 🗓️ | **AI 일정 생성** | 앱 데이터 기반 RAG + Redis 캐싱으로 맞춤 여행 일정 생성 |
-| 💬 | **실시간 채팅** | Firebase Firestore 기반 1:1 채팅 |
-| 📋 | **동행 구인** | 동행 모집 · 신청 · 수락/거절 흐름 |
-| 🍜 | **맛집 리뷰** | 사진 5장 · 별점 · 위치 기반 맛집 등록 |
-| 📝 | **커뮤니티** | 질문 · 후기 · 정보 카테고리 게시판 |
+</div>
 
 <br/>
 
-### 동행 매칭
+---
+
+## 📑 목차
+
+- [✨ 주요 기능](#-주요-기능)
+- [🛠 기술 스택](#-기술-스택)
+- [📂 프로젝트 구조](#-프로젝트-구조)
+- [🚀 시작하기](#-시작하기)
+- [🧠 AI 동작 원리](#-ai-동작-원리)
+- [💡 만들면서 한 선택들](#-만들면서-한-선택들)
+- [🗄 데이터베이스 구조](#-데이터베이스-구조)
+- [📦 배포](#-배포)
+
+<br/>
+
+---
+
+## ✨ 주요 기능
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>🧭 동행 매칭</h3>
+      자기소개 벡터 임베딩으로<br/>여행 성향이 유사한 사람을 추천
+    </td>
+    <td width="33%" valign="top">
+      <h3>🗓️ AI 일정 생성</h3>
+      앱 데이터 기반 RAG + Redis 캐싱으로<br/>맞춤 여행 일정 생성
+    </td>
+    <td width="33%" valign="top">
+      <h3>💬 실시간 채팅</h3>
+      Firebase Firestore 기반<br/>1:1 실시간 채팅
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>📋 동행 구인</h3>
+      동행 모집 · 신청 ·<br/>수락 / 거절 흐름
+    </td>
+    <td width="33%" valign="top">
+      <h3>🍜 맛집 리뷰</h3>
+      사진 5장 · 별점 ·<br/>위치 기반 맛집 등록
+    </td>
+    <td width="33%" valign="top">
+      <h3>📝 커뮤니티</h3>
+      질문 · 후기 · 정보<br/>카테고리 게시판
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+### 🧭 동행 매칭
 자기소개를 입력하면 같은 여행지에 있는 비슷한 성향의 여행자를 추천합니다. 텍스트를 Google Gemini(`text-embedding-004`)로 768차원 벡터로 변환하고, PostgreSQL의 pgvector로 코사인 유사도를 계산합니다. GPS는 사용하지 않고 사용자가 직접 여행지를 입력하는 방식입니다.
 
-### AI 일정 생성
+### 🗓️ AI 일정 생성
 여행지, 기간, 인원, 예산을 입력하면 하루 단위 일정을 만들어줍니다. 단순히 Gemini에 요청하는 게 아니라, 앱에 쌓인 데이터를 컨텍스트로 넣어서 품질을 높입니다. 동일한 조건의 요청은 Redis에 7일 캐시해서 반복 API 호출을 줄였습니다.
 
 > [!NOTE]
@@ -85,21 +147,23 @@
 
 사용자가 늘수록 추천 품질이 자연스럽게 올라가는 구조입니다.
 
-### 커뮤니티 게시판
+### 📝 커뮤니티 게시판
 질문, 후기, 정보 세 가지 카테고리로 게시글을 올릴 수 있습니다. 여행 준비 중 궁금한 것들, 다녀온 후기, 현지 꿀팁 공유가 주요 용도입니다.
 
-### 맛집 리뷰
+### 🍜 맛집 리뷰
 사진(최대 5장), 별점(1~5), 위치를 포함해서 맛집을 등록합니다. 사진은 클라이언트에서 500KB 이하로 압축한 뒤 Cloudflare R2에 저장합니다. AI 일정 생성 시 등록된 맛집이 식사 슬롯에 우선 배치됩니다.
 
-### 동행 구인 게시판
+### 📋 동행 구인 게시판
 여행 일정을 올리고 동행을 모집합니다. 신청 → 수락/거절 흐름이 있고, 수락 후 1:1 채팅으로 이어집니다.
 
-### 실시간 채팅
+### 💬 실시간 채팅
 Firebase Firestore를 직접 사용합니다. 두 사용자의 ID 조합으로 채팅방을 식별하고, Firestore 실시간 리스너로 메시지를 구독합니다.
+
+<br/>
 
 ---
 
-## 기술 스택
+## 🛠 기술 스택
 
 <table>
   <tr>
@@ -176,12 +240,16 @@ Firebase Firestore를 직접 사용합니다. 두 사용자의 ID 조합으로 �
   </tr>
 </table>
 
+<br/>
+
 ---
 
-## 프로젝트 구조
+## 📂 프로젝트 구조
 
 <details>
-<summary>폴더 구조 보기</summary>
+<summary><b>폴더 구조 보기</b></summary>
+
+<br/>
 
 ```
 tripmeet/
@@ -238,9 +306,11 @@ tripmeet/
 
 </details>
 
+<br/>
+
 ---
 
-## 시작하기
+## 🚀 시작하기
 
 ### 사전 준비
 
@@ -307,9 +377,11 @@ npx expo start
 # 웹: w  /  iOS 시뮬레이터: i  /  Android 에뮬레이터: a
 ```
 
+<br/>
+
 ---
 
-## AI 동작 원리
+## 🧠 AI 동작 원리
 
 ### 동행 매칭 — 벡터 유사도 검색
 
@@ -328,9 +400,11 @@ npx expo start
                      └─ Redis (TTL 7일) + DB 저장
 ```
 
+<br/>
+
 ---
 
-## 만들면서 한 선택들
+## 💡 만들면서 한 선택들
 
 ### 예산을 "금액"이 아니라 "구간"으로 캐싱했다
 
@@ -365,9 +439,11 @@ except Exception as e:
 
 나머지 데이터는 전부 Supabase(PostgreSQL)에 있는데, 1:1 채팅만 Firebase Firestore를 씁니다. 실시간 메시지 구독은 Firestore의 리스너가 직접 붙이기 훨씬 간단했고, 채팅은 정합성보다 "지금 바로 도착하는 것"이 중요한 데이터라 판단했습니다. 두 사용자 ID 조합으로 방을 식별해서 별도 방 생성 로직 없이 동작하도록 했습니다.
 
+<br/>
+
 ---
 
-## 데이터베이스 구조
+## 🗄 데이터베이스 구조
 
 Supabase PostgreSQL을 사용합니다. pgvector 확장으로 동행 매칭용 벡터 유사도 검색을 지원합니다.
 
@@ -381,9 +457,11 @@ Supabase PostgreSQL을 사용합니다. pgvector 확장으로 동행 매칭용 �
 | `companions` | 동행 구인 (status: open / closed) |
 | `companion_applications` | 동행 신청 (status: pending / accepted / rejected) |
 
+<br/>
+
 ---
 
-## 배포
+## 📦 배포
 
 Render.com에 3개 서비스로 배포합니다. `render.yaml`에 설정이 있습니다.
 
@@ -393,8 +471,18 @@ Render.com에 3개 서비스로 배포합니다. `render.yaml`에 설정이 있�
 | `tripmeet-app` | Expo Web 빌드 정적 배포 (`npx expo export --platform web`) |
 | `tripmeet-landing` | 랜딩페이지 정적 배포 |
 
+<br/>
+
 ---
 
-## 라이선스
+<div align="center">
+
+## 📄 라이선스
 
 포트폴리오 및 학습 목적으로 제작했습니다.
+
+<br/>
+
+**TripMeet** · 1인 개발 · 2025.12 ~ 2026.03
+
+</div>
