@@ -6,6 +6,9 @@
 이걸 하나로 묶으면 어떨까 싶어서 만든 여행 동행 매칭 모바일 앱입니다.
 
 <br/>
+<img width="854" height="480" alt="tripmeet 일정생성" src="https://github.com/user-attachments/assets/325ca095-7891-4b84-ae27-a7a8ba2b2d95" />
+<img width="854" height="480" alt="동행 채팅페이지" src="https://github.com/user-attachments/assets/805183a8-6411-4796-96a5-b745c2af91b7" />
+<br/>
 
 ![React Native](https://img.shields.io/badge/React_Native-0.83-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![Expo](https://img.shields.io/badge/Expo-55-000020?style=flat-square&logo=expo&logoColor=white)
