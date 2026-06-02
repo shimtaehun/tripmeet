@@ -445,17 +445,77 @@ except Exception as e:
 
 ## 🗄 데이터베이스 구조
 
-Supabase PostgreSQL을 사용합니다. pgvector 확장으로 동행 매칭용 벡터 유사도 검색을 지원합니다.
+Supabase PostgreSQL을 사용합니다. 모든 테이블이 `users`를 중심으로 연결되며, pgvector 확장(`preference_embedding`)으로 동행 매칭용 벡터 유사도 검색을 지원합니다.
 
-| 테이블 | 설명 |
-|--------|------|
-| `users` | 프로필 (Supabase Auth UID와 1:1 연동) |
-| `travel_locations` | 현재 여행 위치 (is_active로 활성 여부 관리) |
-| `itineraries` | AI 생성 일정 (cache_key UNIQUE 제약으로 중복 저장 방지) |
-| `posts` | 커뮤니티 게시글 (category: question / review / info) |
-| `restaurants` | 맛집 리뷰 (image_urls TEXT[], rating 1~5) |
-| `companions` | 동행 구인 (status: open / closed) |
-| `companion_applications` | 동행 신청 (status: pending / accepted / rejected) |
+```mermaid
+erDiagram
+    users ||--o{ travel_locations : "여행 위치 등록"
+    users ||--o{ itineraries : "AI 일정 생성"
+    users ||--o{ posts : "게시글 작성"
+    users ||--o{ restaurants : "맛집 리뷰"
+    users ||--o{ companions : "동행 모집"
+    users ||--o{ companion_applications : "동행 신청"
+    companions ||--o{ companion_applications : "신청 접수"
+
+    users {
+        uuid id PK "Supabase Auth UID"
+        varchar nickname
+        text bio
+        vector preference_embedding "768차원 pgvector"
+        timestamptz created_at
+    }
+    travel_locations {
+        uuid id PK
+        uuid user_id FK
+        varchar location_name
+        varchar country
+        boolean is_active
+    }
+    itineraries {
+        uuid id PK
+        uuid user_id FK
+        varchar destination
+        smallint duration_days
+        smallint travelers_count
+        varchar budget_range
+        varchar cache_key UK "중복 저장 방지"
+        jsonb content
+    }
+    posts {
+        uuid id PK
+        uuid user_id FK
+        varchar category "question/review/info"
+        varchar title
+        text content
+        integer view_count
+    }
+    restaurants {
+        uuid id PK
+        uuid user_id FK
+        varchar name
+        varchar location_name
+        smallint rating "1~5"
+        text image_urls "R2 URL 배열(최대 5장)"
+    }
+    companions {
+        uuid id PK
+        uuid user_id FK
+        varchar destination
+        date travel_start_date
+        date travel_end_date
+        smallint max_participants
+        varchar status "open/closed"
+    }
+    companion_applications {
+        uuid id PK
+        uuid companion_id FK
+        uuid applicant_id FK
+        varchar status "pending/accepted/rejected"
+    }
+```
+
+> [!NOTE]
+> 모든 외래키는 `ON DELETE CASCADE`로 설정해, 사용자 삭제 시 관련 데이터가 함께 정리됩니다. `companion_applications`는 `(companion_id, applicant_id)` 복합 UNIQUE로 동일 공고 중복 신청을 막습니다.
 
 <br/>
 
