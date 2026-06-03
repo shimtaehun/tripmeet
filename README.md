@@ -27,8 +27,7 @@
 
 <br/>
 
-[**🔗 앱 바로가기**](https://tripmeet-app.onrender.com) &nbsp;·&nbsp; [**API 상태**](https://tripmeet-backend.onrender.com/health) &nbsp;·&nbsp; [**랜딩페이지**](https://tripmeet-landing.onrender.com)
-
+[**🔗 서비스 바로가기**](https://tripmeet.onrender.com) &nbsp;·&nbsp; [**API 상태**](https://tripmeet-backend.onrender.com/health) &nbsp;·&nbsp;
 </div>
 
 <br/>
